@@ -12,6 +12,7 @@
     "build": "npm run build-renderer ; npm run build-main",
     "build-renderer": "webpack --config renderer-webpack.config.js --mode production",
     "build-main": "webpack --config main-webpack.config.js --mode production",
+    "package": "electron-packager . ProtoMan --out=out --prune --overwrite",
     "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix"
   },
   "author": "Inchan Hwang, Louis Lee",
@@ -27,6 +28,7 @@
     "@typescript-eslint/eslint-plugin": "^2.19.0",
     "@typescript-eslint/parser": "^2.19.0",
     "electron": "^8.0.0",
+    "electron-packager": "^14.2.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",

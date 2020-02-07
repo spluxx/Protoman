@@ -1,4 +1,5 @@
 import { app, BrowserWindow } from 'electron';
+import path from 'path';
 
 let window: BrowserWindow;
 
@@ -11,7 +12,7 @@ function createWindow(): void {
     },
   });
   window.maximize();
-  window.loadFile('./index.html');
+  window.loadFile(path.join(__dirname, 'index.html'));
 }
 
 app.allowRendererProcessReuse = true;
