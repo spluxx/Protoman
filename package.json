@@ -1,0 +1,43 @@
+{
+  "name": "protoman",
+  "version": "0.0.1",
+  "description": "Basic Postman clone with protobuf functionalities",
+  "main": "./dist/main.js",
+  "scripts": {
+    "start": "electron dist/main.js",
+    "dev": "npm run dev-renderer & npm run dev-main &",
+    "kill-dev": "killall node",
+    "dev-renderer": "webpack --config renderer-webpack.config.js --mode development --watch",
+    "dev-main": "webpack --config main-webpack.config.js --mode development --watch",
+    "build": "npm run build-renderer ; npm run build-main",
+    "build-renderer": "webpack --config renderer-webpack.config.js --mode production",
+    "build-main": "webpack --config main-webpack.config.js --mode production",
+    "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix"
+  },
+  "author": "Inchan Hwang, Louis Lee",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
+  },
+  "devDependencies": {
+    "@types/html-webpack-plugin": "^3.2.2",
+    "@types/react": "^16.9.19",
+    "@types/react-dom": "^16.9.5",
+    "@typescript-eslint/eslint-plugin": "^2.19.0",
+    "@typescript-eslint/parser": "^2.19.0",
+    "electron": "^8.0.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.18.3",
+    "html-webpack-plugin": "^3.2.0",
+    "node-loader": "^0.6.0",
+    "prettier": "^1.19.1",
+    "source-map-loader": "^0.2.4",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.5",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
+  }
+}
