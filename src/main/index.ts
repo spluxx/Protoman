@@ -1,5 +1,6 @@
-import { app, BrowserWindow, globalShortcut } from 'electron';
+import { app, BrowserWindow, globalShortcut, Menu } from 'electron';
 import path from 'path';
+import makeMenu from './menu';
 
 let window: BrowserWindow;
 
@@ -11,8 +12,9 @@ function createWindow(): void {
       nodeIntegration: true,
     },
   });
-  window.maximize();
   window.loadFile(path.join(__dirname, 'index.html'));
+
+  Menu.setApplicationMenu(makeMenu());
 
   if (process.env.NODE_ENV === 'development') {
     globalShortcut.register('F5', function() {
