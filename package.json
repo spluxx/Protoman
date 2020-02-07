@@ -12,7 +12,7 @@
     "build": "npm run build-renderer ; npm run build-main",
     "build-renderer": "webpack --config renderer-webpack.config.js --mode production",
     "build-main": "webpack --config main-webpack.config.js --mode production",
-    "package": "electron-packager . ProtoMan --out=out --prune --overwrite",
+    "package": "npm run build && electron-packager . ProtoMan --out=out --prune --overwrite",
     "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix"
   },
   "author": "Inchan Hwang, Louis Lee",

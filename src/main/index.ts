@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, globalShortcut } from 'electron';
 import path from 'path';
 
 let window: BrowserWindow;
@@ -13,6 +13,12 @@ function createWindow(): void {
   });
   window.maximize();
   window.loadFile(path.join(__dirname, 'index.html'));
+
+  if (process.env.NODE_ENV === 'development') {
+    globalShortcut.register('F5', function() {
+      window.reload();
+    });
+  }
 }
 
 app.allowRendererProcessReuse = true;
