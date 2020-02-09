@@ -18,15 +18,23 @@
   "author": "Inchan Hwang, Louis Lee",
   "license": "MIT",
   "dependencies": {
+    "antd": "^3.26.9",
     "react": "^16.12.0",
-    "react-dom": "^16.12.0"
+    "react-dom": "^16.12.0",
+    "react-redux": "^7.1.3",
+    "redux": "^4.0.5",
+    "styled-components": "^5.0.1"
   },
   "devDependencies": {
     "@types/html-webpack-plugin": "^3.2.2",
     "@types/react": "^16.9.19",
     "@types/react-dom": "^16.9.5",
+    "@types/react-redux": "^7.1.7",
+    "@types/redux": "^3.6.0",
+    "@types/styled-components": "^4.4.2",
     "@typescript-eslint/eslint-plugin": "^2.19.0",
     "@typescript-eslint/parser": "^2.19.0",
+    "css-loader": "^3.4.2",
     "electron": "^8.0.0",
     "electron-packager": "^14.2.0",
     "eslint": "^6.8.0",
@@ -37,6 +45,7 @@
     "node-loader": "^0.6.0",
     "prettier": "^1.19.1",
     "source-map-loader": "^0.2.4",
+    "style-loader": "^1.1.3",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.5",
     "webpack": "^4.41.5",

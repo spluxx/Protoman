@@ -8,7 +8,7 @@ import { Flow } from './http/flow';
 import { Collection } from './Collection';
 
 export interface AppState {
-  readonly envList: ReadonlyArray<Env>;
+  readonly envList: Readonly<{ [key: string]: Env }>;
   readonly collections: Readonly<{ [key: string]: Collection }>;
 
   readonly currentEnv: Env | null;
