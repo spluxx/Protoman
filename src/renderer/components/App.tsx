@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import 'antd/dist/antd.css';
 import CollectionSider from './Collection/CollectionSider';
 import { Layout } from 'antd';
+import FlowView from './Flow/FlowView';
 
 const TopLayout = styled(Layout)`
   width: 100%;
@@ -19,7 +20,9 @@ const App: React.FunctionComponent<{}> = ({}) => {
     <TopLayout>
       <CollectionSider />
       <ContentLayout>
-        <Layout.Content>Content</Layout.Content>
+        <Layout.Content>
+          <FlowView />
+        </Layout.Content>
       </ContentLayout>
     </TopLayout>
   );
