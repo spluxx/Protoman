@@ -22,6 +22,7 @@
     "react-dom": "^16.12.0"
   },
   "devDependencies": {
+    "@types/google-protobuf": "^3.7.2",
     "@types/html-webpack-plugin": "^3.2.2",
     "@types/react": "^16.9.19",
     "@types/react-dom": "^16.9.5",
@@ -36,8 +37,10 @@
     "html-webpack-plugin": "^3.2.0",
     "node-loader": "^0.6.0",
     "prettier": "^1.19.1",
+    "protobufjs": "^6.8.8",
     "source-map-loader": "^0.2.4",
     "ts-loader": "^6.2.1",
+    "ts-protoc-gen": "^0.12.0",
     "typescript": "^3.7.5",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10"
