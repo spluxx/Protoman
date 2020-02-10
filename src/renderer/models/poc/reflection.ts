@@ -1,38 +1,50 @@
 import protobuf, { Root } from 'protobufjs';
 
-function addToList(type: protobuf.Type) {
-  console.log(type.fullName);
-  //add to global list of messages
+interface Wrapper {
+  path: string;
+  messages: string[];
 }
 
-function traverseTypes(current: any) {
-  if (current instanceof protobuf.Type) addToList(current);
+function traverseTypes(current: any): string[] {
+  let messages: string[] = [];
+  if (current instanceof protobuf.Type) {
+    console.log(current.toString());
+    messages.push(current.toString());
+  }
   if (current.nestedArray)
     current.nestedArray.forEach((nested: any) => {
       traverseTypes(nested);
     });
+
+  return messages;
 }
 
-function readProto(path: string) {
-  protobuf.load(path, (err, root) => {
-    if (err) throw err;
-
-    traverseTypes(root);
-    //return pair (path, [message]);
+function readProto(path: string): Promise<Wrapper> {
+  return new Promise((resolve, reject) => {
+    protobuf.load(path, (err, root) => {
+      if (err) reject(err);
+      const wrapper = {
+        path: path,
+        messages: traverseTypes(root),
+      };
+      resolve(wrapper);
+    });
   });
 }
 
-function extractMessages();
+//for POC just print the messages
+function extractMessages() {}
 
 function readProtos(paths: string[]) {
   // turn all this into promises
-  paths.forEach(path => {
-    readProto(path);
+  let parse = Promise.all(paths.map(path => readProto(path)));
+
+  parse.then(data => {
+    extractMessages(data);
   });
 
-  //then let's assume we have [ Pair(path, [messages]) ]
+  //then let's assume we have [ Wrapper(path, [messages]) ]
   //then filter those with the same message names(this is very possible)
-  let pairs = [];
-  //then based on those messagses use recursion
-  messages.forEach(message => {});
+  //then based on those messagses use recursion to create messages
+  // then save this on the state tree
 }
