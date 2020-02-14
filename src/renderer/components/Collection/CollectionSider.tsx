@@ -7,7 +7,7 @@ import { AppState } from '../../models/AppState';
 
 const Sider = styled(Layout.Sider)`
   background: #fff;
-  box-shadow: 3px 0 3px -0px #aaa;
+  box-shadow: 1px 0 3px -0px #aaa;
 `;
 
 const Table = styled('table')`
