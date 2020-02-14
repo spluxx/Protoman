@@ -7,7 +7,7 @@ import { AppState } from '../../models/AppState';
 
 const Sider = styled(Layout.Sider)`
   background: #fff;
-  box-shadow: 3px 0 5px -0px #aaa;
+  box-shadow: 3px 0 3px -0px #aaa;
 `;
 
 const Table = styled('table')`
@@ -27,9 +27,11 @@ const Title = styled('h1')`
 const CollectionSider: React.FunctionComponent<{}> = ({}) => {
   const collections = useSelector((s: AppState) => Object.entries(s.collections));
 
+  const [collapsed, setCollapsed] = React.useState(false);
+
   return (
-    <Sider width={250}>
-      <Table>
+    <Sider width={200} collapsible collapsed={collapsed} onCollapse={setCollapsed} collapsedWidth={30} theme="light">
+      <Table hidden={collapsed}>
         <thead>
           <tr>
             <TableHeader>

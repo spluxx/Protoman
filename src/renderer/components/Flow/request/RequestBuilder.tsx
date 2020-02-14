@@ -1,7 +1,7 @@
 import React from 'react';
 import EndpointInput from './EndpointInput';
-import { Tabs, Row, Col, Button, Icon } from 'antd';
-import HeaderInput from './HeaderInput';
+import { Tabs, Button } from 'antd';
+import HeaderView from '../shared/HeaderView';
 import BodyInput from './BodyInput';
 import styled from 'styled-components';
 
@@ -10,6 +10,7 @@ const { TabPane } = Tabs;
 const BuilderWrapper = styled('div')`
   padding: 16px;
   background-color: white;
+  border-radius: 5px;
 `;
 
 const TopBarWrapper = styled('div')`
@@ -21,20 +22,24 @@ const LeftMarginButton = styled(Button)`
   margin-left: 8px;
 `;
 
+const PaddedTabPane = styled(TabPane)`
+  padding: 4px;
+`;
+
 const RequestBuilder: React.FunctionComponent<{}> = ({}) => {
   return (
     <BuilderWrapper>
       <TopBarWrapper>
         <EndpointInput />
-        <LeftMarginButton size="large">Send</LeftMarginButton>
+        <LeftMarginButton>Send</LeftMarginButton>
       </TopBarWrapper>
       <Tabs defaultActiveKey="header" animated={false}>
-        <TabPane tab="Headers" key="header">
-          <HeaderInput />
-        </TabPane>
-        <TabPane tab="Body" key="body">
+        <PaddedTabPane tab="Headers" key="header">
+          <HeaderView editable />
+        </PaddedTabPane>
+        <PaddedTabPane tab="Body" key="body">
           <BodyInput />
-        </TabPane>
+        </PaddedTabPane>
       </Tabs>
     </BuilderWrapper>
   );

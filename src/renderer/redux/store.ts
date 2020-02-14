@@ -21,7 +21,7 @@ const initialState: AppState = {
       flows: {},
     },
   },
-  currentEnv: null,
+  currentEnv: 'dev',
   currentProtoDefs: [],
   currentMessageNames: [], // just the top-level ones
   currentFlow: null,

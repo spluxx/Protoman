@@ -10,7 +10,7 @@ function traverseTypes(current: any) {
     });
 }
 
-function readProto(path: string): Promise<Wrapper> {
+function readProto(path: string): Promise<void> {
   return new Promise((resolve, reject) => {
     protobuf.load(path);
     protobuf.load(path, (err, root) => {

@@ -11,7 +11,9 @@ module.exports = {
     sourceType: 'module',
     ecmaFeatures: { jsx: true },
   },
-  rules: {},
+  rules: {
+    'react/prop-types': 0,
+  },
   settings: {
     react: {
       version: 'detect',

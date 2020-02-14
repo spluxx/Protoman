@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import 'antd/dist/antd.css';
-import CollectionSider from './Collection/CollectionSider';
+import CollectionSider from './collection/CollectionSider';
 import { Layout } from 'antd';
 import FlowView from './Flow/FlowView';
+import ToolBar from './toolbar/ToolBar';
 
 const TopLayout = styled(Layout)`
   width: 100%;
@@ -11,8 +12,8 @@ const TopLayout = styled(Layout)`
 `;
 
 const ContentLayout = styled(Layout)`
-  padding: 0 24px 24px;
   height: 100%;
+  padding: 16px;
 `;
 
 const App: React.FunctionComponent<{}> = ({}) => {
@@ -20,9 +21,8 @@ const App: React.FunctionComponent<{}> = ({}) => {
     <TopLayout>
       <CollectionSider />
       <ContentLayout>
-        <Layout.Content>
-          <FlowView />
-        </Layout.Content>
+        <ToolBar />
+        <FlowView />
       </ContentLayout>
     </TopLayout>
   );

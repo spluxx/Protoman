@@ -1,7 +1,6 @@
 import React from 'react';
 import { Input, Select } from 'antd';
-import { HTTP_METHODS } from '../../models/http/request_builder';
-import styled from 'styled-components';
+import { HTTP_METHODS } from '../../../models/http/request_builder';
 
 const HttpMethodPicker = (
   <Select defaultValue={HTTP_METHODS[0]} style={{ width: 100 }}>
@@ -12,7 +11,7 @@ const HttpMethodPicker = (
 );
 
 const EndpointInput: React.FunctionComponent<{}> = ({}) => {
-  return <Input size="large" addonBefore={HttpMethodPicker} />;
+  return <Input addonBefore={HttpMethodPicker} placeholder="http://localhost:8000/api/hello" />;
 };
 
 export default EndpointInput;
