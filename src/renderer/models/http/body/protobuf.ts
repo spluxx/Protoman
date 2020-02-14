@@ -1,20 +1,16 @@
 // M - Not part of the vm tree
 
-type ProtobufType = PrimitiveType | MessageType | OneOfType | EnumType;
-type ProtobufValue = PrimitiveValue | MessageValue | OneOfValue | EnumValue;
-type OneOrMultiple<T> = T | ReadonlyArray<T>;
+type ProtobufType = PrimitiveType | MessageType | EnumType;
+type ProtobufValue = PrimitiveValue | MessageValue | EnumValue;
+
+// function typeNameToType(name: string): ProtobufType | null {}
 
 export interface MessageType {
   readonly tag: 'message';
   readonly name: string; // ex) ProtoModel.Coordinates
-  readonly isRepeated: Readonly<{ [key: string]: boolean }>;
-  readonly fields: Readonly<{ [key: string]: ProtobufType }>;
-}
-
-export interface OneOfType {
-  readonly tag: 'oneof';
-  readonly name: string;
-  readonly options: Readonly<{ [key: string]: ProtobufType }>;
+  readonly fields: Readonly<{ [key: string]: [string, boolean] }>;
+  readonly oneOfFields: Readonly<{ [key: string]: string[] }>;
+  readonly mapFields: Readonly<{ [key: string]: [string, string] }>;
 }
 
 export interface PrimitiveType {
@@ -34,16 +30,10 @@ export interface EnumType {
 
 export interface MessageValue {
   readonly tag: 'message';
-  readonly name: string;
-  readonly isRepeated: Readonly<{ [key: string]: boolean }>;
-  readonly fieldValues: Readonly<{ [key: string]: OneOrMultiple<ProtobufValue> }>;
-}
-
-export interface OneOfValue {
-  readonly tag: 'oneof';
-  readonly name: string;
-  readonly options: ReadonlyArray<{ [key: string]: ProtobufValue }>;
-  readonly currentValue: ProtobufValue;
+  readonly name: string; // ex) ProtoModel.Coordinates
+  readonly fields: Readonly<{ [key: string]: [string, boolean] }>;
+  readonly oneOfFields: Readonly<{ [key: string]: string[] }>;
+  readonly mapFields: Readonly<{ [key: string]: [string, string] }>;
 }
 
 export interface PrimitiveValue {

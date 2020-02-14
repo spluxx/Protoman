@@ -95,7 +95,7 @@ message FullCustomQuestion4_2 {
 
 message FullDefaultQuestion4_2 {
     DefaultQuestion question = 1;
-    Space space = 2;
+    map<string, Space> space = 2;
     repeated Answer4_2 answers = 3;
     repeated User4_2 waiting_askers = 4;
 }

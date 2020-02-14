@@ -6,21 +6,13 @@ option java_package = "com.ourspace.generated_files";
 option java_outer_classname = "SpaceServerProto";
 
 
-message User {
-    string user_id = 1;
-    string first_name = 2;
-    string last_name = 3;
-    string photo_url = 4;
-    bool is_onboarding = 5;
-    sint32 points = 6;
-    uint32 num_thanks = 7;
-    uint32 num_revokes = 8;
-    bool is_admin = 9;
-}
-
 message SearchSpaceByNameRequest {
+    message InnerMessage {
+        string fuck = 1;
+    }
     string query_string = 1;
     Coordinates coordinates = 2;
+    InnerMessage inner = 3;
 }
 
 message SearchSpaceByNameResponse {
