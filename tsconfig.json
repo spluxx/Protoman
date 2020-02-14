@@ -7,7 +7,8 @@
     "target": "es6",
     "jsx": "react",
     "alwaysStrict": true,
-    "strict": true
+    "strict": true,
+    "preserveSymlinks": true
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules"]
