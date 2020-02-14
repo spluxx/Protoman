@@ -15,7 +15,7 @@ const EnvPicker: React.FunctionComponent<{}> = ({}) => {
         <Icon type="setting" />
       </Button>
       <Select onSelect={console.log} value={currentEnv} style={{ width: 100 }}>
-        {envList.map(([name, env]) => (
+        {envList.map(([name]) => (
           <Option key={name}>{name}</Option>
         ))}
       </Select>

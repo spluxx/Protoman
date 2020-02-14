@@ -4,6 +4,7 @@ import { Tabs, Button } from 'antd';
 import HeaderView from '../shared/HeaderView';
 import BodyInput from './BodyInput';
 import styled from 'styled-components';
+import { RequestBuilder } from '../../../models/http/request_builder';
 
 const { TabPane } = Tabs;
 
@@ -26,23 +27,29 @@ const PaddedTabPane = styled(TabPane)`
   padding: 4px;
 `;
 
-const RequestBuilder: React.FunctionComponent<{}> = ({}) => {
+type Props = {
+  requestBuilder: RequestBuilder;
+};
+
+const RequestBuilderView: React.FunctionComponent<Props> = ({ requestBuilder }) => {
+  const { method, url, headers, body, responseMessageName } = requestBuilder;
+
   return (
     <BuilderWrapper>
       <TopBarWrapper>
-        <EndpointInput />
+        <EndpointInput method={method} url={url} />
         <LeftMarginButton>Send</LeftMarginButton>
       </TopBarWrapper>
       <Tabs defaultActiveKey="header" animated={false}>
         <PaddedTabPane tab="Headers" key="header">
-          <HeaderView editable />
+          <HeaderView editable headers={headers} />
         </PaddedTabPane>
         <PaddedTabPane tab="Body" key="body">
-          <BodyInput />
+          <BodyInput body={body} />
         </PaddedTabPane>
       </Tabs>
     </BuilderWrapper>
   );
 };
 
-export default RequestBuilder;
+export default RequestBuilderView;

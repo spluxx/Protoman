@@ -1,7 +1,24 @@
 import { MessageValue } from './body/protobuf';
 
 export interface Response {
-  readonly status: string; // ex) 400 (Bad Request)
+  readonly statusCode: number;
   readonly headers: Readonly<{ [key: string]: string }>;
-  readonly body: MessageValue | null;
+  readonly body: ResponseBody;
+}
+
+export interface ResponseBody {
+  type: 'empty' | 'protobuf' | 'string' | 'unknown';
+  value: null | MessageValue | string;
+}
+
+// TODO(Inchan Hwang): Fill these in
+export function statusCodeToText(code: number): string {
+  switch (code) {
+    case 200:
+      return 'Success';
+    case 400:
+      return 'BadRequest';
+    default:
+      return '';
+  }
 }

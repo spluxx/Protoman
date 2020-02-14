@@ -24,7 +24,16 @@ const initialState: AppState = {
   currentEnv: 'dev',
   currentProtoDefs: [],
   currentMessageNames: [], // just the top-level ones
-  currentFlow: null,
+  currentFlow: {
+    requestBuilder: {
+      method: 'GET',
+      url: '',
+      headers: {},
+      body: null,
+      responseMessageName: null,
+    },
+    response: null,
+  },
 };
 
 const store = createStore(s => s || initialState, initialState);

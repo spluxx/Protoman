@@ -1,8 +1,9 @@
 import React from 'react';
 import { Tabs, Row, Col } from 'antd';
 import styled from 'styled-components';
-import BodyView from './BodyView';
 import HeaderView from '../shared/HeaderView';
+import { Response, statusCodeToText } from '../../../models/http/response';
+import ResponseBodyView from './ResponseBodyView';
 
 const { TabPane } = Tabs;
 
@@ -30,29 +31,47 @@ const PaddedTabPane = styled(TabPane)`
   padding: 4px;
 `;
 
-const StatusText: React.FunctionComponent<{}> = ({}) => {
+function statusCodeToColor(code: number): string {
+  if (code < 300) return 'green';
+  else if (code < 400) return 'yellow';
+  else if (code < 500) return 'red';
+  else return 'darkgray';
+}
+
+const StatusText: React.FunctionComponent<{ code: number }> = ({ code }) => {
+  const text = statusCodeToText(code);
+  const color = statusCodeToColor(code);
+
   return (
     <span>
-      Status: <span style={{ color: 'green' }}>200 OK</span>
+      Status:
+      <span style={{ color }}>
+        {code} {text}
+      </span>
     </span>
   );
 };
 
-const ResponseView: React.FunctionComponent<{}> = ({}) => {
+type Props = {
+  response: Response;
+};
+
+const ResponseView: React.FunctionComponent<Props> = ({ response }) => {
+  const { statusCode, headers, body } = response;
   return (
     <ResponseWrapper>
       <TitleWrapper type="flex" align="bottom">
         <LeftyCol span={6}>Response</LeftyCol>
         <RightyCol span={18}>
-          <StatusText />
+          <StatusText code={statusCode} />
         </RightyCol>
       </TitleWrapper>
       <Tabs defaultActiveKey="header" animated={false}>
         <PaddedTabPane tab="Headers" key="header">
-          <HeaderView />
+          <HeaderView headers={headers} />
         </PaddedTabPane>
         <PaddedTabPane tab="Body" key="body">
-          <BodyView contentType="" />
+          <ResponseBodyView body={body} />
         </PaddedTabPane>
       </Tabs>
     </ResponseWrapper>

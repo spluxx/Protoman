@@ -14,5 +14,5 @@ export interface AppState {
   readonly currentEnv: string | null;
   readonly currentProtoDefs: ReadonlyArray<File>;
   readonly currentMessageNames: ReadonlyArray<string>; // just the top-level ones
-  readonly currentFlow: Flow | null;
+  readonly currentFlow: Flow;
 }

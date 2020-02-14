@@ -1,7 +1,9 @@
 import React from 'react';
-import RequestBuilder from './request/RequestBuilder';
+import RequestBuilder from './request/RequestBuilderView';
 import ResponseView from './response/ResponseView';
 import styled from 'styled-components';
+import { AppState } from '../../models/AppState';
+import { useSelector } from 'react-redux';
 
 const Wrapper = styled('div')`
   padding: 0px;
@@ -12,11 +14,13 @@ const Spacing = styled('div')`
 `;
 
 const FlowView: React.FunctionComponent<{}> = ({}) => {
+  const { requestBuilder, response } = useSelector((s: AppState) => s.currentFlow);
+
   return (
     <Wrapper>
-      <RequestBuilder />
+      <RequestBuilder requestBuilder={requestBuilder} />
       <Spacing />
-      <ResponseView />
+      {response ? <ResponseView response={response} /> : null}
     </Wrapper>
   );
 };
