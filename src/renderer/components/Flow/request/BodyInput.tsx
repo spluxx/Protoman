@@ -2,11 +2,17 @@ import React, { FunctionComponent } from 'react';
 import { MessageValue } from '../../../models/http/body/protobuf';
 import { Radio } from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio';
-import MessageView from '../body/MessageView';
+import MessageValueView from '../body/MessageValueView';
+import styled from 'styled-components';
 
 type Props = {
   body: MessageValue | null;
 };
+
+const BodyWrapper = styled('div')`
+  display: block;
+  margin-top: 8px;
+`;
 
 const BodyInput: FunctionComponent<Props> = ({ body }) => {
   const [radioValue, setRadioValue] = React.useState('none');
@@ -21,7 +27,11 @@ const BodyInput: FunctionComponent<Props> = ({ body }) => {
         <Radio value="none">None</Radio>
         <Radio value="protobuf">Protobuf</Radio>
       </Radio.Group>
-      {body ? <MessageView body={body} /> : null}
+      <BodyWrapper hidden={radioValue !== 'protobuf'}>
+        {body ? (
+          <MessageValueView level={0} value={body} onFieldChange={console.log} onValueChange={console.log} editable />
+        ) : null}
+      </BodyWrapper>
     </div>
   );
 };

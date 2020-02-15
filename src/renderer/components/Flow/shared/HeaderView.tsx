@@ -3,15 +3,15 @@ import { Row, Col, Input } from 'antd';
 
 type Props = {
   editable?: boolean;
-  headers: Readonly<{ [key: string]: string }>;
+  headers: ReadonlyArray<[string, string]>;
 };
 
 const HeaderView: React.FunctionComponent<Props> = ({ editable, headers }) => {
   return (
     <div>
-      {Object.entries(headers).map(([name, value], idx) => {
-        <SingleHeaderView key={idx} editable={editable} name={name} value={value} />;
-      })}
+      {headers.map(([name, value], idx) => (
+        <SingleHeaderView key={idx} editable={editable} name={name} value={value} />
+      ))}
     </div>
   );
 };

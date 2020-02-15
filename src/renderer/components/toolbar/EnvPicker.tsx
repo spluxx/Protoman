@@ -7,7 +7,7 @@ const { Option } = Select;
 
 const EnvPicker: React.FunctionComponent<{}> = ({}) => {
   const currentEnv = useSelector((s: AppState) => s.currentEnv);
-  const envList = useSelector((s: AppState) => Object.entries(s.envList));
+  const envList = useSelector((s: AppState) => s.envList);
 
   return (
     <>

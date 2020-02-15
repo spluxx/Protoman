@@ -1,27 +1,43 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
+
 // M - Not part of the vm tree
 
-type ProtobufType = PrimitiveType | MessageType | EnumType;
-type ProtobufValue = PrimitiveValue | MessageValue | EnumValue;
+export type ProtobufType = PrimitiveType | MessageType | EnumType;
+export type ProtobufValue = PrimitiveValue | MessageValue | EnumValue;
+type FieldName = string;
+type TypeName = string;
+type Field<T> = [FieldName, T];
+type Fields<T> = ReadonlyArray<Field<T>>;
+type Entry<T> = [string, T];
+type Entries<T> = ReadonlyArray<Entry<T>>;
 
-// function typeNameToType(name: string): ProtobufType | null {}
+export type ProtoCtx = {
+  types: { [key: string]: ProtobufType };
+};
+
+function typeNameToType(name: TypeName, ctx: ProtoCtx): ProtobufType {
+  // mocked implementation
+  return ctx.types[name];
+}
 
 export interface MessageType {
   readonly tag: 'message';
-  readonly name: string; // ex) ProtoModel.Coordinates
-  readonly fields: Readonly<{ [key: string]: [string, boolean] }>;
-  readonly oneOfFields: Readonly<{ [key: string]: string[] }>;
-  readonly mapFields: Readonly<{ [key: string]: [string, string] }>;
+  readonly name: TypeName; // ex) ProtoModel.Coordinates
+  readonly fields: Fields<TypeName>;
+  readonly repeatedFields: Fields<TypeName>;
+  readonly oneOfFields: Fields<Fields<TypeName>>;
+  readonly mapFields: Fields<[TypeName, TypeName]>;
 }
 
 export interface PrimitiveType {
   readonly tag: 'primitive';
-  readonly name: string;
+  readonly name: TypeName;
   readonly defaultValue: string;
 }
 
 export interface EnumType {
   readonly tag: 'enum';
-  readonly name: string;
+  readonly name: TypeName;
   readonly options: ReadonlyArray<string>;
   readonly optionValues: Readonly<{ [key: string]: number }>;
 }
@@ -29,22 +45,89 @@ export interface EnumType {
 // VM
 
 export interface MessageValue {
-  readonly tag: 'message';
-  readonly name: string; // ex) ProtoModel.Coordinates
-  readonly fields: Readonly<{ [key: string]: [string, boolean] }>;
-  readonly oneOfFields: Readonly<{ [key: string]: string[] }>;
-  readonly mapFields: Readonly<{ [key: string]: [string, string] }>;
+  readonly type: MessageType;
+
+  readonly fields: Fields<ProtobufValue>;
+  readonly repeatedFields: Fields<ReadonlyArray<ProtobufValue>>;
+  readonly oneOfFields: Fields<[string, ProtobufValue]>;
+  readonly mapFields: Fields<Entries<ProtobufValue>>;
 }
 
 export interface PrimitiveValue {
-  readonly tag: 'primitive';
-  readonly name: string;
-  readonly currentValue: string;
+  readonly type: PrimitiveType;
+
+  readonly value: string;
 }
 
 export interface EnumValue {
-  readonly tag: 'enum';
-  readonly name: string;
-  readonly options: ReadonlyArray<string>;
-  readonly currentValue: string;
+  readonly type: EnumType;
+
+  readonly selected: string;
+}
+
+export const typeToDefaultValue = genDefaultMessage;
+
+// Helper functions
+
+function genDefault(type: ProtobufType, ctx: ProtoCtx): ProtobufValue {
+  switch (type.tag) {
+    case 'message':
+      return genDefaultMessage(type as MessageType, ctx);
+    case 'primitive':
+      return genDefaultPrimitive(type as PrimitiveType);
+    case 'enum':
+      return genDefaultEnum(type as EnumType);
+  }
+}
+
+function genDefaultMessage(type: MessageType, ctx: ProtoCtx): MessageValue {
+  const { fields, repeatedFields, oneOfFields, mapFields } = type;
+
+  const fieldValues = fields.map(f => genField(f, ctx));
+  const repeatedFieldValues = repeatedFields.map(genRepeatedField);
+  const oneOfFieldValues = oneOfFields.map(f => genOneOfField(f, ctx));
+  const mapFieldValues = mapFields.map(genMapField);
+
+  return {
+    type,
+    fields: fieldValues,
+    repeatedFields: repeatedFieldValues,
+    oneOfFields: oneOfFieldValues,
+    mapFields: mapFieldValues,
+  };
+}
+
+function genDefaultPrimitive(type: PrimitiveType): PrimitiveValue {
+  return {
+    type,
+    value: type.defaultValue,
+  };
+}
+
+function genDefaultEnum(type: EnumType): EnumValue {
+  return {
+    type,
+    selected: type.options[0], // this is guaranteed to exist by protoc
+  };
+}
+
+function genField(field: Field<TypeName>, ctx: ProtoCtx): Field<ProtobufValue> {
+  const [fieldName, typeName] = field;
+  return [fieldName, genDefault(typeNameToType(typeName, ctx), ctx)];
+}
+
+function genRepeatedField(field: Field<TypeName>): Field<ReadonlyArray<ProtobufValue>> {
+  const [fieldName] = field;
+  return [fieldName, []];
+}
+
+function genOneOfField(field: Field<Fields<TypeName>>, ctx: ProtoCtx): Field<[string, ProtobufValue]> {
+  const [fieldName, innerFields] = field;
+  const [firstFieldName, firstTypeName] = innerFields[0]; // guaranteed by protoc
+  return [fieldName, [firstFieldName, genDefault(typeNameToType(firstTypeName, ctx), ctx)]];
+}
+
+function genMapField(field: Field<[TypeName, TypeName]>): Field<Entries<ProtobufValue>> {
+  const [fieldName] = field;
+  return [fieldName, []];
 }

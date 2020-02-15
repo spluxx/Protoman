@@ -7,7 +7,7 @@ export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'COPY' | 
 export interface RequestBuilder {
   readonly method: HttpMethod;
   readonly url: string;
-  readonly headers: Readonly<{ [key: string]: string }>;
+  readonly headers: ReadonlyArray<[string, string]>;
   readonly body: MessageValue | null;
   readonly responseMessageName: string | null;
 }

@@ -25,7 +25,7 @@ const Title = styled('h1')`
 `;
 
 const CollectionSider: React.FunctionComponent<{}> = ({}) => {
-  const collections = useSelector((s: AppState) => Object.entries(s.collections));
+  const collections = useSelector((s: AppState) => s.collections);
 
   const [collapsed, setCollapsed] = React.useState(false);
 

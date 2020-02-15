@@ -3,5 +3,5 @@
 */
 
 export interface Env {
-  readonly vars: Readonly<{ [key: string]: string }>;
+  readonly vars: ReadonlyArray<[string, string]>;
 }

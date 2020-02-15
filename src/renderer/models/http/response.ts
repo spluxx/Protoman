@@ -2,7 +2,7 @@ import { MessageValue } from './body/protobuf';
 
 export interface Response {
   readonly statusCode: number;
-  readonly headers: Readonly<{ [key: string]: string }>;
+  readonly headers: ReadonlyArray<[string, string]>;
   readonly body: ResponseBody;
 }
 
