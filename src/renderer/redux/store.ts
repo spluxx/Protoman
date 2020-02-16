@@ -1,7 +1,15 @@
 import { createStore } from 'redux';
 import { produce } from 'immer';
 import { AppState } from '../models/AppState';
-import { typeToDefaultValue, MessageType, PrimitiveType, ProtoCtx, EnumType } from '../models/http/body/protobuf';
+import {
+  typeToDefaultValue,
+  MessageType,
+  PrimitiveType,
+  ProtoCtx,
+  EnumType,
+  MessageValue,
+} from '../models/http/body/protobuf';
+import AppReducer from './AppReducer';
 
 const stringType: PrimitiveType = {
   tag: 'primitive',
@@ -49,11 +57,12 @@ const sampleCtx: ProtoCtx = {
   types: {
     string: stringType,
     User: userType,
+    SmallUser: smallUserType,
     Sports: sportsType,
   },
 };
 
-const sampleBody = produce(typeToDefaultValue(userType, sampleCtx), draft => {
+const sampleBody = produce(typeToDefaultValue(userType, sampleCtx) as MessageValue, draft => {
   draft.repeatedFields[0][1] = [
     {
       type: stringType,
@@ -133,30 +142,37 @@ const initialState: AppState = {
       },
     ],
   ],
+  currentEnv: 'dev',
+
   collections: [
     [
       'Yo',
       {
         protoDefs: [],
+        protoCtx: sampleCtx,
         messageNames: [],
-        flows: [],
+        flows: [
+          [
+            'sample request',
+            {
+              requestBuilder: {
+                method: 'GET',
+                url: '',
+                headers: [['content-type', 'application/json']],
+                body: sampleBody,
+                responseMessageName: undefined,
+              },
+              response: undefined,
+            },
+          ],
+        ],
       },
     ],
   ],
-  currentEnv: 'dev',
-  currentProtoDefs: [],
-  currentMessageNames: [], // just the top-level ones
-  currentFlow: {
-    requestBuilder: {
-      method: 'GET',
-      url: '',
-      headers: [['content-type', 'application/json']],
-      body: sampleBody,
-      responseMessageName: null,
-    },
-    response: null,
-  },
+  currentCollection: 'Yo',
+  currentFlow: 'sample request',
 };
-const store = createStore(s => s || initialState, initialState);
+
+const store = createStore((s, a) => AppReducer(s || initialState, a), initialState);
 
 export default store;

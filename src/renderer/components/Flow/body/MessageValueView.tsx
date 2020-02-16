@@ -1,13 +1,43 @@
 import React, { FunctionComponent } from 'react';
-import { MessageValue, PrimitiveValue, EnumValue, ProtobufValue } from '../../../models/http/body/protobuf';
+import { MessageValue, PrimitiveValue, EnumValue, ProtobufValue, ProtoCtx } from '../../../models/http/body/protobuf';
 import styled from 'styled-components';
 import { Input, Select, Button, Icon } from 'antd';
+import { Dispatch, AnyAction } from 'redux';
+import { valueChange, fieldChange, entryAdd, entryRemove } from './MessageValueViewActions';
+import { getByKey } from '../../../utils/utils';
 
 type ValueChangeHandler = (path: string, v: string) => void;
 type FieldChangeHandler = (path: string, t: string) => void; // for oneof
+type EntryAddHandler = (path: string) => void; // for repeated, map fields
+type EntryRemoveHandler = (path: string) => void; // for repeated, map fields
 
-function prefix(prefix: string, ch: ValueChangeHandler): ValueChangeHandler {
-  return (p, t): void => ch(`${prefix}/${p}`, t);
+type EventHandlers = {
+  valueChange: ValueChangeHandler;
+  fieldChange: FieldChangeHandler;
+  entryAdd: EntryAddHandler;
+  entryRemove: EntryRemoveHandler;
+};
+
+export function dispatchingHandler(dispatch: Dispatch, ctx: ProtoCtx): EventHandlers {
+  function fireAndForget<T extends AnyAction>(action: T): void {
+    dispatch(action);
+  }
+
+  return {
+    valueChange: (p, v): void => fireAndForget(valueChange(p, v, ctx)),
+    fieldChange: (p, v): void => fireAndForget(fieldChange(p, v, ctx)),
+    entryAdd: (p): void => fireAndForget(entryAdd(p, ctx)),
+    entryRemove: (p): void => fireAndForget(entryRemove(p, ctx)),
+  };
+}
+
+function prefix(prefix: string, h: EventHandlers): EventHandlers {
+  return {
+    valueChange: (p, v): void => h.valueChange(`${prefix}/${p}`, v),
+    fieldChange: (p, t): void => h.fieldChange(`${prefix}/${p}`, t),
+    entryAdd: (p): void => h.entryAdd(`${prefix}/${p}`),
+    entryRemove: (p): void => h.entryRemove(`${prefix}/${p}`),
+  };
 }
 
 const KEY_INPUT_WIDTH = 150;
@@ -26,6 +56,12 @@ const Block = styled('div')`
   padding: 2px;
 `;
 
+const InlineBlock = styled('div')`
+  display: inline;
+  margin: 4px 0;
+  padding: 2px;
+`;
+
 const LightText = styled('span')`
   color: gray;
 `;
@@ -36,60 +72,46 @@ const FieldName = styled('span')`
 
 type MVVProps = {
   editable?: boolean;
-  level: number;
   value: MessageValue;
-  onValueChange: ValueChangeHandler;
-  onFieldChange: FieldChangeHandler;
+  handlers: EventHandlers;
 };
 
-function bgColorForLevel(level: number): string {
-  return level % 2 === 0 ? '#ffffff' : '#ffffff';
-}
-
-const MessageValueView: FunctionComponent<MVVProps> = ({ editable, level, value, onValueChange, onFieldChange }) => {
+const MessageValueView: FunctionComponent<MVVProps> = ({ editable, value, handlers }) => {
   const { type, fields, repeatedFields, oneOfFields, mapFields } = value;
 
   return (
-    <>
+    <InlineBlock>
       <LightText>{type.name + ' {'}</LightText>
       <IndentationBlock>
         {fields.map(([fieldName, value]) => (
           <SingleFieldView
             key={fieldName}
             editable={editable}
-            level={level + 1}
             fieldName={fieldName}
             value={value}
-            onFieldChange={prefix(fieldName, onFieldChange)}
-            onValueChange={prefix(fieldName, onValueChange)}
+            handlers={prefix(fieldName, handlers)}
           />
         ))}
         {repeatedFields.map(([fieldName, values]) => (
           <RepeatedFieldView
             key={fieldName}
             editable={editable}
-            level={level + 1}
             fieldName={fieldName}
             values={values}
-            onFieldChange={prefix(fieldName, onFieldChange)}
-            onValueChange={prefix(fieldName, onValueChange)}
+            handlers={prefix(fieldName, handlers)}
           />
         ))}
         {oneOfFields.map(([fieldName, selectedField]) => {
-          const options: ReadonlyArray<string> | undefined = type.oneOfFields
-            .find(([fn]) => fn === fieldName)?.[1]
-            ?.map(([name]) => name);
+          const options = getByKey(type.oneOfFields, fieldName)?.map(([name]) => name);
 
           return (
             <OneOfFieldView
               key={fieldName}
               editable={editable}
-              level={level + 1}
               fieldOptions={options || []}
               fieldName={fieldName}
               selectedField={selectedField}
-              onFieldChange={prefix(fieldName, onFieldChange)}
-              onValueChange={prefix(fieldName, onValueChange)}
+              handlers={prefix(fieldName, handlers)}
             />
           );
         })}
@@ -97,26 +119,24 @@ const MessageValueView: FunctionComponent<MVVProps> = ({ editable, level, value,
           <MapFieldView
             key={fieldName}
             editable={editable}
-            level={level + 1}
             fieldName={fieldName}
             kvPairs={entries}
-            onFieldChange={prefix(fieldName, onFieldChange)}
-            onValueChange={prefix(fieldName, onValueChange)}
+            handlers={prefix(fieldName, handlers)}
           />
         ))}
       </IndentationBlock>
       <LightText>{'}'}</LightText>
-    </>
+    </InlineBlock>
   );
 };
 
 type PVVProps = {
   editable?: boolean;
   value: PrimitiveValue;
-  onValueChange: ValueChangeHandler;
+  handlers: EventHandlers;
 };
 
-const PrimitiveValueView: FunctionComponent<PVVProps> = ({ editable, value, onValueChange }) => {
+const PrimitiveValueView: FunctionComponent<PVVProps> = ({ editable, value, handlers }) => {
   const { type, value: v } = value;
 
   return (
@@ -126,6 +146,7 @@ const PrimitiveValueView: FunctionComponent<PVVProps> = ({ editable, value, onVa
       readOnly={!editable}
       value={v}
       style={{ width: VALUE_INPUT_WIDTH }}
+      onChange={(e): void => handlers.valueChange('', e.target.value)}
     />
   );
 };
@@ -133,10 +154,10 @@ const PrimitiveValueView: FunctionComponent<PVVProps> = ({ editable, value, onVa
 type EVVProps = {
   editable?: boolean;
   value: EnumValue;
-  onValueChange: ValueChangeHandler;
+  handlers: EventHandlers;
 };
 
-const EnumValueView: FunctionComponent<EVVProps> = ({ editable, value, onValueChange }) => {
+const EnumValueView: FunctionComponent<EVVProps> = ({ editable, value, handlers }) => {
   const { type, selected } = value;
   const { options } = type;
 
@@ -145,7 +166,7 @@ const EnumValueView: FunctionComponent<EVVProps> = ({ editable, value, onValueCh
   };
 
   return editable ? (
-    <Select value={selected} style={style} size="small">
+    <Select value={selected} style={style} size="small" onChange={(s: string): void => handlers.valueChange('', s)}>
       {options.map((option, idx) => (
         <Select.Option key={idx} value={option}>
           {option}
@@ -153,7 +174,13 @@ const EnumValueView: FunctionComponent<EVVProps> = ({ editable, value, onValueCh
       ))}
     </Select>
   ) : (
-    <Select value={selected} open={false} style={style} size="small">
+    <Select
+      value={selected}
+      open={false} // block
+      style={style}
+      size="small"
+      onChange={(s: string): void => handlers.valueChange('', s)}
+    >
       {options.map((option, idx) => (
         <Select.Option key={idx} value={option}>
           {option}
@@ -165,102 +192,67 @@ const EnumValueView: FunctionComponent<EVVProps> = ({ editable, value, onValueCh
 
 type PBVVProps = {
   editable?: boolean;
-  level: number;
   value: ProtobufValue;
-  onValueChange: ValueChangeHandler;
-  onFieldChange: FieldChangeHandler;
+  handlers: EventHandlers;
 };
 
-const ProtobufValueView: FunctionComponent<PBVVProps> = ({ editable, level, value, onValueChange, onFieldChange }) => {
+const ProtobufValueView: FunctionComponent<PBVVProps> = ({ editable, value, handlers }) => {
   switch (value.type.tag) {
     case 'message':
-      return (
-        <MessageValueView
-          editable={editable}
-          level={level}
-          value={value as MessageValue}
-          onValueChange={onValueChange}
-          onFieldChange={onFieldChange}
-        />
-      );
+      return <MessageValueView editable={editable} value={value as MessageValue} handlers={handlers} />;
     case 'primitive':
-      return <PrimitiveValueView editable={editable} value={value as PrimitiveValue} onValueChange={onValueChange} />;
+      return <PrimitiveValueView editable={editable} value={value as PrimitiveValue} handlers={handlers} />;
     case 'enum':
-      return <EnumValueView editable={editable} value={value as EnumValue} onValueChange={onValueChange} />;
+      return <EnumValueView editable={editable} value={value as EnumValue} handlers={handlers} />;
   }
 };
 
 type SFVProps = {
   editable?: boolean;
-  level: number;
   fieldName: string;
   value: ProtobufValue;
-  onValueChange: ValueChangeHandler;
-  onFieldChange: FieldChangeHandler;
+  handlers: EventHandlers;
 };
 
-const SingleFieldView: FunctionComponent<SFVProps> = ({
-  editable,
-  level,
-  fieldName,
-  value,
-  onValueChange,
-  onFieldChange,
-}) => {
-  const backgroundColor = bgColorForLevel(level);
+const SingleFieldView: FunctionComponent<SFVProps> = ({ editable, fieldName, value, handlers }) => {
   return (
-    <Block style={{ backgroundColor }}>
+    <Block>
       <FieldName>{fieldName}</FieldName>
       <span>: </span>
-      <ProtobufValueView
-        editable={editable}
-        level={level}
-        value={value}
-        onValueChange={onValueChange}
-        onFieldChange={onFieldChange}
-      />
+      <ProtobufValueView editable={editable} value={value} handlers={handlers} />
     </Block>
   );
 };
 
 type RFVProps = {
   editable?: boolean;
-  level: number;
   fieldName: string;
   values: ReadonlyArray<ProtobufValue>;
-  onValueChange: ValueChangeHandler;
-  onFieldChange: FieldChangeHandler;
+  handlers: EventHandlers;
 };
 
-const RepeatedFieldView: FunctionComponent<RFVProps> = ({
-  editable,
-  level,
-  fieldName,
-  values,
-  onValueChange,
-  onFieldChange,
-}) => {
-  const backgroundColor = bgColorForLevel(level);
+const RepeatedFieldView: FunctionComponent<RFVProps> = ({ editable, fieldName, values, handlers }) => {
   return (
-    <Block style={{ backgroundColor }}>
+    <Block>
       <FieldName>{fieldName}</FieldName>
       <span>: </span>
       {values.map((v, idx) => (
         <IndentationBlock key={idx}>
-          <ProtobufValueView
-            editable={editable}
-            level={level}
-            value={v}
-            onValueChange={onValueChange}
-            onFieldChange={onFieldChange}
-          />
-          <Button shape="circle" size="small" style={{ marginLeft: 4 }}>
+          <ProtobufValueView editable={editable} value={v} handlers={prefix(idx.toString(), handlers)} />
+          <Button
+            shape="circle"
+            size="small"
+            ghost
+            type="danger"
+            style={{ marginLeft: 4 }}
+            onClick={(): void => handlers.entryRemove(`${idx.toString()}/`)}
+          >
             <Icon type="delete" />
           </Button>
         </IndentationBlock>
       ))}
       <IndentationBlock>
-        <Button shape="circle" size="small">
+        <Button shape="circle" size="small" ghost type="primary" onClick={(): void => handlers.entryAdd('')}>
           <Icon type="plus" />
         </Button>
       </IndentationBlock>
@@ -270,30 +262,30 @@ const RepeatedFieldView: FunctionComponent<RFVProps> = ({
 
 type OFVProps = {
   editable?: boolean;
-  level: number;
   fieldOptions: ReadonlyArray<string>;
   fieldName: string;
   selectedField: [string, ProtobufValue];
-  onValueChange: ValueChangeHandler;
-  onFieldChange: FieldChangeHandler;
+  handlers: EventHandlers;
 };
 
 const OneOfFieldView: FunctionComponent<OFVProps> = ({
   editable,
-  level,
   fieldOptions,
   fieldName,
   selectedField,
-  onValueChange,
-  onFieldChange,
+  handlers,
 }) => {
   const [name, value] = selectedField;
-  const backgroundColor = bgColorForLevel(level);
   return (
-    <Block style={{ backgroundColor }}>
+    <Block>
       <FieldName>{fieldName}</FieldName>
       <span>: </span>
-      <Select value={name} size="small">
+      <Select
+        value={name}
+        size="small"
+        style={{ width: KEY_INPUT_WIDTH }}
+        onChange={(s: string): void => handlers.fieldChange('', s)}
+      >
         {fieldOptions.map((option, idx) => (
           <Select.Option key={idx} value={option}>
             {option}
@@ -301,14 +293,7 @@ const OneOfFieldView: FunctionComponent<OFVProps> = ({
         ))}
       </Select>
       <IndentationBlock>
-        <SingleFieldView
-          editable={editable}
-          level={level}
-          fieldName={name}
-          value={value}
-          onFieldChange={prefix(name, onFieldChange)}
-          onValueChange={prefix(name, onValueChange)}
-        />
+        <SingleFieldView editable={editable} fieldName={name} value={value} handlers={prefix(name, handlers)} />
       </IndentationBlock>
     </Block>
   );
@@ -316,44 +301,39 @@ const OneOfFieldView: FunctionComponent<OFVProps> = ({
 
 type MFVProps = {
   editable?: boolean;
-  level: number;
   fieldName: string;
   kvPairs: ReadonlyArray<[string, ProtobufValue]>;
-  onValueChange: ValueChangeHandler;
-  onFieldChange: FieldChangeHandler;
+  handlers: EventHandlers;
 };
 
-const MapFieldView: FunctionComponent<MFVProps> = ({
-  editable,
-  level,
-  fieldName,
-  kvPairs,
-  onValueChange,
-  onFieldChange,
-}) => {
-  const backgroundColor = bgColorForLevel(level);
-
+const MapFieldView: FunctionComponent<MFVProps> = ({ editable, fieldName, kvPairs, handlers }) => {
   return (
-    <Block style={{ backgroundColor }}>
+    <Block>
       <FieldName>{fieldName}</FieldName>
       <span>: </span>
       {kvPairs.map(([k, v], idx) => (
         <IndentationBlock key={idx}>
-          <Input value={k} style={{ width: KEY_INPUT_WIDTH, marginRight: 4 }} size="small" />
-          <ProtobufValueView
-            editable={editable}
-            level={level}
-            value={v}
-            onValueChange={onValueChange}
-            onFieldChange={onFieldChange}
+          <Input
+            value={k}
+            style={{ width: KEY_INPUT_WIDTH, marginRight: 4 }}
+            size="small"
+            onChange={(e): void => handlers.valueChange(`${idx.toString()}/0/`, e.target.value)}
           />
-          <Button shape="circle" size="small" style={{ marginLeft: 4 }}>
+          <ProtobufValueView editable={editable} value={v} handlers={prefix(`${idx.toString()}/1`, handlers)} />
+          <Button
+            shape="circle"
+            size="small"
+            ghost
+            type="danger"
+            style={{ marginLeft: 4 }}
+            onClick={(): void => handlers.entryRemove(`${idx.toString()}/`)}
+          >
             <Icon type="delete" />
           </Button>
         </IndentationBlock>
       ))}
       <IndentationBlock>
-        <Button shape="circle" size="small">
+        <Button shape="circle" size="small" ghost type="primary" onClick={(): void => handlers.entryAdd('')}>
           <Icon type="plus" />
         </Button>
       </IndentationBlock>

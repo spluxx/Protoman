@@ -25,12 +25,19 @@ const NO_OP = (): void => {
 
 const ResponseBodyView: FunctionComponent<Props> = ({ body }) => {
   const { type, value } = body;
+
+  const handlers = {
+    valueChange: NO_OP,
+    fieldChange: NO_OP,
+    entryAdd: NO_OP,
+    entryRemove: NO_OP,
+  };
+
   switch (type) {
     case 'empty':
       return <EmptyBody />;
     case 'protobuf':
-      return <MessageValueView level={0} value={value as MessageValue} onFieldChange={NO_OP} onValueChange={NO_OP} />;
-      return null;
+      return <MessageValueView value={value as MessageValue} handlers={handlers} />;
     case 'string':
       return <StringBody value={value as string} />;
     case 'unknown':

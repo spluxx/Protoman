@@ -8,6 +8,6 @@ export interface RequestBuilder {
   readonly method: HttpMethod;
   readonly url: string;
   readonly headers: ReadonlyArray<[string, string]>;
-  readonly body: MessageValue | null;
-  readonly responseMessageName: string | null;
+  readonly body: MessageValue | undefined;
+  readonly responseMessageName: string | undefined;
 }

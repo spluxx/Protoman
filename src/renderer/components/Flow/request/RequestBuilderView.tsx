@@ -5,6 +5,7 @@ import HeaderView from '../shared/HeaderView';
 import BodyInput from './BodyInput';
 import styled from 'styled-components';
 import { RequestBuilder } from '../../../models/http/request_builder';
+import { ProtoCtx } from '../../../models/http/body/protobuf';
 
 const { TabPane } = Tabs;
 
@@ -29,9 +30,10 @@ const PaddedTabPane = styled(TabPane)`
 
 type Props = {
   requestBuilder: RequestBuilder;
+  protoCtx: ProtoCtx;
 };
 
-const RequestBuilderView: React.FunctionComponent<Props> = ({ requestBuilder }) => {
+const RequestBuilderView: React.FunctionComponent<Props> = ({ requestBuilder, protoCtx }) => {
   const { method, url, headers, body, responseMessageName } = requestBuilder;
 
   return (
@@ -45,7 +47,7 @@ const RequestBuilderView: React.FunctionComponent<Props> = ({ requestBuilder }) 
           <HeaderView editable headers={headers} />
         </PaddedTabPane>
         <PaddedTabPane tab="Body" key="body">
-          <BodyInput body={body} />
+          <BodyInput body={body} protoCtx={protoCtx} />
         </PaddedTabPane>
       </Tabs>
     </BuilderWrapper>

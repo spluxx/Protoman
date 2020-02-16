@@ -15,6 +15,12 @@ export type ProtoCtx = {
   types: { [key: string]: ProtobufType };
 };
 
+export function makeEmptyProtoCtx(): ProtoCtx {
+  return {
+    types: {},
+  };
+}
+
 function typeNameToType(name: TypeName, ctx: ProtoCtx): ProtobufType {
   // mocked implementation
   return ctx.types[name];
@@ -65,7 +71,7 @@ export interface EnumValue {
   readonly selected: string;
 }
 
-export const typeToDefaultValue = genDefaultMessage;
+export const typeToDefaultValue = genDefault;
 
 // Helper functions
 

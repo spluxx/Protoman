@@ -1,12 +1,14 @@
 import React, { FunctionComponent } from 'react';
-import { MessageValue } from '../../../models/http/body/protobuf';
+import { MessageValue, ProtoCtx } from '../../../models/http/body/protobuf';
 import { Radio } from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio';
-import MessageValueView from '../body/MessageValueView';
+import MessageValueView, { dispatchingHandler } from '../body/MessageValueView';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
 
 type Props = {
-  body: MessageValue | null;
+  body: MessageValue | undefined;
+  protoCtx: ProtoCtx;
 };
 
 const BodyWrapper = styled('div')`
@@ -14,12 +16,15 @@ const BodyWrapper = styled('div')`
   margin-top: 8px;
 `;
 
-const BodyInput: FunctionComponent<Props> = ({ body }) => {
+const BodyInput: FunctionComponent<Props> = ({ body, protoCtx }) => {
   const [radioValue, setRadioValue] = React.useState('none');
+  const dispatch = useDispatch();
 
   function onRadioChange(e: RadioChangeEvent): void {
     setRadioValue(e.target.value);
   }
+
+  const handlers = dispatchingHandler(dispatch, protoCtx);
 
   return (
     <div>
@@ -28,9 +33,7 @@ const BodyInput: FunctionComponent<Props> = ({ body }) => {
         <Radio value="protobuf">Protobuf</Radio>
       </Radio.Group>
       <BodyWrapper hidden={radioValue !== 'protobuf'}>
-        {body ? (
-          <MessageValueView level={0} value={body} onFieldChange={console.log} onValueChange={console.log} editable />
-        ) : null}
+        {body ? <MessageValueView value={body} handlers={handlers} editable /> : undefined}
       </BodyWrapper>
     </div>
   );

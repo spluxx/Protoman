@@ -8,7 +8,7 @@ export interface Response {
 
 export interface ResponseBody {
   type: 'empty' | 'protobuf' | 'string' | 'unknown';
-  value: null | MessageValue | string;
+  value: undefined | MessageValue | string;
 }
 
 // TODO(Inchan Hwang): Fill these in

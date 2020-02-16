@@ -5,5 +5,5 @@ import { Response } from './response';
 
 export interface Flow {
   readonly requestBuilder: RequestBuilder;
-  readonly response: Response | null;
+  readonly response: Response | undefined;
 }
