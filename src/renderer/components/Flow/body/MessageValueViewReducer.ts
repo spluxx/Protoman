@@ -14,15 +14,13 @@ import { MessageValueViewActionTypes, MessageValueViewAction } from './MessageVa
 import { AppState } from '../../../models/AppState';
 import { getByKey, getEntryByKey } from '../../../utils/utils';
 
-// The reducer attaches to store.currentFlow.requestBuilder.body
-
 function extractBody(d: Draft<AppState>): Draft<MessageValue> | undefined {
   const flow = getByKey(getByKey(d.collections, d.currentCollection)?.flows, d.currentFlow);
   return flow?.requestBuilder?.body;
 }
 
 export default function MessageValueViewReducer(s: AppState, action: AnyAction): AppState {
-  if (s && MessageValueViewActionTypes.includes(action.type)) {
+  if (MessageValueViewActionTypes.includes(action.type)) {
     const a = action as MessageValueViewAction;
 
     switch (a.type) {

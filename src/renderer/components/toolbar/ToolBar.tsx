@@ -1,6 +1,6 @@
 import React from 'react';
 import { Row, Col } from 'antd';
-import EnvPicker from './EnvPicker';
+import EnvPicker from './Env/EnvPicker';
 import styled from 'styled-components';
 
 const PaddedRow = styled(Row)`
