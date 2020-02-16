@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs, Row, Col } from 'antd';
 import styled from 'styled-components';
-import HeaderView from '../shared/HeaderView';
+import HeaderView from '../shared/HeaderView/HeaderView';
 import { Response, statusCodeToText } from '../../../models/http/response';
 import ResponseBodyView from './ResponseBodyView';
 

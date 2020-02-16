@@ -1,7 +1,7 @@
 import React from 'react';
 import EndpointInput from './EndpointInput';
 import { Tabs, Button } from 'antd';
-import HeaderView from '../shared/HeaderView';
+import HeaderView from '../shared/HeaderView/HeaderView';
 import BodyInput from './BodyInput';
 import styled from 'styled-components';
 import { RequestBuilder } from '../../../models/http/request_builder';

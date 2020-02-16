@@ -1,5 +1,5 @@
 import React from 'react';
-import { Select, Button, Icon, Modal, Divider } from 'antd';
+import { Select, Button, Icon, Modal, Divider, message } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from '../../../models/AppState';
 import { EnvEditor } from './EnvEditor';
@@ -32,8 +32,12 @@ const EnvPicker: React.FunctionComponent<{}> = ({}) => {
   }
 
   function handleEnvDelete(envName: string): void {
-    dispatch(deleteEnv(envName));
-    closeModal();
+    if (envList.length > 1) {
+      dispatch(deleteEnv(envName));
+      closeModal();
+    } else {
+      message.error("Can't delete the last environment");
+    }
   }
 
   function validateName(name: string): boolean {
