@@ -1,5 +1,5 @@
 import React from 'react';
-import EndpointInput from './EndpointInput';
+import EndpointInput from './EndpointInput/EndpointInput';
 import { Tabs, Button } from 'antd';
 import HeaderView from '../shared/HeaderView/HeaderView';
 import BodyInput from './BodyInput';

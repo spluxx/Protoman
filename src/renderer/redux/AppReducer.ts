@@ -4,6 +4,7 @@ import MessageValueViewReducer from '../components/flow/body/MessageValueViewRed
 import EnvPickerReducer from '../components/toolbar/Env/EnvPickerReducer';
 import HeaderViewReducer from '../components/flow/shared/HeaderView/HeaderViewReducer';
 import CollectionReducer from '../components/collection/CollectionReducer';
+import EndpointInputReducer from '../components/flow/request/EndpointInput/EndpointInputReducer';
 
 type BigReducer = (s: AppState, a: AnyAction) => AppState;
 
@@ -14,6 +15,12 @@ function applyAll(reducers: BigReducer[]): BigReducer {
   };
 }
 
-const AppReducer = applyAll([MessageValueViewReducer, EnvPickerReducer, HeaderViewReducer, CollectionReducer]);
+const AppReducer = applyAll([
+  MessageValueViewReducer,
+  EnvPickerReducer,
+  HeaderViewReducer,
+  CollectionReducer,
+  EndpointInputReducer,
+]);
 
 export default AppReducer;
