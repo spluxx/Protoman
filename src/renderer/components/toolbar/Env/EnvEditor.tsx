@@ -118,22 +118,24 @@ export const EnvEditor: React.FunctionComponent<Props> = ({
             />
           </Form.Item>
         ) : (
-          <>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
             <Title>{draftName}</Title>
-            <Button shape="circle" size="small" onClick={startEditing} style={{ marginLeft: 4 }}>
-              <Icon type="edit" />
-            </Button>
-            <Button
-              ghost
-              shape="circle"
-              type="danger"
-              size="small"
-              onClick={(): void => onDeleteEnv(envName)}
-              style={{ marginLeft: 4 }}
-            >
-              <Icon type="delete" />
-            </Button>
-          </>
+            <div>
+              <Button shape="circle" size="small" onClick={startEditing} style={{ marginLeft: 4 }}>
+                <Icon type="edit" />
+              </Button>
+              <Button
+                ghost
+                shape="circle"
+                type="danger"
+                size="small"
+                onClick={(): void => onDeleteEnv(envName)}
+                style={{ marginLeft: 4 }}
+              >
+                <Icon type="delete" />
+              </Button>
+            </div>
+          </div>
         )}
       </TitleWrapper>
 

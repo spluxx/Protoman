@@ -8,3 +8,12 @@ export function getEntryByKey<K, V>(
 ): [K, V] | undefined {
   return listOfTuples ? listOfTuples.find(([k]) => k === key) : undefined;
 }
+
+type ClickHandler = (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
+export function prevent(f: ClickHandler): ClickHandler {
+  return (e): void => {
+    e.nativeEvent.stopImmediatePropagation();
+    e.stopPropagation();
+    f(e);
+  };
+}

@@ -169,10 +169,13 @@ const initialState: AppState = {
       },
     ],
   ],
+  openCollections: ['Yo'],
   currentCollection: 'Yo',
   currentFlow: 'sample request',
 };
 
 const store = createStore((s, a) => AppReducer(s || initialState, a), initialState);
+
+window.store = store;
 
 export default store;
