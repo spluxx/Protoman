@@ -119,7 +119,12 @@ const CollectionSider: React.FunctionComponent<{}> = ({}) => {
   }
 
   function handleDeleteFlow(collectionName: string, flowName: string): void {
-    dispatch(deleteFlow(collectionName, flowName));
+    const flowCount = getByKey(collections, collectionName)?.flows?.length || 0;
+    if (flowCount > 1) {
+      dispatch(deleteFlow(collectionName, flowName));
+    } else {
+      message.error("Can't delete the last flow");
+    }
   }
 
   return (

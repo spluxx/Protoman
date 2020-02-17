@@ -5,6 +5,7 @@ import EnvPickerReducer from '../components/toolbar/Env/EnvPickerReducer';
 import HeaderViewReducer from '../components/flow/shared/HeaderView/HeaderViewReducer';
 import CollectionReducer from '../components/collection/CollectionReducer';
 import EndpointInputReducer from '../components/flow/request/EndpointInput/EndpointInputReducer';
+import FlowNameViewReducer from '../components/toolbar/FlowName/FlowNameViewReducer';
 
 type BigReducer = (s: AppState, a: AnyAction) => AppState;
 
@@ -21,6 +22,7 @@ const AppReducer = applyAll([
   HeaderViewReducer,
   CollectionReducer,
   EndpointInputReducer,
+  FlowNameViewReducer,
 ]);
 
 export default AppReducer;

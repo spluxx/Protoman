@@ -80,8 +80,9 @@ export default function CollectionReducer(s: AppState, action: AnyAction): AppSt
         return produce(s, draft => {
           const flows = getByKey(draft.collections, a.collectionName)?.flows;
           const idx = flows?.findIndex(([n]) => n === a.flowName);
-          if (idx && idx >= 0) {
+          if (idx != null && idx >= 0) {
             flows?.splice(idx, 1);
+            console.log(flows);
           }
         });
       default:
