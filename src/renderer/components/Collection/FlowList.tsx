@@ -20,13 +20,22 @@ const Footer = styled('div')`
 `;
 
 type Props = {
+  isCurrentCollection: boolean;
+  currentFlow: string;
   flowNames: string[];
   onSelection: (name: string) => void;
   onDelete: (name: string) => void;
   onCreate: () => void;
 };
 
-const FlowList: React.FunctionComponent<Props> = ({ flowNames, onSelection, onDelete, onCreate }) => {
+const FlowList: React.FunctionComponent<Props> = ({
+  isCurrentCollection,
+  currentFlow,
+  flowNames,
+  onSelection,
+  onDelete,
+  onCreate,
+}) => {
   const footer = (
     <Footer>
       <Button type="primary" ghost onClick={onCreate}>
@@ -42,7 +51,7 @@ const FlowList: React.FunctionComponent<Props> = ({ flowNames, onSelection, onDe
       dataSource={flowNames}
       renderItem={(flowName): React.ReactNode => (
         <ClickableItem onClick={(): void => onSelection(flowName)}>
-          <Typography.Text>{flowName}</Typography.Text>
+          <Typography.Text strong={isCurrentCollection && currentFlow === flowName}>{flowName}</Typography.Text>
           <div>
             <Button
               ghost

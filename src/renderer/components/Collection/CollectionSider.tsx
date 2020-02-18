@@ -61,6 +61,8 @@ const CollectionSider: React.FunctionComponent<{}> = ({}) => {
 
   const collections = useSelector((s: AppState) => s.collections);
   const openCollections = useSelector((s: AppState) => s.openCollections);
+  const currentCollection = useSelector((s: AppState) => s.currentCollection);
+  const currentFlow = useSelector((s: AppState) => s.currentFlow);
 
   const [collapsed, setCollapsed] = React.useState(false);
 
@@ -165,6 +167,8 @@ const CollectionSider: React.FunctionComponent<{}> = ({}) => {
             return (
               <Panel key={name} header={header}>
                 <FlowList
+                  isCurrentCollection={name === currentCollection}
+                  currentFlow={currentFlow}
                   flowNames={col.flows.map(([n]) => n)}
                   onSelection={(flowName): void => handleSelection(name, flowName)}
                   onDelete={(flowName): void => handleDeleteFlow(name, flowName)}

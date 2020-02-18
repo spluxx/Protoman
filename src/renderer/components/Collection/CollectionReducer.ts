@@ -69,7 +69,12 @@ export default function CollectionReducer(s: AppState, action: AnyAction): AppSt
       case 'CREATE_FLOW':
         return produce(s, draft => {
           const collection = getByKey(draft.collections, a.collectionName);
-          collection?.flows?.push([a.flowName, createEmptyFlow()]);
+          const flows = collection?.flows;
+          if (flows) {
+            flows.push([a.flowName, createEmptyFlow()]);
+            draft.currentCollection = a.collectionName;
+            draft.currentFlow = a.flowName;
+          }
         });
       case 'SELECT_FLOW':
         return produce(s, draft => {
