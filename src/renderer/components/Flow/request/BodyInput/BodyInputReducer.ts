@@ -10,7 +10,7 @@ export default function BodyInputReducer(s: AppState, action: AnyAction): AppSta
     const a = action as BodyInputActions;
 
     switch (a.type) {
-      case 'SELECT_MESSAGE_NAME':
+      case 'SELECT_REQUEST_MESSAGE_NAME':
         return produce(s, draft => {
           const collection = getByKey(draft.collections, draft.currentCollection);
           if (!collection) return s;
@@ -20,6 +20,14 @@ export default function BodyInputReducer(s: AppState, action: AnyAction): AppSta
           const dv = typeToDefaultValue(protoCtx.types[a.name], protoCtx);
           if (dv.type.tag !== 'message') return s;
           flow.requestBuilder.body = dv as Draft<MessageValue>;
+        });
+      case 'SELECT_RESPONSE_MESSAGE_NAME':
+        return produce(s, draft => {
+          const collection = getByKey(draft.collections, draft.currentCollection);
+          if (!collection) return s;
+          const flow = getByKey(collection.flows, draft.currentFlow);
+          if (!flow) return s;
+          flow.requestBuilder.responseMessageName = a.name;
         });
       default:
         return s;

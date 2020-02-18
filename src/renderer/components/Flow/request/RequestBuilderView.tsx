@@ -48,7 +48,12 @@ const RequestBuilderView: React.FunctionComponent<Props> = ({ requestBuilder, pr
           <HeaderView editable headers={headers} />
         </PaddedTabPane>
         <PaddedTabPane tab="Body" key="body">
-          <BodyInput body={body} protoCtx={protoCtx} messageNames={messageNames} />
+          <BodyInput
+            body={body}
+            protoCtx={protoCtx}
+            messageNames={messageNames}
+            responseMessageName={responseMessageName}
+          />
         </PaddedTabPane>
       </Tabs>
     </BuilderWrapper>
