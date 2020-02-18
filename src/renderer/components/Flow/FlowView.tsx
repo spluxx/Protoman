@@ -32,7 +32,7 @@ const FlowView: React.FunctionComponent<{}> = ({}) => {
 
   return (
     <Wrapper>
-      <RequestBuilder requestBuilder={requestBuilder} protoCtx={protoCtx} />
+      <RequestBuilder requestBuilder={requestBuilder} protoCtx={protoCtx} messageNames={collection.messageNames} />
       <Spacing />
       {response ? <ResponseView response={response} /> : null}
     </Wrapper>

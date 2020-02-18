@@ -6,6 +6,7 @@ import HeaderViewReducer from '../components/flow/shared/HeaderView/HeaderViewRe
 import CollectionReducer from '../components/collection/CollectionReducer';
 import EndpointInputReducer from '../components/flow/request/EndpointInput/EndpointInputReducer';
 import FlowNameViewReducer from '../components/toolbar/FlowName/FlowNameViewReducer';
+import BodyInputReducer from '../components/flow/request/BodyInput/BodyInputReducer';
 
 type BigReducer = (s: AppState, a: AnyAction) => AppState;
 
@@ -23,6 +24,7 @@ const AppReducer = applyAll([
   CollectionReducer,
   EndpointInputReducer,
   FlowNameViewReducer,
+  BodyInputReducer,
 ]);
 
 export default AppReducer;

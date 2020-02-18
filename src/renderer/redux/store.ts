@@ -150,7 +150,7 @@ const initialState: AppState = {
       {
         protoDefs: [],
         protoCtx: sampleCtx,
-        messageNames: [],
+        messageNames: ['User'],
         flows: [
           [
             'sample request',
@@ -175,7 +175,5 @@ const initialState: AppState = {
 };
 
 const store = createStore((s, a) => AppReducer(s || initialState, a), initialState);
-
-window.store = store;
 
 export default store;
