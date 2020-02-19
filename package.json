@@ -20,6 +20,7 @@
   "dependencies": {
     "antd": "^3.26.9",
     "immer": "^5.3.6",
+    "lodash": "^4.17.15",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-redux": "^7.1.3",
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@types/google-protobuf": "^3.7.2",
     "@types/html-webpack-plugin": "^3.2.2",
+    "@types/lodash": "^4.14.149",
     "@types/react": "^16.9.19",
     "@types/react-dom": "^16.9.5",
     "@types/react-redux": "^7.1.7",

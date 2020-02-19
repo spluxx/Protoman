@@ -50,7 +50,7 @@ const BodyInput: FunctionComponent<Props> = ({ body, protoCtx, messageNames, res
       <BodyWrapper hidden={radioValue === 'none'}>
         <div style={{ marginBottom: 8 }}>
           <span>Request Message: </span>
-          <Select value={body && body.type.name} onChange={onSelectRequestMsg} size="small" style={{ width: 200 }}>
+          <Select value={body && body.type.name} onChange={onSelectRequestMsg} size="small" style={{ width: 230 }}>
             {messageNames.map(messageName => (
               <Select.Option key={messageName}>{messageName}</Select.Option>
             ))}
@@ -62,7 +62,7 @@ const BodyInput: FunctionComponent<Props> = ({ body, protoCtx, messageNames, res
             value={responseMessageName}
             onChange={onSelectResponseMsg}
             size="small"
-            style={{ width: 200 }}
+            style={{ width: 230 }}
             allowClear
           >
             {messageNames.map(messageName => (

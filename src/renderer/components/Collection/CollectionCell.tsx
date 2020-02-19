@@ -13,7 +13,7 @@ const Title = styled('span')`
   margin-bottom: 4px;
   font-size: 10pt;
   user-select: none;
-  width: 120px;
+  width: 100px;
   overflow: hidden;
   text-overflow: ellipsis;
 `;
@@ -38,6 +38,7 @@ type Props = {
   name: string;
   collection: Collection;
   checkName: (name: string) => boolean;
+  onOpenFileManager: () => void;
   onChangeColName: (name: string) => void;
   onDeleteCollection: (name: string) => void;
 };
@@ -46,6 +47,7 @@ const CollectionCell: React.FunctionComponent<Props> = ({
   name,
   collection,
   checkName,
+  onOpenFileManager,
   onDeleteCollection,
   onChangeColName,
 }) => {
@@ -96,6 +98,9 @@ const CollectionCell: React.FunctionComponent<Props> = ({
         <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
           <Title>{draftName}</Title>
           <div>
+            <Button shape="circle" size="small" onClick={prevent(onOpenFileManager)} style={{ marginLeft: 4 }}>
+              <Icon type="file-ppt" />
+            </Button>
             <Button shape="circle" size="small" onClick={prevent(startEditing)} style={{ marginLeft: 4 }}>
               <Icon type="edit" />
             </Button>

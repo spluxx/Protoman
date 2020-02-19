@@ -23,7 +23,7 @@ function createEmptyFlow(): Draft<Flow> {
 
 function createEmptyCollection(): Draft<Collection> {
   return {
-    protoDefs: [],
+    protoFilepaths: [],
     protoCtx: {
       types: {},
     },

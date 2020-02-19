@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, message, Collapse } from 'antd';
+import { Layout, message, Collapse, Modal } from 'antd';
 import styled from 'styled-components';
 import CollectionCell from './CollectionCell';
 import { useSelector, useDispatch } from 'react-redux';
@@ -17,6 +17,7 @@ import {
 import GhostCollectionCell from './GhostCollectionCell';
 import FlowList from './FlowList';
 import { getByKey } from '../../utils/utils';
+import ProtofileManager from './protofile/ProtofileManager';
 
 const { Panel } = Collapse;
 
@@ -52,7 +53,7 @@ const LeanCollapse = styled(Collapse)`
   border-radius: 0;
 `;
 
-export const COLLECTION_SIDER_WIDTH = 200;
+export const COLLECTION_SIDER_WIDTH = 230;
 
 const MAX_NAME_LENGTH = 36;
 
@@ -65,6 +66,8 @@ const CollectionSider: React.FunctionComponent<{}> = ({}) => {
   const currentFlow = useSelector((s: AppState) => s.currentFlow);
 
   const [collapsed, setCollapsed] = React.useState(false);
+
+  const [openFM, setOpenFM] = React.useState<string | null>(null);
 
   const [isCreatingCol, setIsCreatingCol] = React.useState(false);
   const showGhostCol = (): void => setIsCreatingCol(true);
@@ -160,6 +163,7 @@ const CollectionSider: React.FunctionComponent<{}> = ({}) => {
                 name={name}
                 collection={col}
                 checkName={(newName): boolean => validateName(newName, name)}
+                onOpenFileManager={(): void => setOpenFM(name)}
                 onChangeColName={(newName): void => handleNameChange(newName, name)}
                 onDeleteCollection={(): void => handleDelete(name)}
               />
@@ -183,6 +187,16 @@ const CollectionSider: React.FunctionComponent<{}> = ({}) => {
           <NewCollectionCell onCreate={showGhostCol} />
         </LeanCollapse>
       </Wrapper>
+
+      <Modal visible={!!openFM} footer={null} closable={false} destroyOnClose>
+        {openFM ? (
+          <ProtofileManager
+            collectionName={openFM}
+            filepaths={getByKey(collections, openFM)?.protoFilepaths || []}
+            onFinish={(): void => setOpenFM(null)}
+          />
+        ) : null}
+      </Modal>
     </Sider>
   );
 };

@@ -148,7 +148,7 @@ const initialState: AppState = {
     [
       'Yo',
       {
-        protoDefs: [],
+        protoFilepaths: [],
         protoCtx: sampleCtx,
         messageNames: ['User'],
         flows: [
