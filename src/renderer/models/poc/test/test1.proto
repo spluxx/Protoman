@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package test1;
+
+message Fuck {
+    string male = 1; 
+    string female =2; 
+}
+
+message User {
+    string user_id = 1;
+    string first_name = 2;
+    string last_name = 3;
+    string photo_url = 4;
+    bool is_onboarding = 5;
+    sint32 points = 6;
+    uint32 num_thanks = 7;
+    uint32 num_revokes = 8;
+    bool is_admin = 9;
+    Fuck fuck = 10; 
+    map<string, int32> asset = 11; 
+    oneof answer{
+        bool boolean_value = 12;
+        string integer_value = 13;
+        double double_value = 14;
+        string text_value = 15;
+    }
+}

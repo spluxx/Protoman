@@ -77,13 +77,13 @@ type MVVProps = {
 };
 
 const MessageValueView: FunctionComponent<MVVProps> = ({ editable, value, handlers }) => {
-  const { type, fields, repeatedFields, oneOfFields, mapFields } = value;
+  const { type, singleFields, repeatedFields, oneOfFields, mapFields } = value;
 
   return (
     <InlineBlock>
       <LightText>{type.name + ' {'}</LightText>
       <IndentationBlock>
-        {fields.map(([fieldName, value]) => (
+        {singleFields.map(([fieldName, value]) => (
           <SingleFieldView
             key={fieldName}
             editable={editable}

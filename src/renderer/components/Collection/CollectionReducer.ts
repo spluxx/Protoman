@@ -1,36 +1,9 @@
 import { AppState } from '../../models/AppState';
 import { AnyAction } from 'redux';
 import { CollectionActionTypes, CollectionAction } from './CollectionActions';
-import produce, { Draft } from 'immer';
-import { Collection } from '../../models/Collection';
+import produce from 'immer';
 import { getEntryByKey, getByKey } from '../../utils/utils';
-import { Flow } from '../../models/http/flow';
-
-const INITIAL_FLOW_NAME = 'flow1';
-
-function createEmptyFlow(): Draft<Flow> {
-  return {
-    requestBuilder: {
-      method: 'GET',
-      url: '',
-      headers: [],
-      body: undefined,
-      responseMessageName: undefined,
-    },
-    response: undefined,
-  };
-}
-
-function createEmptyCollection(): Draft<Collection> {
-  return {
-    protoFilepaths: [],
-    protoCtx: {
-      types: {},
-    },
-    messageNames: [],
-    flows: [[INITIAL_FLOW_NAME, createEmptyFlow()]],
-  };
-}
+import { createDefaultCollection, createDefaultFlow } from '../../redux/store';
 
 export default function CollectionReducer(s: AppState, action: AnyAction): AppState {
   if (CollectionActionTypes.includes(action.type)) {
@@ -39,7 +12,7 @@ export default function CollectionReducer(s: AppState, action: AnyAction): AppSt
     switch (a.type) {
       case 'CREATE_COLLECTION':
         return produce(s, draft => {
-          draft.collections.push([a.collectionName, createEmptyCollection()]);
+          draft.collections.push([a.collectionName, createDefaultCollection()]);
         });
       case 'CHANGE_COLLECTION_NAME':
         return produce(s, draft => {
@@ -71,7 +44,7 @@ export default function CollectionReducer(s: AppState, action: AnyAction): AppSt
           const collection = getByKey(draft.collections, a.collectionName);
           const flows = collection?.flows;
           if (flows) {
-            flows.push([a.flowName, createEmptyFlow()]);
+            flows.push([a.flowName, createDefaultFlow()]);
             draft.currentCollection = a.collectionName;
             draft.currentFlow = a.flowName;
           }
@@ -87,7 +60,6 @@ export default function CollectionReducer(s: AppState, action: AnyAction): AppSt
           const idx = flows?.findIndex(([n]) => n === a.flowName);
           if (idx != null && idx >= 0) {
             flows?.splice(idx, 1);
-            console.log(flows);
           }
         });
       default:

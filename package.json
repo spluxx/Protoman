@@ -21,10 +21,13 @@
     "antd": "^3.26.9",
     "immer": "^5.3.6",
     "lodash": "^4.17.15",
+    "node-fetch": "^2.6.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-redux": "^7.1.3",
     "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0",
+    "register": "^0.0.0",
     "styled-components": "^5.0.1"
   },
   "devDependencies": {

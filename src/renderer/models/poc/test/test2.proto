@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package test2;
+
+enum ContributionMedal {
+    NONE = 0;
+    BRONZE = 1;
+    SILVER = 2;
+    GOLD = 3;
+}
+
+
+message AnswerValue {
+    oneof answer {
+        bool boolean_value = 1;
+        string integer_value = 2;
+        double double_value = 3;
+        string text_value = 4;
+    }
+}

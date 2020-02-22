@@ -259,7 +259,7 @@ function findField(
   [string, Draft<ProtobufValue>][] | undefined,
 ] {
   return [
-    getByKey(v.fields, fieldName),
+    getByKey(v.singleFields, fieldName),
     getByKey(v.repeatedFields, fieldName),
     getByKey(v.oneOfFields, fieldName),
     getByKey(v.mapFields, fieldName),

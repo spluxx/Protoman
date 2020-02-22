@@ -1,179 +1,61 @@
-import { createStore } from 'redux';
-import { produce } from 'immer';
-import { AppState } from '../models/AppState';
-import {
-  typeToDefaultValue,
-  MessageType,
-  PrimitiveType,
-  ProtoCtx,
-  EnumType,
-  MessageValue,
-} from '../models/http/body/protobuf';
+import { createStore, applyMiddleware } from 'redux';
 import AppReducer from './AppReducer';
+import { AppState } from '../models/AppState';
+import { Draft } from 'immer';
+import { Flow } from '../models/http/flow';
+import { Collection } from '../models/Collection';
+import { Env } from '../models/Env';
+import thunk from 'redux-thunk';
 
-const stringType: PrimitiveType = {
-  tag: 'primitive',
-  name: 'string',
-  defaultValue: '',
-};
+const DEFAULT_FLOW_NAME = 'flow1';
+const DEFAULT_COLLECTION_NAME = 'collection1';
+const DEFAULT_ENV_NAME = 'env1';
 
-const sportsType: EnumType = {
-  tag: 'enum',
-  name: 'Sports',
-  options: ['Basketball', 'Baseball', 'Hockey'],
-  optionValues: { Basketball: 0, Baseball: 1, Hockey: 2 },
-};
-
-const smallUserType: MessageType = {
-  tag: 'message',
-  name: 'SmallUser',
-  fields: [['first_name', 'string']],
-  repeatedFields: [],
-  oneOfFields: [],
-  mapFields: [],
-};
-
-const userType: MessageType = {
-  tag: 'message',
-  name: 'User',
-  fields: [['first_name', 'string']],
-  repeatedFields: [
-    ['friend_ids', 'string'],
-    ['friends', 'SmallUser'],
-  ],
-  oneOfFields: [
-    [
-      'favorite',
-      [
-        ['sports', 'Sports'],
-        ['food', 'string'],
-      ],
-    ],
-  ],
-  mapFields: [['properties', ['string', 'string']]],
-};
-
-const sampleCtx: ProtoCtx = {
-  types: {
-    string: stringType,
-    User: userType,
-    SmallUser: smallUserType,
-    Sports: sportsType,
-  },
-};
-
-const sampleBody = produce(typeToDefaultValue(userType, sampleCtx) as MessageValue, draft => {
-  draft.repeatedFields[0][1] = [
-    {
-      type: stringType,
-      value: '1234',
+export function createDefaultFlow(): Draft<Flow> {
+  return {
+    requestBuilder: {
+      method: 'GET',
+      url: '',
+      headers: [],
+      body: undefined,
+      responseMessageName: undefined,
     },
-    {
-      type: stringType,
-      value: '294',
+    response: undefined,
+  };
+}
+
+export function createDefaultCollection(): Draft<Collection> {
+  return {
+    protoFilepaths: [],
+    buildStatus: 'default',
+    buildError: undefined,
+    protoCtx: {
+      types: {},
     },
-  ];
+    messageNames: [],
+    flows: [[DEFAULT_FLOW_NAME, createDefaultFlow()]],
+  };
+}
 
-  draft.repeatedFields[1][1] = [
-    {
-      //@ts-ignore
-      type: smallUserType,
-      fields: [
-        [
-          'first_name',
-          {
-            type: stringType,
-            value: 'Inchan',
-          },
-        ],
-      ],
-      repeatedFields: [],
-      oneOfFields: [],
-      mapFields: [],
-    },
-    {
-      //@ts-ignore
-      type: smallUserType,
-      fields: [
-        [
-          'first_name',
-          {
-            type: stringType,
-            value: 'Louis',
-          },
-        ],
-      ],
-      repeatedFields: [],
-      oneOfFields: [],
-      mapFields: [],
-    },
-  ];
+function createDefaultEnv(): Draft<Env> {
+  return {
+    vars: [],
+  };
+}
 
-  draft.mapFields[0][1] = [
-    [
-      'key',
-      {
-        type: stringType,
-        value: 'value',
-      },
-    ],
-    [
-      'some_other_key',
-      {
-        type: stringType,
-        value: 'some_long_long_long_long_long_long_long_value',
-      },
-    ],
-  ];
-});
+function createDefaultAppState(): Draft<AppState> {
+  return {
+    envList: [[DEFAULT_ENV_NAME, createDefaultEnv()]],
+    currentEnv: DEFAULT_ENV_NAME,
+    collections: [[DEFAULT_COLLECTION_NAME, createDefaultCollection()]],
+    currentCollection: DEFAULT_COLLECTION_NAME,
+    currentFlow: DEFAULT_FLOW_NAME,
+    openCollections: [DEFAULT_COLLECTION_NAME],
+  };
+}
 
-const initialState: AppState = {
-  envList: [
-    [
-      'dev',
-      {
-        vars: [['host', 'http://localhost:3000']],
-      },
-    ],
-    [
-      'prod',
-      {
-        vars: [['host', 'https://example.com']],
-      },
-    ],
-  ],
-  currentEnv: 'dev',
+const initialState: AppState = createDefaultAppState();
 
-  collections: [
-    [
-      'Yo',
-      {
-        protoFilepaths: [],
-        protoCtx: sampleCtx,
-        messageNames: ['User'],
-        flows: [
-          [
-            'sample request',
-            {
-              requestBuilder: {
-                method: 'GET',
-                url: '',
-                headers: [['content-type', 'application/json']],
-                body: sampleBody,
-                responseMessageName: undefined,
-              },
-              response: undefined,
-            },
-          ],
-        ],
-      },
-    ],
-  ],
-  openCollections: ['Yo'],
-  currentCollection: 'Yo',
-  currentFlow: 'sample request',
-};
-
-const store = createStore((s, a) => AppReducer(s || initialState, a), initialState);
+const store = createStore((s, a) => AppReducer(s || initialState, a), initialState, applyMiddleware(thunk));
 
 export default store;

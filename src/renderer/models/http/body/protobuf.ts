@@ -4,18 +4,18 @@
 
 export type ProtobufType = PrimitiveType | MessageType | EnumType;
 export type ProtobufValue = PrimitiveValue | MessageValue | EnumValue;
-type FieldName = string;
-type TypeName = string;
-type Field<T> = [FieldName, T];
-type Fields<T> = ReadonlyArray<Field<T>>;
-type Entry<T> = [string, T];
-type Entries<T> = ReadonlyArray<Entry<T>>;
+export type FieldName = string;
+export type TypeName = string;
+export type Field<T> = [FieldName, T];
+export type Fields<T> = ReadonlyArray<Field<T>>;
+export type Entry<T> = [string, T];
+export type Entries<T> = ReadonlyArray<Entry<T>>;
 
 export type ProtoCtx = {
   types: { [key: string]: ProtobufType };
 };
 
-function typeNameToType(name: TypeName, ctx: ProtoCtx): ProtobufType {
+export function typeNameToType(name: TypeName, ctx: ProtoCtx): ProtobufType {
   // mocked implementation
   return ctx.types[name];
 }
@@ -23,7 +23,7 @@ function typeNameToType(name: TypeName, ctx: ProtoCtx): ProtobufType {
 export interface MessageType {
   readonly tag: 'message';
   readonly name: TypeName; // ex) ProtoModel.Coordinates
-  readonly fields: Fields<TypeName>;
+  readonly singleFields: Fields<TypeName>;
   readonly repeatedFields: Fields<TypeName>;
   readonly oneOfFields: Fields<Fields<TypeName>>;
   readonly mapFields: Fields<[TypeName, TypeName]>;
@@ -47,7 +47,7 @@ export interface EnumType {
 export interface MessageValue {
   readonly type: MessageType;
 
-  readonly fields: Fields<ProtobufValue>;
+  readonly singleFields: Fields<ProtobufValue>;
   readonly repeatedFields: Fields<ReadonlyArray<ProtobufValue>>;
   readonly oneOfFields: Fields<[string, ProtobufValue]>;
   readonly mapFields: Fields<Entries<ProtobufValue>>;
@@ -81,16 +81,16 @@ function genDefault(type: ProtobufType, ctx: ProtoCtx): ProtobufValue {
 }
 
 function genDefaultMessage(type: MessageType, ctx: ProtoCtx): MessageValue {
-  const { fields, repeatedFields, oneOfFields, mapFields } = type;
+  const { singleFields, repeatedFields, oneOfFields, mapFields } = type;
 
-  const fieldValues = fields.map(f => genField(f, ctx));
+  const fieldValues = singleFields.map(f => genField(f, ctx));
   const repeatedFieldValues = repeatedFields.map(genRepeatedField);
   const oneOfFieldValues = oneOfFields.map(f => genOneOfField(f, ctx));
   const mapFieldValues = mapFields.map(genMapField);
 
   return {
     type,
-    fields: fieldValues,
+    singleFields: fieldValues,
     repeatedFields: repeatedFieldValues,
     oneOfFields: oneOfFieldValues,
     mapFields: mapFieldValues,

@@ -3,11 +3,12 @@ import styled from 'styled-components';
 import { isEqual } from 'lodash';
 import { Typography, List, Button, Icon, Row, Col, Checkbox, Divider } from 'antd';
 import { useDispatch } from 'react-redux';
-import { setProtofiles } from './ProtofileManagerActions';
+import { buildProtofiles } from './ProtofileManagerActions';
+import { Collection } from '../../../models/Collection';
 
 type Props = {
   collectionName: string;
-  filepaths: ReadonlyArray<string>;
+  collection: Collection;
   onFinish: () => void;
 };
 
@@ -20,8 +21,10 @@ const Scrollable = styled('div')`
   overflow: auto;
 `;
 
-const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName, filepaths, onFinish }) => {
+const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName, collection, onFinish }) => {
   const filepickerRef = React.useRef<HTMLInputElement>(null);
+
+  const { protoFilepaths: filepaths, buildStatus, buildError } = collection;
 
   const [draft, setDraft] = React.useState([...filepaths]);
   React.useEffect(() => {
@@ -63,17 +66,13 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName, file
   }
 
   function tryBuilding(): void {
-    // build
+    dispatch(buildProtofiles(collectionName, draft));
   }
 
   function triggerFileDialog(): void {
     if (filepickerRef.current) {
       filepickerRef.current.click();
     }
-  }
-
-  function confirmUpdate(): void {
-    dispatch(setProtofiles(collectionName, draft));
   }
 
   function handleToggle(filepath: string, checked: boolean): void {
@@ -142,10 +141,6 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName, file
           <Button onClick={triggerFileDialog}>
             <Icon type="plus" />
           </Button>
-          <Button onClick={tryBuilding} type="primary" style={{ marginLeft: 8 }} ghost>
-            <Icon type="build" />
-            Build!
-          </Button>
           <Button
             onClick={handleFileDelete}
             type="danger"
@@ -157,8 +152,16 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName, file
           </Button>
         </div>
         <div>
-          <Button onClick={confirmUpdate} disabled={!hasPendingChanges} type="primary" style={{ marginLeft: 8 }} ghost>
-            Update
+          <Button
+            onClick={tryBuilding}
+            type="primary"
+            style={{ marginLeft: 8 }}
+            ghost
+            disabled={!hasPendingChanges}
+            loading={buildStatus === 'building'}
+          >
+            <Icon type="build" />
+            Build and Save
           </Button>
         </div>
       </div>

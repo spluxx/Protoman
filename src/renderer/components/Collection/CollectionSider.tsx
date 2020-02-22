@@ -67,7 +67,8 @@ const CollectionSider: React.FunctionComponent<{}> = ({}) => {
 
   const [collapsed, setCollapsed] = React.useState(false);
 
-  const [openFM, setOpenFM] = React.useState<string | null>(null);
+  const [openFM, setOpenFM] = React.useState<string | undefined>(undefined);
+  const fmCollection = openFM ? getByKey(collections, openFM) : undefined;
 
   const [isCreatingCol, setIsCreatingCol] = React.useState(false);
   const showGhostCol = (): void => setIsCreatingCol(true);
@@ -189,11 +190,11 @@ const CollectionSider: React.FunctionComponent<{}> = ({}) => {
       </Wrapper>
 
       <Modal visible={!!openFM} footer={null} closable={false} destroyOnClose>
-        {openFM ? (
+        {openFM && fmCollection ? (
           <ProtofileManager
             collectionName={openFM}
-            filepaths={getByKey(collections, openFM)?.protoFilepaths || []}
-            onFinish={(): void => setOpenFM(null)}
+            collection={fmCollection}
+            onFinish={(): void => setOpenFM(undefined)}
           />
         ) : null}
       </Modal>
