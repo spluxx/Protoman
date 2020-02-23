@@ -12,7 +12,7 @@ function convertHeaders(headers: ReadonlyArray<[string, string]>): Headers {
 
 function unconvertHeaders(headers: Headers): ReadonlyArray<[string, string]> {
   const h: [string, string][] = [];
-  headers.forEach((name: string, value: string) => h.push([name, value]));
+  headers.forEach((value: string, name: string) => h.push([name, value]));
   return h;
 }
 
