@@ -24,10 +24,10 @@ function handleEnum(messageType: EnumType, messageJson: { [k: string]: any }, ct
   return temp;
 }
 
-function handlePrimitive(messageType: PrimitiveType, messageJson: { [k: string]: any }, ctx: ProtoCtx): PrimitiveValue {
+function handlePrimitive(messageType: PrimitiveType, messageJson: any, ctx: ProtoCtx): PrimitiveValue {
   const temp = {
     type: messageType,
-    value: messageJson[messageType.name],
+    value: messageJson,
   };
   return temp;
 }
@@ -36,13 +36,12 @@ function handleMessage(messageType: MessageType, messageJson: { [k: string]: any
   const temp: { [key: string]: any } = {};
   temp['type'] = messageType;
   temp['singleFields'] = messageType.singleFields.map(([fieldName, typeName]) => {
-    return [fieldName, createMessageValue(typeNameToType(typeName, ctx), messageJson, ctx)];
+    return [fieldName, createMessageValue(typeNameToType(typeName, ctx), messageJson[fieldName], ctx)];
   });
   temp['repeatedFields'] = messageType.repeatedFields.map(([fieldName, typeName]: [string, string]) => {
-    // return [fieldname, array<protobufvalue> ]
     const haha: { [key: string]: ProtobufValue[] } = {};
     haha[fieldName] = messageJson[fieldName].map((value: string | number) =>
-      createMessageValue(typeNameToType(typeName, ctx), messageJson[fieldName][value], ctx),
+      createMessageValue(typeNameToType(typeName, ctx), value, ctx),
     );
     return haha;
   });
@@ -76,11 +75,7 @@ function handleMessage(messageType: MessageType, messageJson: { [k: string]: any
   return temp;
 }
 
-export function createMessageValue(
-  messageProto: ProtobufType,
-  messageJson: { [k: string]: any },
-  ctx: ProtoCtx,
-): ProtobufValue {
+export function createMessageValue(messageProto: ProtobufType, messageJson: any, ctx: ProtoCtx): ProtobufValue {
   switch (messageProto.tag) {
     case 'message': {
       const messageType = messageProto as MessageType;

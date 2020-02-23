@@ -173,9 +173,10 @@ export async function testMessageParser(): Promise<void> {
   });
 
   console.log('verify json');
-  const result = await verifyJson('test3.User', './test3.proto', jsonObject);
+  await verifyJson('test3.User', './test3.proto', jsonObject);
 
   console.log('json to message value');
+  console.log(jsonObject);
   const messageValue = createMessageValue(userType, jsonObject, sampleCtx);
   console.log(messageValue);
 }
