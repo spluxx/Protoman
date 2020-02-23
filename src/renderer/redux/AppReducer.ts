@@ -14,6 +14,7 @@ type BigReducer = (s: AppState, a: AnyAction) => AppState;
 
 function applyAll(reducers: BigReducer[]): BigReducer {
   return (s, a): AppState => {
+    console.log(a);
     return reducers.reduce((s, r) => r(s, a), s);
   };
 }

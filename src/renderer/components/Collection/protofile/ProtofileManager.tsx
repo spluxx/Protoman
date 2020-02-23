@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { isEqual } from 'lodash';
 import { Typography, List, Button, Icon, Row, Col, Checkbox, Divider } from 'antd';
 import { useDispatch } from 'react-redux';
 import { buildProtofiles } from './ProtofileManagerActions';
@@ -66,6 +65,7 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName, coll
   }
 
   function tryBuilding(): void {
+    console.log('yo');
     dispatch(buildProtofiles(collectionName, draft));
   }
 
@@ -91,8 +91,6 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName, coll
       setSelected([]);
     }
   }
-
-  const hasPendingChanges = !isEqual(filepaths, draft);
 
   return (
     <Wrapper>
@@ -157,7 +155,6 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName, coll
             type="primary"
             style={{ marginLeft: 8 }}
             ghost
-            disabled={!hasPendingChanges}
             loading={buildStatus === 'building'}
           >
             <Icon type="build" />

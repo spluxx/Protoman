@@ -5,6 +5,10 @@ import { allPrimitiveTypes } from './primitiveTypes';
 type FieldPair<T> = [string, T];
 type Fields<T> = Array<FieldPair<T>>;
 
+function resolveTypeName(resolvedField: protobuf.FieldBase): string {
+  return resolvedField.resolvedType?.fullName || resolvedField.type;
+}
+
 // core function
 export function createMessageType(messageType: protobuf.Type): MessageType {
   const repeatedFields: Fields<string> = [];
@@ -14,31 +18,37 @@ export function createMessageType(messageType: protobuf.Type): MessageType {
 
   messageType.fieldsArray.forEach((field: protobuf.FieldBase) => {
     //repeated
+    const resolvedField = field.resolve();
     if (field.repeated) {
-      repeatedFields.push([field.name, field.type]);
+      repeatedFields.push([field.name, resolveTypeName(resolvedField)]);
     } else if (field.map) {
       const map = field as protobuf.MapField;
-      mapFields.push([map.name, [map.keyType, map.type]]);
+      mapFields.push([map.name, [map.keyType, resolveTypeName(map)]]);
     } else {
-      const resolvedField = field.resolve();
-      singleFields.push([resolvedField.name, resolvedField.resolvedType?.fullName || resolvedField.type]);
+      singleFields.push([resolvedField.name, resolveTypeName(resolvedField)]);
     }
   });
 
   if (messageType.oneofs) {
     messageType.oneofsArray.forEach(one => {
-      const options: [string, string][] = one.fieldsArray.map(elt => [elt.name, elt.type]);
+      const options: [string, string][] = one.fieldsArray.map(elt => {
+        const typeName = resolveTypeName(elt.resolve());
+        return [elt.name, typeName];
+      });
       oneOfFields.push([one.name, options]);
     });
   }
 
-  const oneOfFieldNames = oneOfFields.map(([name]) => name);
+  const oneOfFieldNames = oneOfFields.reduce(
+    (acc, [, options]) => acc.concat(options.map(([name]) => name)),
+    [] as string[],
+  );
   const realSingleFields = singleFields.filter(([name]) => !oneOfFieldNames.includes(name));
 
   const temp: MessageType = {
     tag: 'message',
     name: messageType.fullName, // ex) ProtoModel.Coordinates
-    singleFields: realSingleFields.length > 0 ? realSingleFields : singleFields,
+    singleFields: realSingleFields,
     repeatedFields: repeatedFields,
     oneOfFields: oneOfFields,
     mapFields: mapFields,
