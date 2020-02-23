@@ -147,9 +147,7 @@ export const userValue: MessageValue = {
 
 export const test3UserExpectedJson = {
   first_name: 'Louis',
-  favorite: {
-    sports: 'Basketball',
-  },
+  sports: 'Basketball',
   friend_ids: ['16', '18'],
   friends: [{ first_name: 'Inchan' }, { first_name: 'Erie' }],
   properties: { city: 'Wonju', sex: 'Boy', height: 'Tall' },

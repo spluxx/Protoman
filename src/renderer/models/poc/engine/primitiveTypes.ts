@@ -12,7 +12,7 @@ const float: PrimitiveType = {
   defaultValue: '0',
 };
 
-const int32: PrimitiveType = {
+export const int32: PrimitiveType = {
   tag: 'primitive',
   name: 'int32',
   defaultValue: '0',
@@ -70,12 +70,12 @@ const sfixed64: PrimitiveType = {
   name: 'sfixed64',
   defaultValue: '0',
 };
-const bool: PrimitiveType = {
+export const bool: PrimitiveType = {
   tag: 'primitive',
   name: 'bool',
   defaultValue: 'false',
 };
-const string: PrimitiveType = {
+export const string: PrimitiveType = {
   tag: 'primitive',
   name: 'string',
   defaultValue: '',
