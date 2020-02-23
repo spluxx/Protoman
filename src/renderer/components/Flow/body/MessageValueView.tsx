@@ -286,7 +286,7 @@ const OneOfFieldView: FunctionComponent<OFVProps> = ({
       <FieldName>{fieldName}</FieldName>
       <span>: </span>
       <Select
-        value={name}
+        defaultValue={name}
         size="small"
         style={{ width: KEY_INPUT_WIDTH }}
         onChange={(s: string): void => handlers.fieldChange('', s)}

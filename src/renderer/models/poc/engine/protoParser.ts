@@ -10,7 +10,6 @@ export function createMessageType(messageType: protobuf.Type): MessageType {
   const repeatedFields: Fields<string> = [];
   const oneOfFields: Fields<Fields<string>> = [];
   const singleFields: Fields<string> = [];
-  let realSingleFields: Fields<string> = [];
   const mapFields: Fields<[string, string]> = [];
 
   messageType.fieldsArray.forEach((field: protobuf.FieldBase) => {
@@ -21,33 +20,25 @@ export function createMessageType(messageType: protobuf.Type): MessageType {
       const map = field as protobuf.MapField;
       mapFields.push([map.name, [map.keyType, map.type]]);
     } else {
-      realSingleFields.push([field.name, field.type]);
+      const resolvedField = field.resolve();
+      singleFields.push([resolvedField.name, resolvedField.resolvedType?.fullName || resolvedField.type]);
     }
   });
 
   if (messageType.oneofs) {
     messageType.oneofsArray.forEach(one => {
-      //TODO : finish this part
-      const options = one.fieldsArray.reduce(
-        (acc, elt) => [...acc, [elt.name, elt.type] as [string, string]],
-        [] as [string, string][],
-      );
+      const options: [string, string][] = one.fieldsArray.map(elt => [elt.name, elt.type]);
       oneOfFields.push([one.name, options]);
-      realSingleFields = singleFields.filter(field => !one.oneof.includes(field[0]));
     });
   }
 
-  function isArrayEmpty(arr: Fields<string>): boolean {
-    if (Array.isArray(arr) && arr.length) {
-      return true;
-    }
-    return false;
-  }
+  const oneOfFieldNames = oneOfFields.map(([name]) => name);
+  const realSingleFields = singleFields.filter(([name]) => !oneOfFieldNames.includes(name));
 
   const temp: MessageType = {
     tag: 'message',
     name: messageType.fullName, // ex) ProtoModel.Coordinates
-    singleFields: isArrayEmpty(realSingleFields) ? singleFields : realSingleFields,
+    singleFields: realSingleFields.length > 0 ? realSingleFields : singleFields,
     repeatedFields: repeatedFields,
     oneOfFields: oneOfFields,
     mapFields: mapFields,
@@ -68,13 +59,10 @@ function createEnumType(enumType: protobuf.Enum): EnumType {
 
 function traverseTypes(current: any): ProtobufType[] {
   if (current instanceof protobuf.Type) {
-    console.log(current);
     return [createMessageType(current)];
   } else if (current instanceof protobuf.Enum) {
     return [createEnumType(current)];
   } else if (current.nestedArray) {
-    console.log('fuck!!');
-    console.log(current.nestedArray);
     return current.nestedArray.reduce((acc: ProtobufType[], nested: any) => [...acc, ...traverseTypes(nested)], []);
   } else {
     console.error("something's wrong...", current);
@@ -102,8 +90,7 @@ export async function readProtos(paths: ReadonlyArray<string>): Promise<[Protobu
     [[] as ProtobufType[], {} as { [key: string]: string }],
   );
 
-  types.concat(allPrimitiveTypes);
-  return [types, origin];
+  return [types.concat(allPrimitiveTypes), origin];
 }
 
 export async function buildContext(filepaths: ReadonlyArray<string>): Promise<ProtoCtx> {
