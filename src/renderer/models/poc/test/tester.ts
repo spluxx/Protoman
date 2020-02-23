@@ -3,5 +3,5 @@ import { testProtoParser } from './protoParserTest';
 
 (async (): Promise<void> => {
   await testProtoParser();
-  await testMessageParser();
+  //await testMessageParser();
 })();
