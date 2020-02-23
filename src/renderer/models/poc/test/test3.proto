@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package test3;
+
+enum Sports {
+    Basketball = 0;
+    Baseball = 1;
+    Hockey = 2;
+}
+
+message SmallUser {
+    string first_name =1;
+}
+
+
+message User {
+    string first_name =1;
+    repeated string friend_ids =2;
+    repeated SmallUser friends = 3;
+    oneof favorites {
+        Sports sports = 4;
+        string food = 5;
+    }
+    map<string, string> properties = 6;
+}

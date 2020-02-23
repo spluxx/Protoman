@@ -1,7 +1,8 @@
 import { RequestBuilder } from '../../http/request_builder';
 import { MessageValue, ProtoCtx } from '../../http/body/protobuf';
-import { serialize, deserialize } from './messageParser';
 import { Response, ResponseBodyType } from '../../http/response';
+import { deserialize } from './deserializer';
+import { serialize } from './serializer';
 
 function convertHeaders(headers: ReadonlyArray<[string, string]>): Headers {
   return headers.reduce((h, [name, value]) => {

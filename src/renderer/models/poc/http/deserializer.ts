@@ -14,80 +14,6 @@ import {
 import protobuf from 'protobufjs';
 import { createMessageType } from '../engine/protoParser';
 
-// function recurse(current: object)
-// parent = {};
-// if(current == message) parent[current.name] = recurse(current.value);
-// else parent[current.name] = current.value;
-
-// todo make a util function to handle undefined
-function makeMessageValue(messagevalue: MessageValue): any {
-  const current: { [key: string]: any } = {};
-  messagevalue.singleFields.forEach(([name, value]) => {
-    current[name] = createMessageRecurse(value);
-  });
-
-  messagevalue.oneOfFields.forEach(([name, value]) => {
-    current[name] = createMessageRecurse(value[1]);
-  });
-
-  messagevalue.repeatedFields.forEach(([name, values]) => {
-    current[name] = values.map(createMessageRecurse);
-  });
-
-  messagevalue.mapFields.forEach(([name, kvPairs]) => {
-    current[name] = {};
-    kvPairs.forEach(([k, v]) => {
-      current[name][k] = createMessageRecurse(v);
-    });
-  });
-  return current;
-}
-
-function makePrimitiveValue(primitiveValue: PrimitiveValue): any {
-  switch (primitiveValue.type.name) {
-    case 'bool': {
-      return primitiveValue.value == 'true';
-    }
-    case 'string': {
-      return primitiveValue.value;
-    }
-    case 'bytes': {
-      //not now
-    }
-    default: {
-      return Number(primitiveValue.value);
-    }
-  }
-}
-
-function makeEnumValue(enumValue: EnumValue): any {
-  return enumValue.type.optionValues[enumValue.selected];
-}
-
-export function createMessageRecurse(protobufValue: ProtobufValue): any {
-  switch (protobufValue.type.tag) {
-    case 'message': {
-      const messageValue = protobufValue as MessageValue;
-      return makeMessageValue(messageValue);
-    }
-    case 'primitive': {
-      const primitiveValue = protobufValue as PrimitiveValue;
-      return makePrimitiveValue(primitiveValue);
-    }
-    //enum
-    default: {
-      const enumValue = protobufValue as EnumValue;
-      return makeEnumValue(enumValue);
-    }
-  }
-}
-
-export async function serialize(body: MessageValue, path: string): Promise<Buffer> {
-  const root = await protobuf.load(path);
-  const messageType = root.lookupType(body.type.name);
-  return new Buffer(messageType.encode(createMessageRecurse(body)).finish());
-}
-
 // TODO(Louis Lee); finish this
 function handleEnum(messageType: EnumType, messageJson: { [k: string]: any }, ctx: ProtoCtx): EnumValue {
   //should return one value
@@ -98,10 +24,10 @@ function handleEnum(messageType: EnumType, messageJson: { [k: string]: any }, ct
   return temp;
 }
 
-function handlePrimitive(messageType: PrimitiveType, messageJson: { [k: string]: any }, ctx: ProtoCtx): PrimitiveValue {
+function handlePrimitive(messageType: PrimitiveType, messageJson: any, ctx: ProtoCtx): PrimitiveValue {
   const temp = {
     type: messageType,
-    value: messageJson[messageType.name],
+    value: messageJson,
   };
   return temp;
 }
@@ -110,13 +36,12 @@ function handleMessage(messageType: MessageType, messageJson: { [k: string]: any
   const temp: { [key: string]: any } = {};
   temp['type'] = messageType;
   temp['singleFields'] = messageType.singleFields.map(([fieldName, typeName]) => {
-    return [fieldName, createMessageValue(typeNameToType(typeName, ctx), messageJson, ctx)];
+    return [fieldName, createMessageValue(typeNameToType(typeName, ctx), messageJson[fieldName], ctx)];
   });
   temp['repeatedFields'] = messageType.repeatedFields.map(([fieldName, typeName]: [string, string]) => {
-    // return [fieldname, array<protobufvalue> ]
     const haha: { [key: string]: ProtobufValue[] } = {};
     haha[fieldName] = messageJson[fieldName].map((value: string | number) =>
-      createMessageValue(typeNameToType(typeName, ctx), messageJson[fieldName][value], ctx),
+      createMessageValue(typeNameToType(typeName, ctx), value, ctx),
     );
     return haha;
   });
@@ -150,11 +75,7 @@ function handleMessage(messageType: MessageType, messageJson: { [k: string]: any
   return temp;
 }
 
-export function createMessageValue(
-  messageProto: ProtobufType,
-  messageJson: { [k: string]: any },
-  ctx: ProtoCtx,
-): ProtobufValue {
+export function createMessageValue(messageProto: ProtobufType, messageJson: any, ctx: ProtoCtx): ProtobufValue {
   switch (messageProto.tag) {
     case 'message': {
       const messageType = messageProto as MessageType;
