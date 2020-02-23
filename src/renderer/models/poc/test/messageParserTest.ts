@@ -1,6 +1,4 @@
 import * as assert from 'assert';
-import { readProtos } from '../engine/protoParser';
-import { allPrimitiveTypes } from '../engine/primitiveTypes';
 
 import {
   MessageType,
@@ -12,7 +10,18 @@ import {
   EnumValue,
   MessageValue,
 } from '../../http/body/protobuf';
-import * as messageParser from '../http/messageParser';
+import protobuf from 'protobufjs';
+import { createMessageRecurse } from '../http/serializer';
+import { createMessageValue } from '../http/deserializer';
+
+async function verifyJson(messageName: string, path: string, payload: any): Promise<void> {
+  const root = await protobuf.load(path);
+  const userMessage = root.lookupType(messageName);
+  const errMsg = userMessage.verify(payload);
+  console.log(errMsg);
+  if (errMsg) throw Error(errMsg);
+}
+
 export async function testMessageParser(): Promise<void> {
   const stringType: PrimitiveType = {
     tag: 'primitive',
@@ -152,7 +161,7 @@ export async function testMessageParser(): Promise<void> {
   console.log('Testing for Message Parser starting');
 
   console.log('message value to json');
-  const jsonObject = messageParser.createMessageRecurse(userValue);
+  const jsonObject = createMessageRecurse(userValue);
   assert.deepEqual(jsonObject, {
     first_name: 'Louis',
     favorite: {
@@ -163,27 +172,10 @@ export async function testMessageParser(): Promise<void> {
     properties: { city: 'Wonju', sex: 'Boy', height: 'Tall' },
   });
 
-  // const userType: MessageType = {
-  //   tag: 'message',
-  //   name: 'User',
-  //   singleFields: [['first_name', 'string']],
-  //   repeatedFields: [
-  //     ['friend_ids', 'string'],
-  //     ['friends', 'SmallUser'],
-  //   ],
-  //   oneOfFields: [
-  //     [
-  //       'favorite',
-  //       [
-  //         ['sports', 'Sports'],
-  //         ['food', 'string'],
-  //       ],
-  //     ],
-  //   ],
-  //   mapFields: [['properties', ['string', 'string']]],
-  // };
+  console.log('verify json');
+  const result = await verifyJson('test3.User', './test3.proto', jsonObject);
 
   console.log('json to message value');
-  const messageValue = messageParser.createMessageValue(userType, jsonObject, sampleCtx);
+  const messageValue = createMessageValue(userType, jsonObject, sampleCtx);
   console.log(messageValue);
 }
