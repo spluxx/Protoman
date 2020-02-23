@@ -13,6 +13,7 @@ import {
 } from '../../http/body/protobuf';
 import protobuf from 'protobufjs';
 import { createMessageType } from '../engine/protoParser';
+import { message } from 'antd';
 
 // function recurse(current: object)
 // parent = {};
@@ -27,7 +28,10 @@ function makeMessageValue(messagevalue: MessageValue): any {
   });
 
   messagevalue.oneOfFields.forEach(([name, value]) => {
-    current[name] = createMessageRecurse(value[1]);
+    const temp: { [key: string]: any } = {};
+    const fieldName = value[0];
+    temp[fieldName] = createMessageRecurse(value[1]);
+    current[name] = temp;
   });
 
   messagevalue.repeatedFields.forEach(([name, values]) => {
@@ -52,7 +56,7 @@ function makePrimitiveValue(primitiveValue: PrimitiveValue): any {
       return primitiveValue.value;
     }
     case 'bytes': {
-      //not now
+      //TODO(Louis): not now
     }
     default: {
       return Number(primitiveValue.value);
@@ -61,7 +65,7 @@ function makePrimitiveValue(primitiveValue: PrimitiveValue): any {
 }
 
 function makeEnumValue(enumValue: EnumValue): any {
-  return enumValue.type.optionValues[enumValue.selected];
+  return enumValue.selected;
 }
 
 export function createMessageRecurse(protobufValue: ProtobufValue): any {
@@ -76,6 +80,8 @@ export function createMessageRecurse(protobufValue: ProtobufValue): any {
     }
     //enum
     default: {
+      console.log('hello');
+      console.log(protobufValue);
       const enumValue = protobufValue as EnumValue;
       return makeEnumValue(enumValue);
     }

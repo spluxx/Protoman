@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package test3;
+
+enum Sports {
+    Basketball = 0;
+    Baseball = 1;
+    Hockey = 2;
+}
+
+
+message User {
+    oneof favorites {
+        Sports sports = 1;
+        string food = 2;
+    }
+}

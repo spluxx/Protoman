@@ -1,8 +1,13 @@
+import * as assert from 'assert';
+import { readProtos } from '../engine/protoParser';
+import { allPrimitiveTypes } from '../engine/primitiveTypes';
+
 import {
   MessageType,
   PrimitiveType,
   EnumType,
   ProtoCtx,
+  ProtobufValue,
   PrimitiveValue,
   EnumValue,
   MessageValue,
@@ -148,7 +153,35 @@ export async function testMessageParser(): Promise<void> {
 
   console.log('message value to json');
   const jsonObject = messageParser.createMessageRecurse(userValue);
-  console.log(jsonObject);
+  assert.deepEqual(jsonObject, {
+    first_name: 'Louis',
+    favorite: {
+      sports: 'Basketball',
+    },
+    friend_ids: ['16', '18'],
+    friends: [{ first_name: 'Inchan' }, { first_name: 'Erie' }],
+    properties: { city: 'Wonju', sex: 'Boy', height: 'Tall' },
+  });
+
+  // const userType: MessageType = {
+  //   tag: 'message',
+  //   name: 'User',
+  //   singleFields: [['first_name', 'string']],
+  //   repeatedFields: [
+  //     ['friend_ids', 'string'],
+  //     ['friends', 'SmallUser'],
+  //   ],
+  //   oneOfFields: [
+  //     [
+  //       'favorite',
+  //       [
+  //         ['sports', 'Sports'],
+  //         ['food', 'string'],
+  //       ],
+  //     ],
+  //   ],
+  //   mapFields: [['properties', ['string', 'string']]],
+  // };
 
   console.log('json to message value');
   const messageValue = messageParser.createMessageValue(userType, jsonObject, sampleCtx);
