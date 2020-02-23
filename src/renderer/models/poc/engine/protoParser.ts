@@ -37,10 +37,17 @@ export function createMessageType(messageType: protobuf.Type): MessageType {
     });
   }
 
+  function isArrayEmpty(arr: Fields<string>): boolean {
+    if (Array.isArray(arr) && arr.length) {
+      return true;
+    }
+    return false;
+  }
+
   const temp: MessageType = {
     tag: 'message',
     name: messageType.fullName, // ex) ProtoModel.Coordinates
-    singleFields: realSingleFields,
+    singleFields: isArrayEmpty(realSingleFields) ? singleFields : realSingleFields,
     repeatedFields: repeatedFields,
     oneOfFields: oneOfFields,
     mapFields: mapFields,
@@ -61,10 +68,13 @@ function createEnumType(enumType: protobuf.Enum): EnumType {
 
 function traverseTypes(current: any): ProtobufType[] {
   if (current instanceof protobuf.Type) {
+    console.log(current);
     return [createMessageType(current)];
   } else if (current instanceof protobuf.Enum) {
     return [createEnumType(current)];
   } else if (current.nestedArray) {
+    console.log('fuck!!');
+    console.log(current.nestedArray);
     return current.nestedArray.reduce((acc: ProtobufType[], nested: any) => [...acc, ...traverseTypes(nested)], []);
   } else {
     console.error("something's wrong...", current);
