@@ -58,6 +58,7 @@ export const sampleCtx: ProtoCtx = {
     SmallUser: smallUserType,
     Sports: sportsType,
   },
+  origin: {},
 };
 
 const firstNameValue: PrimitiveValue = {

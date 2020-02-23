@@ -1,7 +1,5 @@
-import { testProtoParser } from './protoParserTest';
 import { testMessageParser } from './messageParserTest';
 
-(async () => {
-  //await testProtoParser();
+(async (): Promise<void> => {
   await testMessageParser();
 })();

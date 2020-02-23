@@ -8,11 +8,9 @@ function makeMessageValue(messagevalue: MessageValue): any {
     current[name] = createMessageRecurse(value);
   });
 
-  messagevalue.oneOfFields.forEach(([name, value]) => {
-    const temp: { [key: string]: any } = {};
+  messagevalue.oneOfFields.forEach(([, value]) => {
     const fieldName = value[0];
-    temp[fieldName] = createMessageRecurse(value[1]);
-    current[name] = temp;
+    current[fieldName] = createMessageRecurse(value[1]);
   });
 
   messagevalue.repeatedFields.forEach(([name, values]) => {
@@ -46,7 +44,7 @@ function makePrimitiveValue(primitiveValue: PrimitiveValue): any {
 }
 
 function makeEnumValue(enumValue: EnumValue): any {
-  return enumValue.selected;
+  return enumValue.type.optionValues[enumValue.selected];
 }
 
 export function createMessageRecurse(protobufValue: ProtobufValue): any {
@@ -70,5 +68,8 @@ export function createMessageRecurse(protobufValue: ProtobufValue): any {
 export async function serialize(body: MessageValue, path: string): Promise<Buffer> {
   const root = await protobuf.load(path);
   const messageType = root.lookupType(body.type.name);
-  return new Buffer(messageType.encode(createMessageRecurse(body)).finish());
+  const rec = createMessageRecurse(body);
+  const buf = new Buffer(messageType.encode(messageType.create(rec)).finish());
+  console.log(buf);
+  return buf;
 }

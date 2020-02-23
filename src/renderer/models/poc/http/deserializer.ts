@@ -46,18 +46,23 @@ function handleMessage(messageType: MessageType, messageJson: { [k: string]: any
     return haha;
   });
 
-  messageType.oneOfFields.map(field => field);
-  temp['oneOfFields'] = messageType.oneOfFields.map(([largeFieldName, [[smallFieldName, value]]]) => {
-    const haha = [];
-    const largeValue: { [key: string]: any } = messageJson[largeFieldName];
-    const smallValue: { [key: string]: any } = largeValue[smallFieldName];
-    const hello: [string, ProtobufValue] = [
-      smallFieldName,
-      createMessageValue(typeNameToType(value, ctx), smallValue, ctx),
-    ];
-    haha.push([largeFieldName, hello]);
-    return haha;
-  });
+  temp['oneOfFields'] = messageType.oneOfFields
+    .map(([largeFieldName, options]) => {
+      const selectedOption = options.find(([name]) => !!messageJson[name]);
+      if (!selectedOption) {
+        console.error('The fuck?');
+        return undefined;
+      } else {
+        const [name, typeName] = selectedOption;
+        const smallValue = messageJson[name];
+        const hello: [string, ProtobufValue] = [
+          name,
+          createMessageValue(typeNameToType(typeName, ctx), smallValue, ctx),
+        ];
+        return [largeFieldName, hello];
+      }
+    })
+    .filter(a => !!a);
 
   temp['mapFields'] = messageType.mapFields.map(([fieldName, [keyType, valueTypeName]]) => {
     const haha = [];
