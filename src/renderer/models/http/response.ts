@@ -6,8 +6,10 @@ export interface Response {
   readonly body: ResponseBody;
 }
 
+export type ResponseBodyType = 'empty' | 'protobuf' | 'unknown';
+
 export interface ResponseBody {
-  type: 'empty' | 'protobuf' | 'string' | 'unknown';
+  type: ResponseBodyType;
   value: undefined | MessageValue | string;
 }
 

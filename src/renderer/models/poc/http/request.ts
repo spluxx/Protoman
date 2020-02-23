@@ -1,6 +1,7 @@
 import { RequestBuilder } from '../../http/request_builder';
 import { MessageValue, ProtoCtx } from '../../http/body/protobuf';
 import { serialize, deserialize } from './messageParser';
+import { Response, ResponseBodyType } from '../../http/response';
 
 function convertHeaders(headers: ReadonlyArray<[string, string]>): Headers {
   return headers.reduce((h, [name, value]) => {
@@ -9,12 +10,16 @@ function convertHeaders(headers: ReadonlyArray<[string, string]>): Headers {
   }, new Headers());
 }
 
-export async function protoRequest(
-  request: RequestBuilder,
-  filePath: string,
-  protoCtx: ProtoCtx,
-): Promise<MessageValue | undefined> {
-  const body = await (request.body ? serialize(request.body, filePath) : Promise.resolve(undefined));
+function unconvertHeaders(headers: Headers): ReadonlyArray<[string, string]> {
+  const h: [string, string][] = [];
+  headers.forEach((name: string, value: string) => h.push([name, value]));
+  return h;
+}
+
+export async function protoRequest(request: RequestBuilder, protoCtx: ProtoCtx): Promise<Response> {
+  const body = await (request.body
+    ? serialize(request.body, protoCtx.origin[request.body.type.name])
+    : Promise.resolve(undefined));
 
   const resp = await fetch(request.url, {
     method: request.method,
@@ -22,10 +27,30 @@ export async function protoRequest(
     headers: convertHeaders(request.headers),
   });
 
-  if (request.responseMessageName) {
-    const buf = new Uint8Array(await resp.arrayBuffer());
-    return deserialize(buf, request.responseMessageName, filePath, protoCtx);
-  } else {
-    return Promise.resolve(undefined);
+  let responseType: ResponseBodyType = 'unknown';
+  let responseBody: MessageValue | undefined = undefined;
+  const buf = new Uint8Array(await resp.arrayBuffer());
+
+  if (buf.length === 0) {
+    responseType = 'empty';
+  } else if (request.responseMessageName) {
+    responseType = 'protobuf';
+    responseBody = await deserialize(
+      buf,
+      request.responseMessageName,
+      protoCtx.origin[request.responseMessageName],
+      protoCtx,
+    );
   }
+
+  const responseHeaders = unconvertHeaders(resp.headers);
+
+  return {
+    statusCode: resp.status,
+    headers: responseHeaders,
+    body: {
+      type: responseType,
+      value: responseBody,
+    },
+  };
 }

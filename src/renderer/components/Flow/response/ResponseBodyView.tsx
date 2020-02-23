@@ -15,10 +15,6 @@ const EmptyBody: FunctionComponent<{}> = () => {
   return <div>The response has an empty body.</div>;
 };
 
-const StringBody: FunctionComponent<{ value: string }> = ({ value }) => {
-  return <div>{value}</div>;
-};
-
 const NO_OP = (): void => {
   // no_op
 };
@@ -38,8 +34,6 @@ const ResponseBodyView: FunctionComponent<Props> = ({ body }) => {
       return <EmptyBody />;
     case 'protobuf':
       return <MessageValueView value={value as MessageValue} handlers={handlers} />;
-    case 'string':
-      return <StringBody value={value as string} />;
     case 'unknown':
       return <UnknownBody />;
   }

@@ -13,6 +13,7 @@ export type Entries<T> = ReadonlyArray<Entry<T>>;
 
 export type ProtoCtx = {
   types: { [key: string]: ProtobufType };
+  origin: { [key: string]: string }; // file path
 };
 
 export function typeNameToType(name: TypeName, ctx: ProtoCtx): ProtobufType {

@@ -7,8 +7,6 @@ type Fields<T> = Array<FieldPair<T>>;
 
 // core function
 export function createMessageType(messageType: protobuf.Type): MessageType {
-  console.log(messageType);
-
   const repeatedFields: Fields<string> = [];
   const oneOfFields: Fields<Fields<string>> = [];
   const singleFields: Fields<string> = [];
@@ -23,14 +21,13 @@ export function createMessageType(messageType: protobuf.Type): MessageType {
       const map = field as protobuf.MapField;
       mapFields.push([map.name, [map.keyType, map.type]]);
     } else {
-      singleFields.push([field.name, field.type]);
+      realSingleFields.push([field.name, field.type]);
     }
   });
 
   if (messageType.oneofs) {
     messageType.oneofsArray.forEach(one => {
       //TODO : finish this part
-      console.log(one.fieldsArray);
       const options = one.fieldsArray.reduce(
         (acc, elt) => [...acc, [elt.name, elt.type] as [string, string]],
         [] as [string, string][],
@@ -48,6 +45,7 @@ export function createMessageType(messageType: protobuf.Type): MessageType {
     oneOfFields: oneOfFields,
     mapFields: mapFields,
   };
+
   return temp;
 }
 
@@ -78,22 +76,33 @@ function readProto(path: string): Promise<ProtobufType[]> {
   return protobuf.load(path).then(traverseTypes);
 }
 
-function flatten<T>(listOfList: T[][]): T[] {
-  return listOfList.reduce((longList, list) => [...longList, ...list], []);
-}
+export async function readProtos(paths: ReadonlyArray<string>): Promise<[ProtobufType[], { [key: string]: string }]> {
+  const typeLists = await Promise.all(paths.map(readProto));
+  const [types, origin] = typeLists.reduce(
+    (acc, typesFromFile, idx) => {
+      const [types, origin] = acc;
+      return [
+        [...types, ...typesFromFile],
+        typesFromFile.reduce((o, t) => {
+          o[t.name] = paths[idx];
+          return o;
+        }, origin),
+      ];
+    },
+    [[] as ProtobufType[], {} as { [key: string]: string }],
+  );
 
-export function readProtos(paths: ReadonlyArray<string>): Promise<ProtobufType[]> {
-  return Promise.all(paths.map(readProto))
-    .then(flatten)
-    .then(list => [...list, ...allPrimitiveTypes]);
+  types.concat(allPrimitiveTypes);
+  return [types, origin];
 }
 
 export async function buildContext(filepaths: ReadonlyArray<string>): Promise<ProtoCtx> {
-  const protoTypes = await readProtos(filepaths);
+  const [protoTypes, origin] = await readProtos(filepaths);
   return {
     types: protoTypes.reduce((acc, type) => {
       acc[type.name] = type;
       return acc;
     }, {} as { [key: string]: ProtobufType }),
+    origin,
   };
 }

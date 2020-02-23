@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import 'antd/dist/antd.css';
 import CollectionSider from './collection/CollectionSider';
 import { Layout } from 'antd';
-import FlowView from './flow/FlowView';
+import FlowView from './flow/FlowView/FlowView';
 import ToolBar from './toolbar/ToolBar';
 
 const TopLayout = styled(Layout)`

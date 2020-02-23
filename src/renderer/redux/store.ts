@@ -20,6 +20,8 @@ export function createDefaultFlow(): Draft<Flow> {
       body: undefined,
       responseMessageName: undefined,
     },
+    requestStatus: 'default',
+    requestError: undefined,
     response: undefined,
   };
 }
@@ -31,6 +33,7 @@ export function createDefaultCollection(): Draft<Collection> {
     buildError: undefined,
     protoCtx: {
       types: {},
+      origin: {},
     },
     messageNames: [],
     flows: [[DEFAULT_FLOW_NAME, createDefaultFlow()]],

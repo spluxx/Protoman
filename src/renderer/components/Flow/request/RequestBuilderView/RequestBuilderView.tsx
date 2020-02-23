@@ -1,11 +1,11 @@
 import React from 'react';
-import EndpointInput from './EndpointInput/EndpointInput';
+import EndpointInput from '../EndpointInput/EndpointInput';
 import { Tabs, Button } from 'antd';
-import HeaderView from '../shared/HeaderView/HeaderView';
-import BodyInput from './BodyInput/BodyInput';
+import HeaderView from '../../shared/HeaderView/HeaderView';
+import BodyInput from '../BodyInput/BodyInput';
 import styled from 'styled-components';
-import { RequestBuilder } from '../../../models/http/request_builder';
-import { ProtoCtx } from '../../../models/http/body/protobuf';
+import { RequestBuilder } from '../../../../models/http/request_builder';
+import { ProtoCtx } from '../../../../models/http/body/protobuf';
 
 const { TabPane } = Tabs;
 
@@ -32,16 +32,17 @@ type Props = {
   requestBuilder: RequestBuilder;
   protoCtx: ProtoCtx;
   messageNames: ReadonlyArray<string>;
+  onSend: () => void;
 };
 
-const RequestBuilderView: React.FunctionComponent<Props> = ({ requestBuilder, protoCtx, messageNames }) => {
+const RequestBuilderView: React.FunctionComponent<Props> = ({ requestBuilder, protoCtx, messageNames, onSend }) => {
   const { method, url, headers, body, responseMessageName } = requestBuilder;
 
   return (
     <BuilderWrapper>
       <TopBarWrapper>
         <EndpointInput method={method} url={url} />
-        <LeftMarginButton>Send</LeftMarginButton>
+        <LeftMarginButton onClick={onSend}>Send</LeftMarginButton>
       </TopBarWrapper>
       <Tabs defaultActiveKey="header" animated={false}>
         <PaddedTabPane tab="Headers" key="header">
