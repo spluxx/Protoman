@@ -50,7 +50,7 @@ function handleMessage(messageType: MessageType, messageJson: { [k: string]: any
     .map(([largeFieldName, options]) => {
       const selectedOption = options.find(([name]) => !!messageJson[name]);
       if (!selectedOption) {
-        console.error('The fuck?');
+        //TODO(Louis): catch error
         return undefined;
       } else {
         const [name, typeName] = selectedOption;

@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+enum Lab {
+    lab = 0;
+    no_lab = 1;
+}
+
+enum Time {
+    morning = 0; 
+    afternoon =1; 
+    night =2; 
+    online =3;
+}
+
+enum Grade {
+    Freshman =0;
+    Sophomore =1;
+    Junior =2; 
+    Senior =3;
+}
+
+enum Title {
+    Lecturer = 0;
+    Professor =1;
+}
+
+message Person {
+    string first_name = 1;
+    int32 age =2;
+}
+
+message Student {
+    Person person = 1;
+    Grade grade =2;
+}
+
+message Instructor {
+    Person person =1; 
+    Title title =2; 
+}
+
+
+message Class {
+    string course_name =1;
+    int32 course_number =2;
+    repeated Student students =3;
+    repeated Instructor instructors = 4;
+    Lab lab =5; 
+    oneof class_hours {
+        string hours = 6;
+        Time time =7; 
+    }
+    bool isRegistered =8;
+}
