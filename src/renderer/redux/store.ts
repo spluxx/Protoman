@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, Store } from 'redux';
 import AppReducer from './AppReducer';
 import { AppState } from '../models/AppState';
 import { Draft } from 'immer';
@@ -6,6 +6,9 @@ import { Flow } from '../models/http/flow';
 import { Collection } from '../models/Collection';
 import { Env } from '../models/Env';
 import thunk from 'redux-thunk';
+import encoding from 'text-encoding';
+
+const { TextEncoder, TextDecoder } = encoding;
 
 const DEFAULT_FLOW_NAME = 'flow1';
 const DEFAULT_COLLECTION_NAME = 'collection1';
@@ -57,8 +60,20 @@ function createDefaultAppState(): Draft<AppState> {
   };
 }
 
-const initialState: AppState = createDefaultAppState();
+function serialize(appState: AppState): Uint8Array {
+  const json = JSON.stringify(appState, null, 0);
+  return new TextEncoder().encode(json);
+}
 
-const store = createStore((s, a) => AppReducer(s || initialState, a), initialState, applyMiddleware(thunk));
+function deserialize(buf: Uint8Array): AppState {
+  return JSON.parse(new TextDecoder().decode(buf));
+}
 
-export default store;
+export function makeStore(loaded: Uint8Array | null): Store {
+  const initialState = loaded ? deserialize(loaded) : createDefaultAppState();
+  return createStore((s, a) => AppReducer(s || initialState, a), initialState, applyMiddleware(thunk));
+}
+
+export function dumpStore(store: Store): Uint8Array {
+  return serialize(store.getState());
+}

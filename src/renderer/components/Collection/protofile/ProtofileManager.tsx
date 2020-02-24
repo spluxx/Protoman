@@ -65,7 +65,6 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName, coll
   }
 
   function tryBuilding(): void {
-    console.log('yo');
     dispatch(buildProtofiles(collectionName, draft));
   }
 

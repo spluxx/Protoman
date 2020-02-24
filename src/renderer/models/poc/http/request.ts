@@ -18,8 +18,6 @@ function unconvertHeaders(headers: Headers): ReadonlyArray<[string, string]> {
 }
 
 export async function protoRequest(request: RequestBuilder, protoCtx: ProtoCtx): Promise<Response> {
-  console.log(request.body);
-
   const body = await (request.body
     ? serialize(request.body, protoCtx.origin[request.body.type.name])
     : Promise.resolve(undefined));

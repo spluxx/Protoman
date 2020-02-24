@@ -28,7 +28,8 @@
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
     "register": "^0.0.0",
-    "styled-components": "^5.0.1"
+    "styled-components": "^5.0.1",
+    "text-encoding": "^0.7.0"
   },
   "devDependencies": {
     "@types/google-protobuf": "^3.7.2",
@@ -39,6 +40,7 @@
     "@types/react-redux": "^7.1.7",
     "@types/redux": "^3.6.0",
     "@types/styled-components": "^4.4.2",
+    "@types/text-encoding": "0.0.35",
     "@typescript-eslint/eslint-plugin": "^2.19.0",
     "@typescript-eslint/parser": "^2.19.0",
     "css-loader": "^3.4.2",

@@ -70,6 +70,5 @@ export async function serialize(body: MessageValue, path: string): Promise<Buffe
   const messageType = root.lookupType(body.type.name);
   const rec = createMessageRecurse(body);
   const buf = new Buffer(messageType.encode(messageType.create(rec)).finish());
-  console.log(buf);
   return buf;
 }
