@@ -211,10 +211,10 @@ const SingleEnvVarView: React.FunctionComponent<SingleProps> = ({
       <Col span={6}>
         <Input placeholder="name" value={name} onChange={(e): void => onNameChange(e.target.value)} />
       </Col>
-      <Col span={16}>
+      <Col span={17}>
         <Input placeholder="value" value={value} onChange={(e): void => onValueChange(e.target.value)} />
       </Col>
-      <Col span={2}>
+      <Col span={1}>
         <Button shape="circle" size="small" ghost type="danger" onClick={onDelete}>
           <Icon type="delete" />
         </Button>

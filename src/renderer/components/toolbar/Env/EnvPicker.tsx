@@ -9,6 +9,8 @@ import { selectEnvNames } from '../../../redux/store';
 
 const { Option } = Select;
 
+const ENV_MODAL_WIDTH = 800;
+
 const EnvPicker: React.FunctionComponent<{}> = ({}) => {
   const [modalVisible, setModalVisible] = React.useState(false);
   const showModal = (): void => setModalVisible(true);
@@ -63,7 +65,7 @@ const EnvPicker: React.FunctionComponent<{}> = ({}) => {
         ))}
       </Select>
       {modalVisible ? (
-        <Modal visible={modalVisible} footer={null} closable={false} destroyOnClose>
+        <Modal visible={modalVisible} footer={null} closable={false} destroyOnClose width={ENV_MODAL_WIDTH}>
           <EnvEditor onCancel={closeModal} />
         </Modal>
       ) : null}
