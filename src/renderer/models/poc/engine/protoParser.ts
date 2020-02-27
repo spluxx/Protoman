@@ -9,7 +9,6 @@ function resolveTypeName(resolvedField: protobuf.FieldBase): string {
   return resolvedField.resolvedType?.fullName || resolvedField.type;
 }
 
-// core function
 export function createMessageType(messageType: protobuf.Type): MessageType {
   const repeatedFields: Fields<string> = [];
   const oneOfFields: Fields<Fields<string>> = [];
@@ -17,11 +16,10 @@ export function createMessageType(messageType: protobuf.Type): MessageType {
   const mapFields: Fields<[string, string]> = [];
 
   messageType.fieldsArray.forEach((field: protobuf.FieldBase) => {
-    //repeated
     const resolvedField = field.resolve();
-    if (field.repeated) {
-      repeatedFields.push([field.name, resolveTypeName(resolvedField)]);
-    } else if (field.map) {
+    if (resolvedField.repeated) {
+      repeatedFields.push([resolvedField.name, resolveTypeName(resolvedField)]);
+    } else if (resolvedField.map) {
       const map = field as protobuf.MapField;
       mapFields.push([map.name, [map.keyType, resolveTypeName(map)]]);
     } else {
@@ -43,11 +41,12 @@ export function createMessageType(messageType: protobuf.Type): MessageType {
     (acc, [, options]) => acc.concat(options.map(([name]) => name)),
     [] as string[],
   );
+
   const realSingleFields = singleFields.filter(([name]) => !oneOfFieldNames.includes(name));
 
   const temp: MessageType = {
     tag: 'message',
-    name: messageType.fullName, // ex) ProtoModel.Coordinates
+    name: messageType.fullName,
     singleFields: realSingleFields,
     repeatedFields: repeatedFields,
     oneOfFields: oneOfFields,
@@ -68,20 +67,23 @@ function createEnumType(enumType: protobuf.Enum): EnumType {
 }
 
 function traverseTypes(current: any): ProtobufType[] {
-  if (current instanceof protobuf.Type) {
-    return [createMessageType(current)];
-  } else if (current instanceof protobuf.Enum) {
-    return [createEnumType(current)];
-  } else if (current.nestedArray) {
-    return current.nestedArray.reduce((acc: ProtobufType[], nested: any) => [...acc, ...traverseTypes(nested)], []);
-  } else {
-    console.error("something's wrong...", current);
-    return [];
+  switch (current.constructor) {
+    case protobuf.Type:
+      return [createMessageType(current)];
+    case protobuf.Enum:
+      return [createEnumType(current)];
+    default:
+      return current.nestedArray.reduce((acc: ProtobufType[], nested: any) => [...acc, ...traverseTypes(nested)], []);
   }
 }
 
 function readProto(path: string): Promise<ProtobufType[]> {
-  return protobuf.load(path).then(traverseTypes);
+  return protobuf
+    .load(path)
+    .then(traverseTypes)
+    .catch(err => {
+      throw new Error('Protobuf cannot be read');
+    });
 }
 
 export async function readProtos(paths: ReadonlyArray<string>): Promise<[ProtobufType[], { [key: string]: string }]> {

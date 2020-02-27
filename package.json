@@ -19,6 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "antd": "^3.26.9",
+    "assert": "^2.0.0",
     "immer": "^5.3.6",
     "lodash": "^4.17.15",
     "node-fetch": "^2.6.0",
@@ -29,7 +30,8 @@
     "redux-thunk": "^2.3.0",
     "register": "^0.0.0",
     "styled-components": "^5.0.1",
-    "text-encoding": "^0.7.0"
+    "text-encoding": "^0.7.0",
+    "underscore": "^1.9.2"
   },
   "devDependencies": {
     "@types/google-protobuf": "^3.7.2",
