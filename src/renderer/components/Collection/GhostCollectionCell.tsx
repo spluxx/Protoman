@@ -1,6 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Input, Form } from 'antd';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectColNames } from '../../redux/store';
+import { validateNewCollectionName } from '../../models/Collection';
+import { createCollection } from './CollectionActions';
 
 const TableData = styled('div')`
   padding: 4px 8px;
@@ -14,14 +18,27 @@ const TitleInput = styled(Input)`
 `;
 
 type Props = {
-  onCreate: (name: string) => void;
   onCancel: () => void;
-  checkName: (name: string) => boolean;
 };
 
-const GhostCollectionCell: React.FunctionComponent<Props> = ({ onCreate, onCancel, checkName }) => {
+const GhostCollectionCell: React.FunctionComponent<Props> = ({ onCancel }) => {
+  const dispatch = useDispatch();
+
+  const colNames = useSelector(selectColNames);
+
   const [v, setV] = React.useState('');
   const [isInvalidName, setIsInvalidName] = React.useState(false);
+
+  function checkName(name: string): boolean {
+    return validateNewCollectionName(name, colNames);
+  }
+
+  function handleCreate(name: string): void {
+    if (checkName(name)) {
+      dispatch(createCollection(name));
+      onCancel();
+    }
+  }
 
   return (
     <TableData>
@@ -45,7 +62,7 @@ const GhostCollectionCell: React.FunctionComponent<Props> = ({ onCreate, onCance
                 break;
               case 13: // enter
                 if (!isInvalidName) {
-                  onCreate(v);
+                  handleCreate(v);
                 }
             }
           }}

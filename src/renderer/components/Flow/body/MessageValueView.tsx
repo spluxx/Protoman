@@ -144,7 +144,7 @@ const PrimitiveValueView: FunctionComponent<PVVProps> = ({ editable, value, hand
       size="small"
       addonAfter={<LightText>{type.name}</LightText>}
       readOnly={!editable}
-      defaultValue={v}
+      value={v}
       style={{ width: VALUE_INPUT_WIDTH }}
       onChange={(e): void => handlers.valueChange('', e.target.value)}
     />
@@ -166,12 +166,7 @@ const EnumValueView: FunctionComponent<EVVProps> = ({ editable, value, handlers 
   };
 
   return editable ? (
-    <Select
-      defaultValue={selected}
-      style={style}
-      size="small"
-      onChange={(s: string): void => handlers.valueChange('', s)}
-    >
+    <Select value={selected} style={style} size="small" onChange={(s: string): void => handlers.valueChange('', s)}>
       {options.map((option, idx) => (
         <Select.Option key={idx} value={option}>
           {option}
@@ -180,7 +175,7 @@ const EnumValueView: FunctionComponent<EVVProps> = ({ editable, value, handlers 
     </Select>
   ) : (
     <Select
-      defaultValue={selected}
+      value={selected}
       open={false} // block
       style={style}
       size="small"
@@ -286,7 +281,7 @@ const OneOfFieldView: FunctionComponent<OFVProps> = ({
       <FieldName>{fieldName}</FieldName>
       <span>: </span>
       <Select
-        defaultValue={name}
+        value={name}
         size="small"
         style={{ width: KEY_INPUT_WIDTH }}
         onChange={(s: string): void => handlers.fieldChange('', s)}
@@ -319,7 +314,7 @@ const MapFieldView: FunctionComponent<MFVProps> = ({ editable, fieldName, kvPair
       {kvPairs.map(([k, v], idx) => (
         <IndentationBlock key={idx}>
           <Input
-            defaultValue={k}
+            value={k}
             style={{ width: KEY_INPUT_WIDTH, marginRight: 4 }}
             size="small"
             onChange={(e): void => handlers.valueChange(`${idx.toString()}/0/`, e.target.value)}

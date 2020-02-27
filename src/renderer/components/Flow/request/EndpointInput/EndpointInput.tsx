@@ -7,9 +7,10 @@ import { changeURL, changeMethod } from './EndpointInputActions';
 type Props = {
   method: HttpMethod;
   url: string;
+  onSend: () => void;
 };
 
-const EndpointInput: React.FunctionComponent<Props> = ({ method, url }) => {
+const EndpointInput: React.FunctionComponent<Props> = ({ method, url, onSend }) => {
   const dispatch = useDispatch();
 
   function handleURLChange(url: string): void {
@@ -34,6 +35,7 @@ const EndpointInput: React.FunctionComponent<Props> = ({ method, url }) => {
       value={url}
       placeholder="http://localhost:8000/api/hello"
       onChange={(e): void => handleURLChange(e.target.value)}
+      onPressEnter={onSend}
     />
   );
 };

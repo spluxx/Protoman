@@ -3,10 +3,9 @@ import { Select, Button, Icon, Modal, Divider, message } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from '../../../models/AppState';
 import { EnvEditor } from './EnvEditor';
-import { getByKey } from '../../../utils/utils';
-import { Draft } from 'immer';
-import { Env } from '../../../models/Env';
-import { switchEnv, updateEnv, createEnv, deleteEnv } from './EnvPickerActions';
+import { validateNewEnvName } from '../../../models/Env';
+import { createEnv, switchEnv } from './EnvPickerActions';
+import { selectEnvNames } from '../../../redux/store';
 
 const { Option } = Select;
 
@@ -16,39 +15,24 @@ const EnvPicker: React.FunctionComponent<{}> = ({}) => {
   const closeModal = (): void => setModalVisible(false);
 
   const currentEnv = useSelector((s: AppState) => s.currentEnv);
+  const envNames = useSelector(selectEnvNames);
   const envList = useSelector((s: AppState) => s.envList);
-
-  const env = getByKey(envList, currentEnv);
 
   const dispatch = useDispatch();
 
-  function handleEnvChange(newEnvName: string, newEnv: Draft<Env>): void {
-    dispatch(updateEnv(currentEnv, newEnvName, newEnv));
-    closeModal();
-  }
-
-  function handleEnvSwitch(newEnvName: string): void {
-    dispatch(switchEnv(newEnvName));
-  }
-
-  function handleEnvDelete(envName: string): void {
-    if (envList.length > 1) {
-      dispatch(deleteEnv(envName));
-      closeModal();
-    } else {
-      message.error("Can't delete the last environment");
-    }
-  }
-
-  function validateName(name: string): boolean {
-    return name.length > 0 && (name === currentEnv || envList.map(([n]): string => n).every(n => n !== name));
+  function checkName(name: string): boolean {
+    return validateNewEnvName(name, envNames);
   }
 
   function createNewEnv(): void {
     const tmpName = 'env';
     let tmpNameIdx = 1;
-    while (!validateName(`${tmpName}${tmpNameIdx}`)) tmpNameIdx++;
+    while (!checkName(`${tmpName}${tmpNameIdx}`)) tmpNameIdx++;
     dispatch(createEnv(`${tmpName}${tmpNameIdx}`));
+  }
+
+  function handleEnvSwitch(newEnvName: string): void {
+    dispatch(switchEnv(newEnvName));
   }
 
   return (
@@ -78,16 +62,9 @@ const EnvPicker: React.FunctionComponent<{}> = ({}) => {
           <Option key={name}>{name}</Option>
         ))}
       </Select>
-      {env ? (
+      {modalVisible ? (
         <Modal visible={modalVisible} footer={null} closable={false} destroyOnClose>
-          <EnvEditor
-            envName={currentEnv}
-            env={env}
-            onConfirm={handleEnvChange}
-            onCancel={closeModal}
-            checkName={validateName}
-            onDeleteEnv={handleEnvDelete}
-          />
+          <EnvEditor onCancel={closeModal} />
         </Modal>
       ) : null}
     </>

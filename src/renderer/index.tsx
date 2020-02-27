@@ -26,10 +26,6 @@ function initialize(store: Store): void {
       ipcRenderer.send(ipcChannels.SAVE, [dumpStore(store)]);
     }, DEBOUNCE_MS);
   });
-
-  ipcRenderer.on(ipcChannels.SAVE, event => {
-    event.sender.send(ipcChannels.SAVE, [dumpStore(store)]);
-  });
 }
 
 ipcRenderer.on(ipcChannels.LOAD_MOST_RECENT, (event, args) => {

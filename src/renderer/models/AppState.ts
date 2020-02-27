@@ -11,7 +11,10 @@ export interface AppState {
   readonly currentEnv: string;
 
   readonly collections: ReadonlyArray<[string, Collection]>;
+
   readonly openCollections: ReadonlyArray<string>;
+  readonly fmOpenCollection: string | undefined;
+
   readonly currentCollection: string;
   readonly currentFlow: string;
 }

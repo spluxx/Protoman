@@ -2,10 +2,10 @@ import React from 'react';
 import RequestBuilder from '../request/RequestBuilderView/RequestBuilderView';
 import ResponseView from '../response/ResponseView';
 import styled from 'styled-components';
-import { AppState } from '../../../models/AppState';
 import { useSelector, useDispatch } from 'react-redux';
-import { getByKey } from '../../../utils/utils';
 import { sendRequest } from './FlowViewActions';
+import { selectCurrentColWithName, selectCurrentFlowWithName } from '../../../redux/store';
+import { Alert, Spin } from 'antd';
 
 const Wrapper = styled('div')`
   padding: 0px;
@@ -18,17 +18,13 @@ const Spacing = styled('div')`
 const FlowView: React.FunctionComponent<{}> = ({}) => {
   const dispatch = useDispatch();
 
-  const collections = useSelector((s: AppState) => s.collections);
-  const collectionName = useSelector((s: AppState) => s.currentCollection);
-  const flowName = useSelector((s: AppState) => s.currentFlow);
+  const col = useSelector(selectCurrentColWithName);
+  const flo = useSelector(selectCurrentFlowWithName);
 
-  const collection = getByKey(collections, collectionName);
+  if (!col || !flo) return null;
 
-  if (!collection) return null;
-
-  const flow = getByKey(collection.flows, flowName);
-
-  if (!flow) return null;
+  const [collectionName, collection] = col;
+  const [flowName, flow] = flo;
 
   const { requestBuilder, requestStatus, requestError, response } = flow;
   const { protoCtx } = collection;
@@ -46,6 +42,13 @@ const FlowView: React.FunctionComponent<{}> = ({}) => {
         onSend={send}
       />
       <Spacing />
+
+      {requestStatus === 'failure' ? (
+        <Alert message={requestError?.message || ' '} type="error" closeText="Close" />
+      ) : null}
+
+      {requestStatus === 'sending' ? <Spin size="large" tip="Sending request..." /> : null}
+
       {response ? <ResponseView response={response} /> : null}
     </Wrapper>
   );

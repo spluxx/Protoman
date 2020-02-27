@@ -1,12 +1,13 @@
 import { createStore, applyMiddleware, Store } from 'redux';
 import AppReducer from './AppReducer';
 import { AppState } from '../models/AppState';
-import { Draft } from 'immer';
+import produce, { Draft } from 'immer';
 import { Flow } from '../models/http/flow';
 import { Collection } from '../models/Collection';
 import { Env } from '../models/Env';
 import thunk from 'redux-thunk';
 import encoding from 'text-encoding';
+import { getByKey, getEntryByKey } from '../utils/utils';
 
 const { TextEncoder, TextDecoder } = encoding;
 
@@ -20,7 +21,11 @@ export function createDefaultFlow(): Draft<Flow> {
       method: 'GET',
       url: '',
       headers: [],
-      body: undefined,
+      bodyType: 'none',
+      bodies: {
+        none: undefined,
+        protobuf: undefined,
+      },
       responseMessageName: undefined,
     },
     requestStatus: 'default',
@@ -57,11 +62,68 @@ function createDefaultAppState(): Draft<AppState> {
     currentCollection: DEFAULT_COLLECTION_NAME,
     currentFlow: DEFAULT_FLOW_NAME,
     openCollections: [DEFAULT_COLLECTION_NAME],
+    fmOpenCollection: undefined,
   };
 }
 
+/** Selectors */
+
+export function selectCurrentCol(s: AppState): Collection | undefined {
+  return getByKey(s.collections, s.currentCollection);
+}
+
+export function selectCurrentFlow(s: AppState): Flow | undefined {
+  return getByKey(selectCurrentCol(s)?.flows, s.currentFlow);
+}
+
+export function selectCurrentEnv(s: AppState): Env | undefined {
+  return getByKey(s.envList, s.currentEnv);
+}
+
+export function selectCurrentColWithName(s: AppState): [string, Collection] | undefined {
+  return getEntryByKey(s.collections, s.currentCollection);
+}
+
+export function selectCurrentFlowWithName(s: AppState): [string, Flow] | undefined {
+  return getEntryByKey(selectCurrentCol(s)?.flows, s.currentFlow);
+}
+
+export function selectCurrentEnvWithName(s: AppState): [string, Env] | undefined {
+  return getEntryByKey(s.envList, s.currentEnv);
+}
+
+export function selectColNames(s: AppState): string[] {
+  return s.collections.map(([n]) => n);
+}
+
+export function selectEnvNames(s: AppState): string[] {
+  return s.envList.map(([n]) => n);
+}
+
+/** Serialize/Deserialize */
+
+function preprocess(appState: AppState): AppState {
+  function procFlow(flow: Draft<Flow>): Draft<Flow> {
+    flow.requestError = undefined;
+    flow.requestStatus = 'default';
+    return flow;
+  }
+
+  function procCol(collection: Draft<Collection>): Draft<Collection> {
+    collection.buildError = undefined;
+    collection.buildStatus = 'default';
+    collection.flows = collection.flows.map(([fn, f]) => [fn, procFlow(f)]);
+    return collection;
+  }
+
+  return produce(appState, draft => {
+    draft.collections = draft.collections.map(([cn, c]) => [cn, procCol(c)]);
+    return draft;
+  });
+}
+
 function serialize(appState: AppState): Uint8Array {
-  const json = JSON.stringify(appState, null, 0);
+  const json = JSON.stringify(preprocess(appState), null, 0);
   return new TextEncoder().encode(json);
 }
 

@@ -51,6 +51,19 @@ type DeleteFlow = {
 
 const DELETE_FLOW = 'DELETE_FLOW';
 
+type OpenFM = {
+  type: 'OPEN_FM';
+  collectionName: string;
+};
+
+const OPEN_FM = 'OPEN_FM';
+
+type CloseFM = {
+  type: 'CLOSE_FM';
+};
+
+const CLOSE_FM = 'CLOSE_FM';
+
 export const CollectionActionTypes = [
   CREATE_COLLECTION,
   CHANGE_COLLECTION_NAME,
@@ -59,6 +72,8 @@ export const CollectionActionTypes = [
   CREATE_FLOW,
   SELECT_FLOW,
   DELETE_FLOW,
+  OPEN_FM,
+  CLOSE_FM,
 ];
 export type CollectionAction =
   | CreateCollection
@@ -67,7 +82,9 @@ export type CollectionAction =
   | ToggleCollections
   | CreateFlow
   | SelectFlow
-  | DeleteFlow;
+  | DeleteFlow
+  | OpenFM
+  | CloseFM;
 
 export function createCollection(collectionName: string): CreateCollection {
   return {
@@ -119,5 +136,18 @@ export function deleteFlow(collectionName: string, flowName: string): DeleteFlow
     type: DELETE_FLOW,
     collectionName,
     flowName,
+  };
+}
+
+export function openFM(collectionName: string): OpenFM {
+  return {
+    type: OPEN_FM,
+    collectionName,
+  };
+}
+
+export function closeFM(): CloseFM {
+  return {
+    type: CLOSE_FM,
   };
 }

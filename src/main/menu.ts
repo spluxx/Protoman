@@ -1,5 +1,4 @@
 import { Menu, app } from 'electron';
-import { triggerSave } from './events';
 const isMac = process.platform === 'darwin';
 
 export function makeMenu(): Menu {
@@ -24,28 +23,22 @@ export function makeMenu(): Menu {
       : []) as any), // idk why but typescript trips up with this
     {
       label: 'File',
-      submenu: [
-        {
-          label: 'Save',
-          click: triggerSave,
-          accelerator: 'CommandOrControl+S',
-        },
-        ...(isMac ? [] : [{ role: 'quit' }]),
-      ],
+      submenu: [...(isMac ? [] : [{ role: 'quit' }])],
     },
     {
       label: 'View',
       submenu: [
-        { role: 'reload' },
-        { role: 'forcereload' },
-        { role: 'toggledevtools' },
-        { type: 'separator' },
+        { role: 'resetzoom' },
         { role: 'resetzoom' },
         { role: 'zoomin' },
         { role: 'zoomout' },
         { type: 'separator' },
         { role: 'togglefullscreen' },
       ],
+    },
+    {
+      label: 'Dev',
+      submenu: [{ role: 'toggledevtools' }, { role: 'reload' }],
     },
   ]);
 }

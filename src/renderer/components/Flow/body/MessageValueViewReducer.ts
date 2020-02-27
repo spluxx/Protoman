@@ -16,7 +16,7 @@ import { getByKey, getEntryByKey } from '../../../utils/utils';
 
 function extractBody(d: Draft<AppState>): Draft<MessageValue> | undefined {
   const flow = getByKey(getByKey(d.collections, d.currentCollection)?.flows, d.currentFlow);
-  return flow?.requestBuilder?.body;
+  return flow?.requestBuilder?.bodies?.protobuf;
 }
 
 export default function MessageValueViewReducer(s: AppState, action: AnyAction): AppState {

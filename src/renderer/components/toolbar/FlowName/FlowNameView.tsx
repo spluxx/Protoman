@@ -1,10 +1,10 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { AppState } from '../../../models/AppState';
 import { Form, Input, Button, Icon } from 'antd';
 import styled from 'styled-components';
-import { getByKey } from '../../../utils/utils';
 import { changeFlowName } from './FlowNameViewActions';
+import { selectCurrentCol } from '../../../redux/store';
+import { AppState } from '../../../models/AppState';
 
 const Title = styled('span')`
   font-size: 16pt;
@@ -34,19 +34,17 @@ const FlowNameView: React.FunctionComponent<Props> = ({}) => {
 
   const [isInvalidName, setIsInvalidName] = React.useState(false);
 
-  const collections = useSelector((s: AppState) => s.collections);
-  const collectionName = useSelector((s: AppState) => s.currentCollection);
+  const collection = useSelector(selectCurrentCol);
   const flowName = useSelector((s: AppState) => s.currentFlow);
+
   React.useEffect(() => {
-    setDraftName(flowName);
+    if (flowName) {
+      setDraftName(flowName);
+    }
   }, [flowName]);
 
-  const flows = getByKey(collections, collectionName)?.flows;
-
-  if (!flows) return null;
-
   function checkName(newName: string): boolean {
-    return newName === flowName || !flows?.map(([n]): string => n)?.includes(newName);
+    return newName === flowName || !collection?.flows?.map(([n]): string => n)?.includes(newName);
   }
 
   return (

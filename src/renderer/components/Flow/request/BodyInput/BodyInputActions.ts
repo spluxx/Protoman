@@ -12,8 +12,15 @@ type SelectResponseMessageName = {
 
 const SELECT_RESPONSE_MESSAGE_NAME = 'SELECT_RESPONSE_MESSAGE_NAME';
 
-export const BodyInputActionTypes = [SELECT_REQUEST_MESSAGE_NAME, SELECT_RESPONSE_MESSAGE_NAME];
-export type BodyInputActions = SelectRequestMessageName | SelectResponseMessageName;
+type SelectBodyType = {
+  type: 'SELECT_BODY_TYPE';
+  bodyType: string;
+};
+
+const SELECT_BODY_TYPE = 'SELECT_BODY_TYPE';
+
+export const BodyInputActionTypes = [SELECT_REQUEST_MESSAGE_NAME, SELECT_RESPONSE_MESSAGE_NAME, SELECT_BODY_TYPE];
+export type BodyInputActions = SelectRequestMessageName | SelectResponseMessageName | SelectBodyType;
 
 export function selectRequestMessageName(name: string): SelectRequestMessageName {
   return {
@@ -26,5 +33,12 @@ export function selectResponseMessageName(name: string): SelectResponseMessageNa
   return {
     type: SELECT_RESPONSE_MESSAGE_NAME,
     name,
+  };
+}
+
+export function selectBodyType(bodyType: string): SelectBodyType {
+  return {
+    type: SELECT_BODY_TYPE,
+    bodyType,
   };
 }

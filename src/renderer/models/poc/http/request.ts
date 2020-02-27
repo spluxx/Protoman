@@ -18,9 +18,20 @@ function unconvertHeaders(headers: Headers): ReadonlyArray<[string, string]> {
 }
 
 export async function protoRequest(request: RequestBuilder, protoCtx: ProtoCtx): Promise<Response> {
-  const body = await (request.body
-    ? serialize(request.body, protoCtx.origin[request.body.type.name])
-    : Promise.resolve(undefined));
+  const { bodyType, bodies } = request;
+
+  let body: Uint8Array | undefined;
+  switch (bodyType) {
+    case 'protobuf':
+      if (bodies.protobuf) {
+        body = await serialize(bodies.protobuf, protoCtx.origin[bodies.protobuf.type.name]);
+      } else {
+        throw new Error('Internal Error');
+      }
+      break;
+    case 'none':
+      body = undefined;
+  }
 
   const resp = await fetch(request.url, {
     method: request.method,

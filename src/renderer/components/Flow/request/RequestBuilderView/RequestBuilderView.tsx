@@ -36,12 +36,12 @@ type Props = {
 };
 
 const RequestBuilderView: React.FunctionComponent<Props> = ({ requestBuilder, protoCtx, messageNames, onSend }) => {
-  const { method, url, headers, body, responseMessageName } = requestBuilder;
+  const { method, url, headers, bodyType, bodies, responseMessageName } = requestBuilder;
 
   return (
     <BuilderWrapper>
       <TopBarWrapper>
-        <EndpointInput method={method} url={url} />
+        <EndpointInput method={method} url={url} onSend={onSend} />
         <LeftMarginButton onClick={onSend}>Send</LeftMarginButton>
       </TopBarWrapper>
       <Tabs defaultActiveKey="header" animated={false}>
@@ -50,7 +50,8 @@ const RequestBuilderView: React.FunctionComponent<Props> = ({ requestBuilder, pr
         </PaddedTabPane>
         <PaddedTabPane tab="Body" key="body">
           <BodyInput
-            body={body}
+            bodyType={bodyType}
+            bodies={bodies}
             protoCtx={protoCtx}
             messageNames={messageNames}
             responseMessageName={responseMessageName}

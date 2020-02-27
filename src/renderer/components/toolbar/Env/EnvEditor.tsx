@@ -1,17 +1,12 @@
 import React from 'react';
-import { Env } from '../../../models/Env';
-import { Button, Row, Col, Input, Divider, Icon, Form } from 'antd';
+import { Env, validateNewEnvName } from '../../../models/Env';
+import { Button, Row, Col, Input, Divider, Icon, Form, message } from 'antd';
 import styled from 'styled-components';
 import { Draft } from 'immer';
-
-type Props = {
-  envName: string;
-  env: Env;
-  checkName: (name: string) => boolean;
-  onConfirm: (updatedName: string, updatedEnv: Draft<Env>) => void;
-  onCancel: () => void;
-  onDeleteEnv: (name: string) => void;
-};
+import { useDispatch, useSelector } from 'react-redux';
+import { updateEnv, deleteEnv } from './EnvPickerActions';
+import { selectCurrentEnv, selectEnvNames } from '../../../redux/store';
+import { AppState } from '../../../models/AppState';
 
 const Wrapper = styled('div')`
   padding: 0;
@@ -47,27 +42,28 @@ const TitleWrapper = styled('div')`
   align-items: center;
 `;
 
-export const EnvEditor: React.FunctionComponent<Props> = ({
-  envName,
-  env,
-  checkName,
-  onConfirm,
-  onCancel,
-  onDeleteEnv,
-}) => {
-  const [draftName, setDraftName] = React.useState(envName);
+type Props = {
+  onCancel: () => void;
+};
+
+export const EnvEditor: React.FunctionComponent<Props> = ({ onCancel }) => {
+  const dispatch = useDispatch();
+
+  const envNames = useSelector(selectEnvNames);
+  const envName = useSelector((s: AppState) => s.currentEnv);
+  const env = useSelector(selectCurrentEnv);
 
   const [isEditingName, setIsEditingName] = React.useState(false);
   const startEditing = (): void => setIsEditingName(true);
   const stopEditing = (): void => setIsEditingName(false);
 
-  const [isInvalidName, setIsInvalidName] = React.useState(false);
-
   const [draft, setDraft] = React.useState<Draft<Env>>({ vars: [] });
+  const [draftName, setDraftName] = React.useState('');
+  const [isInvalidName, setIsInvalidName] = React.useState(false);
 
   React.useEffect(() => {
     const draftVars: [string, string][] = [];
-    env.vars.forEach(([k, v]) => draftVars.push([k, v]));
+    env?.vars?.forEach(([k, v]) => draftVars.push([k, v]));
     setDraft({ vars: draftVars });
   }, [env]);
 
@@ -93,6 +89,24 @@ export const EnvEditor: React.FunctionComponent<Props> = ({
   function createEntry(): void {
     draft.vars.splice(draft.vars.length, 0, ['', '']);
     setDraft({ vars: [...draft.vars] });
+  }
+
+  function checkName(name: string): boolean {
+    return validateNewEnvName(name, envNames);
+  }
+
+  function handleEnvChange(): void {
+    dispatch(updateEnv(envName, draftName, draft));
+    onCancel();
+  }
+
+  function handleEnvDelete(): void {
+    if (envNames.length > 1) {
+      dispatch(deleteEnv(envName));
+      onCancel();
+    } else {
+      message.error("Can't delete the last environment");
+    }
   }
 
   return (
@@ -129,7 +143,7 @@ export const EnvEditor: React.FunctionComponent<Props> = ({
                 shape="circle"
                 type="danger"
                 size="small"
-                onClick={(): void => onDeleteEnv(envName)}
+                onClick={handleEnvDelete}
                 style={{ marginLeft: 4 }}
               >
                 <Icon type="delete" />
@@ -162,7 +176,7 @@ export const EnvEditor: React.FunctionComponent<Props> = ({
           ghost
           onClick={(): void => {
             if (!isInvalidName) {
-              onConfirm(draftName, draft);
+              handleEnvChange();
             }
           }}
           type="primary"

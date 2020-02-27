@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, message, Collapse, Modal } from 'antd';
+import { Layout, Collapse, Modal } from 'antd';
 import styled from 'styled-components';
 import CollectionCell from './CollectionCell';
 import { useSelector, useDispatch } from 'react-redux';
@@ -7,17 +7,19 @@ import { AppState } from '../../models/AppState';
 import NewCollectionCell from './NewCollectionCell';
 import {
   createCollection,
-  deleteCollection,
-  changeCollectionName,
   toggleCollections,
   selectFlow,
   deleteFlow,
   createFlow,
+  closeFM,
+  openFM,
 } from './CollectionActions';
 import GhostCollectionCell from './GhostCollectionCell';
 import FlowList from './FlowList';
 import { getByKey } from '../../utils/utils';
 import ProtofileManager from './protofile/ProtofileManager';
+import { selectColNames } from '../../redux/store';
+import { validateNewCollectionName } from '../../models/Collection';
 
 const { Panel } = Collapse;
 
@@ -55,94 +57,24 @@ const LeanCollapse = styled(Collapse)`
 
 export const COLLECTION_SIDER_WIDTH = 230;
 
-const MAX_NAME_LENGTH = 36;
-
 const CollectionSider: React.FunctionComponent<{}> = ({}) => {
   const dispatch = useDispatch();
 
   const collections = useSelector((s: AppState) => s.collections);
   const openCollections = useSelector((s: AppState) => s.openCollections);
-  const currentCollection = useSelector((s: AppState) => s.currentCollection);
-  const currentFlow = useSelector((s: AppState) => s.currentFlow);
-
-  const [collapsed, setCollapsed] = React.useState(false);
-
-  const [openFM, setOpenFM] = React.useState<string | undefined>(undefined);
-  const fmCollection = openFM ? getByKey(collections, openFM) : undefined;
+  const fmOpenCollection = useSelector((s: AppState) => s.fmOpenCollection);
 
   const [isCreatingCol, setIsCreatingCol] = React.useState(false);
   const showGhostCol = (): void => setIsCreatingCol(true);
   const hideGhostCol = (): void => setIsCreatingCol(false);
 
-  function validateNewName(name: string): boolean {
-    return MAX_NAME_LENGTH > name.length && name.length > 0 && !collections.map(([n]) => n).includes(name);
-  }
-
-  function validateName(newName: string, currentName: string): boolean {
-    return currentName === newName || validateNewName(newName);
-  }
-
-  function validateFlowName(collectionName: string, flowName: string): boolean {
-    return !getByKey(collections, collectionName)
-      ?.flows?.map(([n]) => n)
-      ?.includes(flowName);
-  }
-
-  function handleCreate(name: string): void {
-    if (validateNewName(name)) {
-      dispatch(createCollection(name));
-      hideGhostCol();
-    }
-  }
-
-  function handleDelete(name: string): void {
-    if (collections.length > 1) {
-      dispatch(deleteCollection(name));
-    } else {
-      message.error("Can't delete the last collection");
-    }
-  }
-
-  function handleNameChange(newName: string, name: string): void {
-    if (validateName(newName, name)) {
-      dispatch(changeCollectionName(name, newName));
-    }
-  }
-
   function handleToggleOpen(openCollections: string[]): void {
     dispatch(toggleCollections(openCollections));
   }
 
-  function handleSelection(collectionName: string, flowName: string): void {
-    dispatch(selectFlow(collectionName, flowName));
-  }
-
-  function handleCreateFlow(collectionName: string): void {
-    const tmpName = 'flow';
-    let tmpNameIdx = 1;
-    while (!validateFlowName(collectionName, `${tmpName}${tmpNameIdx}`)) tmpNameIdx++;
-    dispatch(createFlow(collectionName, `${tmpName}${tmpNameIdx}`));
-  }
-
-  function handleDeleteFlow(collectionName: string, flowName: string): void {
-    const flowCount = getByKey(collections, collectionName)?.flows?.length || 0;
-    if (flowCount > 1) {
-      dispatch(deleteFlow(collectionName, flowName));
-    } else {
-      message.error("Can't delete the last flow");
-    }
-  }
-
   return (
-    <Sider
-      width={COLLECTION_SIDER_WIDTH}
-      // collapsible
-      collapsed={collapsed}
-      onCollapse={setCollapsed}
-      collapsedWidth={30}
-      theme="light"
-    >
-      <Wrapper hidden={collapsed}>
+    <Sider width={COLLECTION_SIDER_WIDTH} theme="light">
+      <Wrapper>
         <Header>
           <Title>Collections</Title>
         </Header>
@@ -158,45 +90,21 @@ const CollectionSider: React.FunctionComponent<{}> = ({}) => {
             }
           }}
         >
-          {collections.map(([name, col]) => {
-            const header = (
-              <CollectionCell
-                name={name}
-                collection={col}
-                checkName={(newName): boolean => validateName(newName, name)}
-                onOpenFileManager={(): void => setOpenFM(name)}
-                onChangeColName={(newName): void => handleNameChange(newName, name)}
-                onDeleteCollection={(): void => handleDelete(name)}
-              />
-            );
+          {collections.map(([name]) => {
+            const header = <CollectionCell collectionName={name} />;
             return (
               <Panel key={name} header={header}>
-                <FlowList
-                  isCurrentCollection={name === currentCollection}
-                  currentFlow={currentFlow}
-                  flowNames={col.flows.map(([n]) => n)}
-                  onSelection={(flowName): void => handleSelection(name, flowName)}
-                  onDelete={(flowName): void => handleDeleteFlow(name, flowName)}
-                  onCreate={(): void => handleCreateFlow(name)}
-                />
+                <FlowList collectionName={name} />
               </Panel>
             );
           })}
-          {isCreatingCol ? (
-            <GhostCollectionCell onCreate={handleCreate} onCancel={hideGhostCol} checkName={validateNewName} />
-          ) : null}
+          {isCreatingCol ? <GhostCollectionCell onCancel={hideGhostCol} /> : null}
           <NewCollectionCell onCreate={showGhostCol} />
         </LeanCollapse>
       </Wrapper>
 
-      <Modal visible={!!openFM} footer={null} closable={false} destroyOnClose>
-        {openFM && fmCollection ? (
-          <ProtofileManager
-            collectionName={openFM}
-            collection={fmCollection}
-            onFinish={(): void => setOpenFM(undefined)}
-          />
-        ) : null}
+      <Modal visible={!!fmOpenCollection} footer={null} closable={false} destroyOnClose>
+        {fmOpenCollection ? <ProtofileManager collectionName={fmOpenCollection} /> : null}
       </Modal>
     </Sider>
   );

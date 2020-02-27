@@ -5,10 +5,12 @@ import { RadioChangeEvent } from 'antd/lib/radio';
 import MessageValueView, { dispatchingHandler } from '../../body/MessageValueView';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
-import { selectRequestMessageName, selectResponseMessageName } from './BodyInputActions';
+import { selectRequestMessageName, selectResponseMessageName, selectBodyType } from './BodyInputActions';
+import { RequestBody, BodyType } from '../../../../models/http/request_builder';
 
 type Props = {
-  body: MessageValue | undefined;
+  bodyType: BodyType;
+  bodies: RequestBody;
   protoCtx: ProtoCtx;
   messageNames: ReadonlyArray<string>;
   responseMessageName: string | undefined;
@@ -19,16 +21,11 @@ const BodyWrapper = styled('div')`
   margin-top: 8px;
 `;
 
-const BodyInput: FunctionComponent<Props> = ({ body, protoCtx, messageNames, responseMessageName }) => {
-  const [radioValue, setRadioValue] = React.useState(body ? 'protobuf' : 'none');
-  React.useEffect(() => {
-    setRadioValue(body ? 'protobuf' : 'none');
-  }, [body]);
-
+const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies, protoCtx, messageNames, responseMessageName }) => {
   const dispatch = useDispatch();
 
   function onRadioChange(e: RadioChangeEvent): void {
-    setRadioValue(e.target.value);
+    dispatch(selectBodyType(e.target.value));
   }
 
   function onSelectRequestMsg(msgName: string): void {
@@ -41,16 +38,19 @@ const BodyInput: FunctionComponent<Props> = ({ body, protoCtx, messageNames, res
 
   const handlers = dispatchingHandler(dispatch, protoCtx);
 
-  return (
-    <div>
-      <Radio.Group defaultValue="none" value={radioValue} onChange={onRadioChange}>
-        <Radio value="none">None</Radio>
-        <Radio value="protobuf">Protobuf</Radio>
-      </Radio.Group>
-      <BodyWrapper hidden={radioValue === 'none'}>
+  function renderBody(): React.ReactNode {
+    return bodyType === 'none' ? (
+      <div />
+    ) : bodyType === 'protobuf' ? (
+      <>
         <div style={{ marginBottom: 8 }}>
           <span>Request Message: </span>
-          <Select value={body && body.type.name} onChange={onSelectRequestMsg} size="small" style={{ width: 230 }}>
+          <Select
+            value={bodies.protobuf && bodies.protobuf.type.name}
+            onChange={onSelectRequestMsg}
+            size="small"
+            style={{ width: 230 }}
+          >
             {messageNames.map(messageName => (
               <Select.Option key={messageName}>{messageName}</Select.Option>
             ))}
@@ -70,8 +70,18 @@ const BodyInput: FunctionComponent<Props> = ({ body, protoCtx, messageNames, res
             ))}
           </Select>
         </div>
-        {body ? <MessageValueView value={body} handlers={handlers} editable /> : undefined}
-      </BodyWrapper>
+        {bodies.protobuf ? <MessageValueView value={bodies.protobuf} handlers={handlers} editable /> : null}
+      </>
+    ) : null;
+  }
+
+  return (
+    <div>
+      <Radio.Group defaultValue="none" value={bodyType} onChange={onRadioChange}>
+        <Radio value="none">None</Radio>
+        <Radio value="protobuf">Protobuf</Radio>
+      </Radio.Group>
+      <BodyWrapper>{renderBody()}</BodyWrapper>
     </div>
   );
 };

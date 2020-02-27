@@ -1,15 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Typography, List, Button, Icon, Row, Col, Checkbox, Divider } from 'antd';
-import { useDispatch } from 'react-redux';
+import { Typography, List, Button, Icon, Row, Col, Checkbox, Divider, Alert, message } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
 import { buildProtofiles } from './ProtofileManagerActions';
-import { Collection } from '../../../models/Collection';
-
-type Props = {
-  collectionName: string;
-  collection: Collection;
-  onFinish: () => void;
-};
+import { AppState } from '../../../models/AppState';
+import { getByKey } from '../../../utils/utils';
+import { closeFM } from '../CollectionActions';
 
 const Wrapper = styled('div')`
   padding: 0px;
@@ -20,19 +16,30 @@ const Scrollable = styled('div')`
   overflow: auto;
 `;
 
-const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName, collection, onFinish }) => {
-  const filepickerRef = React.useRef<HTMLInputElement>(null);
+type Props = {
+  collectionName: string;
+};
 
-  const { protoFilepaths: filepaths, buildStatus, buildError } = collection;
+const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName }) => {
+  const dispatch = useDispatch();
 
-  const [draft, setDraft] = React.useState([...filepaths]);
-  React.useEffect(() => {
-    setDraft([...filepaths]);
-  }, [filepaths]);
+  const collection = useSelector((s: AppState) => getByKey(s.collections, collectionName));
+  const filepaths = collection?.protoFilepaths;
+  const buildStatus = collection?.buildStatus;
+  const buildError = collection?.buildError;
 
   const [selected, setSelected] = React.useState<string[]>([]);
+  const [draft, setDraft] = React.useState<string[]>([]);
 
-  const dispatch = useDispatch();
+  const filepickerRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (filepaths) {
+      setDraft([...filepaths]);
+    }
+  }, [filepaths]);
+
+  if (!collection) return null;
 
   function handleFileInput(files: FileList | null): void {
     if (!files) return;
@@ -68,11 +75,7 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName, coll
     dispatch(buildProtofiles(collectionName, draft));
   }
 
-  function triggerFileDialog(): void {
-    if (filepickerRef.current) {
-      filepickerRef.current.click();
-    }
-  }
+  const triggerFileDialog = (): void => filepickerRef.current?.click();
 
   function handleToggle(filepath: string, checked: boolean): void {
     if (checked) {
@@ -91,11 +94,15 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName, coll
     }
   }
 
+  function handleCloseFM(): void {
+    dispatch(closeFM());
+  }
+
   return (
     <Wrapper>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Typography.Title level={4}>.proto files for {collectionName}</Typography.Title>
-        <Button shape="circle" type="danger" size="small" ghost onClick={onFinish}>
+        <Button shape="circle" type="danger" size="small" ghost onClick={handleCloseFM}>
           <Icon type="close" />
         </Button>
       </div>
@@ -133,6 +140,9 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName, coll
         />
       </Scrollable>
       <input type="file" multiple hidden ref={filepickerRef} onChange={(e): void => handleFileInput(e.target.files)} />
+
+      {buildStatus === 'failure' ? <Alert message={buildError?.message || ' '} type="error" closeText="Close" /> : null}
+
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
         <div>
           <Button onClick={triggerFileDialog}>
@@ -153,8 +163,8 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName, coll
             onClick={tryBuilding}
             type="primary"
             style={{ marginLeft: 8 }}
-            ghost
             loading={buildStatus === 'building'}
+            ghost
           >
             <Icon type="build" />
             Build and Save

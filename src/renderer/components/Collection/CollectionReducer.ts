@@ -31,8 +31,14 @@ export default function CollectionReducer(s: AppState, action: AnyAction): AppSt
       case 'DELETE_COLLECTION':
         return produce(s, draft => {
           const idx = draft.collections.findIndex(([n]) => n === a.collectionName);
-          if (idx >= 0) {
-            draft.collections.splice(idx, 1);
+          if (idx < 0) return draft;
+
+          draft.collections.splice(idx, 1);
+          if (draft.currentCollection === a.collectionName) {
+            draft.currentCollection = draft.collections[0][0];
+            const flows = getByKey(draft.collections, draft.currentCollection)?.flows;
+            if (!flows) return draft;
+            draft.currentFlow = flows[0][0];
           }
         });
       case 'TOGGLE_COLLECTIONS':
@@ -57,10 +63,22 @@ export default function CollectionReducer(s: AppState, action: AnyAction): AppSt
       case 'DELETE_FLOW':
         return produce(s, draft => {
           const flows = getByKey(draft.collections, a.collectionName)?.flows;
-          const idx = flows?.findIndex(([n]) => n === a.flowName);
-          if (idx != null && idx >= 0) {
-            flows?.splice(idx, 1);
+          if (!flows) return draft;
+          const idx = flows.findIndex(([n]) => n === a.flowName);
+          if (idx < 0) return draft;
+
+          flows.splice(idx, 1);
+          if (a.flowName === draft.currentFlow && a.collectionName === draft.currentCollection) {
+            draft.currentFlow = flows[0][0];
           }
+        });
+      case 'OPEN_FM':
+        return produce(s, draft => {
+          draft.fmOpenCollection = a.collectionName;
+        });
+      case 'CLOSE_FM':
+        return produce(s, draft => {
+          draft.fmOpenCollection = undefined;
         });
       default:
         return s;
