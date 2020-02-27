@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Typography, List, Button, Icon, Row, Col, Checkbox, Divider, Alert, message } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { buildProtofiles } from './ProtofileManagerActions';
+import { buildProtofiles, resetProtofileStatus } from './ProtofileManagerActions';
 import { AppState } from '../../../models/AppState';
 import { getByKey } from '../../../utils/utils';
 import { closeFM } from '../CollectionActions';
@@ -43,6 +43,8 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName }) =>
 
   function handleFileInput(files: FileList | null): void {
     if (!files) return;
+
+    dispatch(resetProtofileStatus(collectionName));
 
     const filepaths: string[] = [];
     for (let i = 0; i < files.length; i++) {
@@ -142,6 +144,7 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName }) =>
       <input type="file" multiple hidden ref={filepickerRef} onChange={(e): void => handleFileInput(e.target.files)} />
 
       {buildStatus === 'failure' ? <Alert message={buildError?.message || ' '} type="error" closeText="Close" /> : null}
+      {buildStatus === 'success' ? <Alert message="Build success!" type="success" closeText="Close" /> : null}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
         <div>

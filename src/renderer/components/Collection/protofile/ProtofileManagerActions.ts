@@ -36,13 +36,26 @@ type BuildProtofilesFailure = {
 
 const BUILD_PROTOFILES_FAILURE = 'BUILD_PROTOFILES_FAILURE';
 
+type ResetProtofileStatus = {
+  type: 'RESET_PROTOFILE_STATUS';
+  collectionName: string;
+};
+
+const RESET_PROTOFILE_STATUS = 'RESET_PROTOFILE_STATUS';
+
 export const ProtofileManagerActionTypes = [
   SET_PROTOFILES,
   BUILD_PROTOFILES,
   BUILD_PROTOFILES_SUCCESS,
   BUILD_PROTOFILES_FAILURE,
+  RESET_PROTOFILE_STATUS,
 ];
-export type ProtofileManagerActions = SetProtofiles | BuildProtofiles | BuildProtofilesSuccess | BuildProtofilesFailure;
+export type ProtofileManagerActions =
+  | SetProtofiles
+  | BuildProtofiles
+  | BuildProtofilesSuccess
+  | BuildProtofilesFailure
+  | ResetProtofileStatus;
 
 export function buildProtofiles(
   collectionName: string,
@@ -59,5 +72,12 @@ export function buildProtofiles(
         dispatch({ type: BUILD_PROTOFILES_FAILURE, collectionName, err });
       }
     }
+  };
+}
+
+export function resetProtofileStatus(collectionName: string): ResetProtofileStatus {
+  return {
+    type: RESET_PROTOFILE_STATUS,
+    collectionName,
   };
 }

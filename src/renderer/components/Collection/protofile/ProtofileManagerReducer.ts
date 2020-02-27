@@ -15,7 +15,6 @@ export default function ProtofileManagerReducer(s: AppState, action: AnyAction):
           const collection = getByKey(draft.collections, a.collectionName);
           if (collection) {
             collection.protoFilepaths = a.filepaths;
-            collection.buildStatus = 'default';
             collection.buildError = undefined;
           }
         });
@@ -45,6 +44,13 @@ export default function ProtofileManagerReducer(s: AppState, action: AnyAction):
           if (collection) {
             collection.buildStatus = 'failure';
             collection.buildError = a.err;
+          }
+        });
+      case 'RESET_PROTOFILE_STATUS':
+        return produce(s, draft => {
+          const collection = getByKey(draft.collections, a.collectionName);
+          if (collection) {
+            collection.buildStatus = 'default';
           }
         });
       default:

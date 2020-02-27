@@ -118,6 +118,7 @@ function preprocess(appState: AppState): AppState {
 
   return produce(appState, draft => {
     draft.collections = draft.collections.map(([cn, c]) => [cn, procCol(c)]);
+    draft.fmOpenCollection = undefined;
     return draft;
   });
 }
