@@ -26,6 +26,17 @@ export function makeMenu(): Menu {
       submenu: [...(isMac ? [] : [{ role: 'quit' }])],
     },
     {
+      label: 'Edit',
+      submenu: [
+        { role: 'undo' },
+        { role: 'redo' },
+        { type: 'separator' },
+        { role: 'cut' },
+        { role: 'copy' },
+        { role: 'paste' },
+      ],
+    },
+    {
       label: 'View',
       submenu: [
         { role: 'resetzoom' },

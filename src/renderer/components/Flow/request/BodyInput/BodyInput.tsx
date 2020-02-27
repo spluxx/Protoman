@@ -21,6 +21,8 @@ const BodyWrapper = styled('div')`
   margin-top: 8px;
 `;
 
+const MESSAGE_NAME_WIDTH = 350;
+
 const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies, protoCtx, messageNames, responseMessageName }) => {
   const dispatch = useDispatch();
 
@@ -49,7 +51,11 @@ const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies, protoCtx, messa
             value={bodies.protobuf && bodies.protobuf.type.name}
             onChange={onSelectRequestMsg}
             size="small"
-            style={{ width: 230 }}
+            style={{ width: MESSAGE_NAME_WIDTH }}
+            showSearch
+            filterOption={(input, option): boolean => {
+              return (option.props.children as string).includes(input);
+            }}
           >
             {messageNames.map(messageName => (
               <Select.Option key={messageName}>{messageName}</Select.Option>
@@ -62,8 +68,12 @@ const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies, protoCtx, messa
             value={responseMessageName}
             onChange={onSelectResponseMsg}
             size="small"
-            style={{ width: 230 }}
+            style={{ width: MESSAGE_NAME_WIDTH }}
             allowClear
+            showSearch
+            filterOption={(input, option): boolean => {
+              return (option.props.children as string).includes(input);
+            }}
           >
             {messageNames.map(messageName => (
               <Select.Option key={messageName}>{messageName}</Select.Option>
