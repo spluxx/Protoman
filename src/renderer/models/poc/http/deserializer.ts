@@ -14,22 +14,23 @@ import {
 import protobuf from 'protobufjs';
 import { createMessageType } from '../engine/protoParser';
 
-// TODO(Louis Lee); finish this
-function handleEnum(messageType: EnumType, messageJson: { [k: string]: any }, ctx: ProtoCtx): EnumValue {
-  //should return one value
-  const temp = {
-    type: messageType,
-    selected: messageJson[messageType.name],
-  };
-  return temp;
+function getKeyByValue(object: any, value: string): string | undefined {
+  return Object.keys(object).find(key => object[key] === value);
 }
 
-function handlePrimitive(messageType: PrimitiveType, messageJson: any, ctx: ProtoCtx): PrimitiveValue {
-  const temp = {
+// TODO(Louis Lee); finish this
+function handleEnum(messageType: EnumType, messageJson: any): EnumValue {
+  return {
+    type: messageType,
+    selected: getKeyByValue(messageType.optionValues, messageJson) || messageType.options[0],
+  };
+}
+
+function handlePrimitive(messageType: PrimitiveType, messageJson: any): PrimitiveValue {
+  return {
     type: messageType,
     value: messageJson,
   };
-  return temp;
 }
 
 function handleMessage(messageType: MessageType, messageJson: { [k: string]: any }, ctx: ProtoCtx): any {
@@ -39,18 +40,22 @@ function handleMessage(messageType: MessageType, messageJson: { [k: string]: any
     return [fieldName, createMessageValue(typeNameToType(typeName, ctx), messageJson[fieldName], ctx)];
   });
   temp['repeatedFields'] = messageType.repeatedFields.map(([fieldName, typeName]: [string, string]) => {
-    const haha: { [key: string]: ProtobufValue[] } = {};
-    haha[fieldName] = messageJson[fieldName].map((value: string | number) =>
-      createMessageValue(typeNameToType(typeName, ctx), value, ctx),
-    );
-    return haha;
+    return [
+      fieldName,
+      messageJson[fieldName].map((value: string | number) =>
+        createMessageValue(typeNameToType(typeName, ctx), value, ctx),
+      ),
+    ];
   });
 
   temp['oneOfFields'] = messageType.oneOfFields
     .map(([largeFieldName, options]) => {
-      const selectedOption = options.find(([name]) => !!messageJson[name]);
+      const selectedOption = options.find(([name, type]) => {
+        return messageJson[name] !== undefined;
+      });
       if (!selectedOption) {
         //TODO(Louis): catch error
+        //throw new Error("response does not include" + name )
         return undefined;
       } else {
         const [name, typeName] = selectedOption;
@@ -65,7 +70,6 @@ function handleMessage(messageType: MessageType, messageJson: { [k: string]: any
     .filter(a => !!a);
 
   temp['mapFields'] = messageType.mapFields.map(([fieldName, [keyType, valueTypeName]]) => {
-    const haha = [];
     const keyValuePairs: {} = messageJson[fieldName];
     const entries = Object.entries(keyValuePairs);
     const temp = entries.map(([key, value]) => {
@@ -73,8 +77,7 @@ function handleMessage(messageType: MessageType, messageJson: { [k: string]: any
       const valueType: ProtobufType = typeNameToType(valueTypeName, ctx);
       return [key, createMessageValue(valueType, fake, ctx)];
     });
-    haha.push([fieldName, temp]);
-    return [keyType, haha];
+    return [fieldName, temp];
   });
 
   return temp;
@@ -88,12 +91,12 @@ export function createMessageValue(messageProto: ProtobufType, messageJson: any,
     }
     case 'primitive': {
       const primitiveType = messageProto as PrimitiveType;
-      return handlePrimitive(primitiveType, messageJson, ctx);
+      return handlePrimitive(primitiveType, messageJson);
     }
     //enum
     default: {
       const enumType = messageProto as EnumType;
-      return handleEnum(enumType, messageJson, ctx);
+      return handleEnum(enumType, messageJson);
     }
   }
 }

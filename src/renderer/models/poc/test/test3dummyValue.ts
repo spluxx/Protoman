@@ -110,7 +110,7 @@ const mapValue3: PrimitiveValue = {
 };
 
 const smallUser1Value: MessageValue = {
-  type: userType,
+  type: smallUserType,
   singleFields: [['first_name', friend1FirstNameValue]],
   repeatedFields: [],
   oneOfFields: [],
@@ -118,7 +118,7 @@ const smallUser1Value: MessageValue = {
 };
 
 const smallUser2Value: MessageValue = {
-  type: userType,
+  type: smallUserType,
   singleFields: [['first_name', friend2FirstNameValue]],
   repeatedFields: [],
   oneOfFields: [],
@@ -147,7 +147,7 @@ export const userValue: MessageValue = {
 
 export const test3UserExpectedJson = {
   first_name: 'Louis',
-  sports: 'Basketball',
+  sports: 0,
   friend_ids: ['16', '18'],
   friends: [{ first_name: 'Inchan' }, { first_name: 'Erie' }],
   properties: { city: 'Wonju', sex: 'Boy', height: 'Tall' },

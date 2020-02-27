@@ -1,11 +1,9 @@
-import * as assert from 'assert';
 import { readProtos, buildContext } from '../engine/protoParser';
-import { allPrimitiveTypes } from '../engine/primitiveTypes';
 import { MessageType } from '../../http/body/protobuf';
 import { isEqual } from 'lodash';
+import { equal, strictEqual } from 'assert';
 
 const testFilePaths1: string[] = ['./test1.proto'];
-const testFilePaths2: string[] = ['./test2.proto'];
 const testFilePathsAll: string[] = ['./test1.proto', './test2.proto'];
 
 const userTypeExpected: MessageType = {
@@ -56,9 +54,9 @@ export async function testProtoParser(): Promise<void> {
   const testResult1 = await readProtos(testFilePaths1);
   const test1Types = testResult1[0];
   const fuckType = test1Types[0];
-  isEqual(fuckType, fuckTypeExpected);
+  equal(isEqual(fuckType, fuckTypeExpected), true);
   const userType = test1Types[1];
-  isEqual(userType, userTypeExpected);
+  equal(isEqual(userType, userTypeExpected), true);
 
   console.log('check origin');
   const test1Origin = testResult1[1];
@@ -66,12 +64,12 @@ export async function testProtoParser(): Promise<void> {
 
   console.log('check ctx');
   const test1Ctx = await buildContext(testFilePaths1);
-  isEqual(test1Ctx.types.length, 17);
+  equal(isEqual(Object.keys(test1Ctx.types).length, 17), true);
 
   console.log('testing allFilePaths');
   const testResultAll = await readProtos(testFilePathsAll);
   const testAllTypes = testResultAll[0];
-  assert.strictEqual(testAllTypes.length, 19);
+  strictEqual(testAllTypes.length, 19);
   console.log('test has ended');
 
   return Promise.resolve();
