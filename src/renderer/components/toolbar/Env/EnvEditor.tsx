@@ -12,12 +12,16 @@ const Wrapper = styled('div')`
   padding: 0;
   margin: 0;
   width: 100%;
+  height: 50vh;
+  display: flex;
+  flex-direction: column;
 `;
 
 const KVWrapper = styled('div')`
   padding: 8px;
   width: 100%;
   overflow: auto;
+  flex-grow: 99;
 `;
 
 const ButtonWrapper = styled('div')`
@@ -25,6 +29,7 @@ const ButtonWrapper = styled('div')`
   width: 100%;
   display: flex;
   flex-direction: row-reverse;
+  align-items: center;
 `;
 
 const Title = styled('span')`
@@ -40,6 +45,10 @@ const TitleInput = styled(Input)`
 const TitleWrapper = styled('div')`
   display: flex;
   align-items: center;
+`;
+
+const Spacing = styled('div')`
+  flex-grow: 99;
 `;
 
 type Props = {
@@ -166,9 +175,6 @@ export const EnvEditor: React.FunctionComponent<Props> = ({ onCancel }) => {
             onDelete={(): void => deleteEntry(idx)}
           />
         ))}
-        <Button shape="circle" size="small" ghost type="primary" onClick={createEntry}>
-          <Icon type="plus" />
-        </Button>
       </KVWrapper>
 
       <ButtonWrapper>
@@ -185,6 +191,10 @@ export const EnvEditor: React.FunctionComponent<Props> = ({ onCancel }) => {
         </Button>
         <Button ghost style={{ marginRight: 4 }} onClick={onCancel} type="danger">
           Cancel
+        </Button>
+        <Spacing />
+        <Button shape="circle" size="small" ghost type="primary" onClick={createEntry}>
+          <Icon type="plus" />
         </Button>
       </ButtonWrapper>
     </Wrapper>
