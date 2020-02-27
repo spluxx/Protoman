@@ -239,23 +239,27 @@ const RepeatedFieldView: FunctionComponent<RFVProps> = ({ editable, fieldName, v
       {values.map((v, idx) => (
         <IndentationBlock key={idx}>
           <ProtobufValueView editable={editable} value={v} handlers={prefix(idx.toString(), handlers)} />
-          <Button
-            shape="circle"
-            size="small"
-            ghost
-            type="danger"
-            style={{ marginLeft: 4 }}
-            onClick={(): void => handlers.entryRemove(`${idx.toString()}/`)}
-          >
-            <Icon type="delete" />
-          </Button>
+          {editable ? (
+            <Button
+              shape="circle"
+              size="small"
+              ghost
+              type="danger"
+              style={{ marginLeft: 4 }}
+              onClick={(): void => handlers.entryRemove(`${idx.toString()}/`)}
+            >
+              <Icon type="delete" />
+            </Button>
+          ) : null}
         </IndentationBlock>
       ))}
-      <IndentationBlock>
-        <Button shape="circle" size="small" ghost type="primary" onClick={(): void => handlers.entryAdd('')}>
-          <Icon type="plus" />
-        </Button>
-      </IndentationBlock>
+      {editable ? (
+        <IndentationBlock>
+          <Button shape="circle" size="small" ghost type="primary" onClick={(): void => handlers.entryAdd('')}>
+            <Icon type="plus" />
+          </Button>
+        </IndentationBlock>
+      ) : null}
     </Block>
   );
 };
@@ -280,18 +284,22 @@ const OneOfFieldView: FunctionComponent<OFVProps> = ({
     <Block>
       <FieldName>{fieldName}</FieldName>
       <span>: </span>
-      <Select
-        value={name}
-        size="small"
-        style={{ width: KEY_INPUT_WIDTH }}
-        onChange={(s: string): void => handlers.fieldChange('', s)}
-      >
-        {fieldOptions.map((option, idx) => (
-          <Select.Option key={idx} value={option}>
-            {option}
-          </Select.Option>
-        ))}
-      </Select>
+      {editable ? (
+        <Select
+          value={name}
+          size="small"
+          style={{ width: KEY_INPUT_WIDTH }}
+          onChange={(s: string): void => handlers.fieldChange('', s)}
+        >
+          {fieldOptions.map((option, idx) => (
+            <Select.Option key={idx} value={option}>
+              {option}
+            </Select.Option>
+          ))}
+        </Select>
+      ) : (
+        <span>{`${name} (${value.type.name})`}</span>
+      )}
       <IndentationBlock>
         <SingleFieldView editable={editable} fieldName={name} value={value} handlers={prefix(name, handlers)} />
       </IndentationBlock>
@@ -320,23 +328,27 @@ const MapFieldView: FunctionComponent<MFVProps> = ({ editable, fieldName, kvPair
             onChange={(e): void => handlers.valueChange(`${idx.toString()}/0/`, e.target.value)}
           />
           <ProtobufValueView editable={editable} value={v} handlers={prefix(`${idx.toString()}/1`, handlers)} />
-          <Button
-            shape="circle"
-            size="small"
-            ghost
-            type="danger"
-            style={{ marginLeft: 4 }}
-            onClick={(): void => handlers.entryRemove(`${idx.toString()}/`)}
-          >
-            <Icon type="delete" />
-          </Button>
+          {editable ? (
+            <Button
+              shape="circle"
+              size="small"
+              ghost
+              type="danger"
+              style={{ marginLeft: 4 }}
+              onClick={(): void => handlers.entryRemove(`${idx.toString()}/`)}
+            >
+              <Icon type="delete" />
+            </Button>
+          ) : null}
         </IndentationBlock>
       ))}
-      <IndentationBlock>
-        <Button shape="circle" size="small" ghost type="primary" onClick={(): void => handlers.entryAdd('')}>
-          <Icon type="plus" />
-        </Button>
-      </IndentationBlock>
+      {editable ? (
+        <IndentationBlock>
+          <Button shape="circle" size="small" ghost type="primary" onClick={(): void => handlers.entryAdd('')}>
+            <Icon type="plus" />
+          </Button>
+        </IndentationBlock>
+      ) : null}
     </Block>
   );
 };

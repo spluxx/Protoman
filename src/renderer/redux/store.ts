@@ -11,9 +11,9 @@ import { getByKey, getEntryByKey } from '../utils/utils';
 
 const { TextEncoder, TextDecoder } = encoding;
 
-const DEFAULT_FLOW_NAME = 'flow1';
-const DEFAULT_COLLECTION_NAME = 'collection1';
-const DEFAULT_ENV_NAME = 'env1';
+const DEFAULT_FLOW_NAME = 'Request1';
+const DEFAULT_COLLECTION_NAME = 'Collection1';
+const DEFAULT_ENV_NAME = 'Env1';
 
 export function createDefaultFlow(): Draft<Flow> {
   return {

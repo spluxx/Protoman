@@ -45,7 +45,7 @@ const FlowList: React.FunctionComponent<Props> = ({ collectionName }) => {
   }
 
   function handleCreate(): void {
-    const tmpName = 'flow';
+    const tmpName = 'Request';
     let tmpNameIdx = 1;
     while (!validateFlowName(`${tmpName}${tmpNameIdx}`)) tmpNameIdx++;
     dispatch(createFlow(collectionName, `${tmpName}${tmpNameIdx}`));
@@ -64,7 +64,7 @@ const FlowList: React.FunctionComponent<Props> = ({ collectionName }) => {
     <Footer>
       <Button type="primary" ghost onClick={handleCreate}>
         <Icon type="plus" />
-        New Flow
+        New Request
       </Button>
     </Footer>
   );

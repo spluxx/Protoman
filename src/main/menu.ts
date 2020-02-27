@@ -34,6 +34,7 @@ export function makeMenu(): Menu {
         { role: 'cut' },
         { role: 'copy' },
         { role: 'paste' },
+        { role: 'selectAll' },
       ],
     },
     {

@@ -1,6 +1,6 @@
 {
   "name": "protoman",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Basic Postman clone with protobuf functionalities",
   "main": "./dist/main.js",
   "scripts": {
