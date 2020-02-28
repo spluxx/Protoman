@@ -6,7 +6,7 @@ import { initializeEvents } from './events';
 let window: BrowserWindow;
 
 const WIDTH_RATIO = 0.8;
-const ASPECT_RATIO = 3 / 5;
+const ASPECT_RATIO = 10 / 16;
 
 async function createWindow(): Promise<void> {
   const screenWidth = screen.getPrimaryDisplay().workAreaSize.width;
