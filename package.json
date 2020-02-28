@@ -29,10 +29,12 @@
     "directories": {
       "buildResources": "assets",
       "output": "build"
-    },
+		},
     "mac": {
       "category": "public.app-category.developer-tools",
-			"target": "dmg"
+      "target": "dmg",
+      "hardenedRuntime": true,
+      "entitlements": "./pkg_resources/Entitlements.plist"
     },
     "nsis": {
       "createDesktopShortcut": "always"
@@ -41,12 +43,12 @@
     "dmg": {
       "contents": [
         {
-          "x": 110,
-          "y": 150
+          "x": 140,
+          "y": 220
         },
         {
-          "x": 240,
-          "y": 150,
+          "x": 400,
+          "y": 220,
           "type": "link",
           "path": "/Applications"
         }

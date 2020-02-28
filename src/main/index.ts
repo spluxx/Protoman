@@ -5,7 +5,7 @@ import { initializeEvents } from './events';
 
 let window: BrowserWindow;
 
-const WIDTH_RATIO = 0.75;
+const WIDTH_RATIO = 0.8;
 const ASPECT_RATIO = 3 / 5;
 
 async function createWindow(): Promise<void> {
