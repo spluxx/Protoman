@@ -1,25 +1,31 @@
-import { app, BrowserWindow, Menu } from 'electron';
+import { app, BrowserWindow, Menu, screen } from 'electron';
 import path from 'path';
 import makeMenu from './menu';
 import { initializeEvents } from './events';
 
 let window: BrowserWindow;
 
+const WIDTH_RATIO = 0.75;
+const ASPECT_RATIO = 3 / 5;
+
 async function createWindow(): Promise<void> {
+  const screenWidth = screen.getPrimaryDisplay().workAreaSize.width;
+
   window = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: screenWidth * WIDTH_RATIO,
+    height: screenWidth * WIDTH_RATIO * ASPECT_RATIO,
     webPreferences: {
       nodeIntegration: true,
     },
   });
   initializeEvents();
   Menu.setApplicationMenu(makeMenu());
-  window.maximize();
   window.loadFile(path.join(__dirname, 'index.html'));
 }
 
-export function sendToWindow(channel: string, args: any[]): void {
+console.log('MAIN PROCESS STARTED');
+
+export function sendToWindow(channel: string, args: unknown[]): void {
   window.webContents.send(channel, args);
 }
 

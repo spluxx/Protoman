@@ -1,8 +1,10 @@
 {
-  "name": "protoman",
+  "name": "Protoman",
   "version": "0.1.0",
   "description": "Basic Postman clone with protobuf functionalities",
-  "main": "./dist/main.js",
+  "author": "Inchan Hwang, Louis Lee",
+  "license": "MIT",
+  "main": "dist/main.js",
   "scripts": {
     "start": "electron dist/main.js",
     "dev": "npm run dev-renderer & npm run dev-main &",
@@ -12,17 +14,55 @@
     "build": "npm run build-renderer ; npm run build-main",
     "build-renderer": "webpack --config renderer-webpack.config.js --mode production",
     "build-main": "webpack --config main-webpack.config.js --mode production",
-    "package": "npm run build && electron-packager . ProtoMan --out=out --prune --overwrite",
-    "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix"
+    "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
+    "postinstall": "electron-builder install-app-deps",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "release": "electron-builder"
   },
-  "author": "Inchan Hwang, Louis Lee",
-  "license": "MIT",
+  "build": {
+    "appId": "co.protoman.protoman",
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "buildResources": "assets",
+      "output": "build"
+    },
+    "mac": {
+      "category": "public.app-category.developer-tools",
+			"target": "dmg"
+    },
+    "nsis": {
+      "createDesktopShortcut": "always"
+    },
+    "extends": null,
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "category": "Development"
+    }
+  },
   "dependencies": {
     "antd": "^3.26.9",
     "assert": "^2.0.0",
     "immer": "^5.3.6",
     "lodash": "^4.17.15",
     "node-fetch": "^2.6.0",
+    "protobufjs": "^6.8.8",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-redux": "^7.1.3",
@@ -47,7 +87,7 @@
     "@typescript-eslint/parser": "^2.19.0",
     "css-loader": "^3.4.2",
     "electron": "^8.0.0",
-    "electron-packager": "^14.2.0",
+    "electron-builder": "^21.0.14",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
@@ -55,7 +95,6 @@
     "html-webpack-plugin": "^3.2.0",
     "node-loader": "^0.6.0",
     "prettier": "^1.19.1",
-    "protobufjs": "^6.8.8",
     "source-map-loader": "^0.2.4",
     "style-loader": "^1.1.3",
     "ts-loader": "^6.2.1",

@@ -28,10 +28,17 @@ function initialize(store: Store): void {
   });
 }
 
+console.log('RENDERER PROCESS STARTED');
+
 ipcRenderer.on(ipcChannels.LOAD_MOST_RECENT, (event, args) => {
+  console.log('Loaded most recent state ', args);
   if (args[0] !== undefined) {
     initialize(makeStore(args[0]));
   }
+});
+
+ipcRenderer.on(ipcChannels.MAIN_ERROR, (event, args) => {
+  console.log('Error from the main process: ', args[0].message);
 });
 
 ipcRenderer.send(ipcChannels.LOAD_MOST_RECENT);

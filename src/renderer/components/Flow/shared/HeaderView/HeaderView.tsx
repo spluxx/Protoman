@@ -40,9 +40,11 @@ const HeaderView: React.FunctionComponent<Props> = ({ editable, headers }) => {
           onDelete={(): void => handleDelete(idx)}
         />
       ))}
-      <Button shape="circle" size="small" ghost type="primary" onClick={handleCreate} disabled={!editable}>
-        <Icon type="plus" />
-      </Button>
+      {editable ? (
+        <Button shape="circle" size="small" ghost type="primary" onClick={handleCreate} disabled={!editable}>
+          <Icon type="plus" />
+        </Button>
+      ) : null}
     </div>
   );
 };
@@ -74,7 +76,7 @@ const SingleHeaderView: React.FunctionComponent<SingleProps> = ({
           onChange={(e): void => onNameChange(e.target.value)}
         />
       </Col>
-      <Col span={16}>
+      <Col span={editable ? 16 : 18}>
         <Input
           placeholder="value"
           readOnly={!editable}
@@ -82,11 +84,13 @@ const SingleHeaderView: React.FunctionComponent<SingleProps> = ({
           onChange={(e): void => onValueChange(e.target.value)}
         />
       </Col>
-      <Col span={2}>
-        <Button shape="circle" size="small" ghost type="danger" onClick={onDelete} disabled={!editable}>
-          <Icon type="delete" />
-        </Button>
-      </Col>
+      {editable ? (
+        <Col span={2}>
+          <Button shape="circle" size="small" ghost type="danger" onClick={onDelete} disabled={!editable}>
+            <Icon type="delete" />
+          </Button>
+        </Col>
+      ) : null}
     </Row>
   );
 };
