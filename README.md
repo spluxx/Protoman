@@ -21,7 +21,7 @@ A [Postman](https://www.postman.com/)-like API client for [protobuf](https://dev
 
 1. **Register your .proto files to enable protobuf-related features. <span>By clicking on the button with <img src="assets/p_icon.png" width=15/> icon next to your collection to register the file paths.</span>**
 
-<img src="assets/protofile_manager.png" width=600>
+<img src="assets/protofile_manager.png" width=800>
 
 2.  **The rest of the request-building interface is similar to Postman.**
 
@@ -35,7 +35,7 @@ A [Postman](https://www.postman.com/)-like API client for [protobuf](https://dev
 
     e. The response is shown below the request section.
 
-<img src="assets/req_resp.png" width=600>
+<img src="assets/req_resp.png" width=800>
 
 3. **That's it for the current version. Enjoy and leave a star if you like it !**
 
