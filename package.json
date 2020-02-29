@@ -17,8 +17,9 @@
     "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
     "postinstall": "electron-builder install-app-deps",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder",
-    "release": "electron-builder"
+    "dist:mac": "electron-builder --mac",
+    "dist:win": "electron-builder --win",
+    "dist:linux": "electron-builder --linux"
   },
   "build": {
     "appId": "co.protoman.protoman",
@@ -29,7 +30,7 @@
     "directories": {
       "buildResources": "assets",
       "output": "build"
-		},
+    },
     "mac": {
       "category": "public.app-category.developer-tools",
       "target": "dmg",
@@ -89,7 +90,7 @@
     "@typescript-eslint/parser": "^2.19.0",
     "css-loader": "^3.4.2",
     "electron": "^8.0.0",
-    "electron-builder": "^21.0.14",
+    "electron-builder": "^22.2.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
