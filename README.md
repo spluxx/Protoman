@@ -39,19 +39,17 @@ A [Postman](https://www.postman.com/)-like API client for [protobuf](https://dev
 
 3. **That's it for the current version. Enjoy and leave a star if you like it !**
 
+
 ## Installation
 
 ### Mac
-
-[Protoman-0.1.0.dmg](http://protoman.co/mac/Protoman-0.1.0.dmg)
+[Protoman-0.1.1.dmg](http://protoman.co/mac/Protoman-0.1.1.dmg)
 
 ### Windows
-
-[Protoman Setup 0.1.0.exe](http://protoman.co/win/Protoman%20Setup%200.1.0.exe) - Unlike mac, I don't currently own a license to sign the app. So it might give you some security warnings!
+[Protoman Setup 0.1.1.exe](http://protoman.co/win/Protoman%20Setup%200.1.1.exe) - Unlike mac, I don't currently own a license to sign the app. So it might give you some security warnings!
 
 ### Linux
-
-[Protoman-0.1.0.AppImage](http://protoman.co/linux/Protoman-0.1.0.AppImage)
+[Protoman-0.1.1.AppImage](http://protoman.co/linux/Protoman-0.1.1.AppImage)
 
 As a fallback, you can clone the repo and run npm install && npm run build to build, and npm run start to launch the app. Or, you can actually find configurations on [electron builder](https://www.electron.build/) to get the right distribution version yourself!
 
@@ -64,7 +62,7 @@ If you are interested in reporting/fixing issues and contributing directly to th
 3. Submit a PR.
 4. We'll get back to you as soon as we can!
 
-Make sure to run `npm run lint` before submitting the PR!
+Make sure to run `npm run lint` before submitting your PR!
 
 ## Licence
 

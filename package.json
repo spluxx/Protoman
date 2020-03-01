@@ -1,6 +1,6 @@
 {
   "name": "Protoman",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Basic Postman clone with protobuf functionalities",
   "author": "Inchan Hwang, Louis Lee",
   "license": "MIT",
@@ -17,6 +17,7 @@
     "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
     "postinstall": "electron-builder install-app-deps",
     "pack": "electron-builder --dir",
+		"dist:all": "electron-builder -mwl",
     "dist:mac": "electron-builder --mac",
     "dist:win": "electron-builder --win",
     "dist:linux": "electron-builder --linux"

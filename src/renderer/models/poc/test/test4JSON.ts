@@ -55,6 +55,7 @@ export const test4UserValueExpected = {
           options: ['lab', 'no_lab'],
           optionValues: {
             lab: 0,
+            // eslint-disable-next-line @typescript-eslint/camelcase
             no_lab: 1,
           },
         },
