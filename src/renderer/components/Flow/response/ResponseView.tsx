@@ -31,6 +31,10 @@ const PaddedTabPane = styled(TabPane)`
   padding: 4px;
 `;
 
+const LeftMarginSpan = styled('span')`
+  margin-left: 8px;
+`;
+
 function statusCodeToColor(code: number): string {
   if (code < 300) return 'green';
   else if (code < 400) return 'yellow';
@@ -43,12 +47,49 @@ const StatusText: React.FunctionComponent<{ code: number }> = ({ code }) => {
   const color = statusCodeToColor(code);
 
   return (
-    <span>
-      Status:
+    <LeftMarginSpan>
+      {'Status: '}
       <span style={{ color }}>
         {code} {text}
       </span>
-    </span>
+    </LeftMarginSpan>
+  );
+};
+
+const TimeText: React.FunctionComponent<{ time: number }> = ({ time }) => {
+  let t = time;
+  let unit = 'ms';
+
+  if (t >= 1000) {
+    t = t / 1000;
+    unit = 's';
+  }
+
+  return (
+    <LeftMarginSpan>
+      Time: {t} {unit}
+    </LeftMarginSpan>
+  );
+};
+
+const SIZE_UNITS = ['B', 'KB', 'MB', 'GB'];
+
+function raise(bs: number, unit: string): [number, string] {
+  const uIdx = SIZE_UNITS.findIndex(u => u === unit);
+  return [Math.floor(bs / 1024), SIZE_UNITS[uIdx + 1]];
+}
+
+const BodySizeText: React.FunctionComponent<{ bodySize: number }> = ({ bodySize }) => {
+  let bs = bodySize;
+  let unit = 'B';
+  while (bs >= 1024) {
+    [bs, unit] = raise(bs, unit);
+  }
+
+  return (
+    <LeftMarginSpan>
+      Size: {bs} {unit}
+    </LeftMarginSpan>
   );
 };
 
@@ -57,21 +98,23 @@ type Props = {
 };
 
 const ResponseView: React.FunctionComponent<Props> = ({ response }) => {
-  const { statusCode, headers, body } = response;
+  const { statusCode, headers, time, bodySize, body } = response;
   return (
     <ResponseWrapper>
       <TitleWrapper type="flex" align="bottom">
         <LeftyCol span={6}>Response</LeftyCol>
         <RightyCol span={18}>
           <StatusText code={statusCode} />
+          <TimeText time={time} />
+          <BodySizeText bodySize={bodySize} />
         </RightyCol>
       </TitleWrapper>
-      <Tabs defaultActiveKey="header" animated={false}>
-        <PaddedTabPane tab="Headers" key="header">
-          <HeaderView headers={headers} />
-        </PaddedTabPane>
+      <Tabs defaultActiveKey="body" animated={false}>
         <PaddedTabPane tab="Body" key="body">
           <ResponseBodyView body={body} />
+        </PaddedTabPane>
+        <PaddedTabPane tab="Headers" key="header">
+          <HeaderView headers={headers} />
         </PaddedTabPane>
       </Tabs>
     </ResponseWrapper>

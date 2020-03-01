@@ -9,6 +9,7 @@ import FlowNameViewReducer from '../components/toolbar/FlowName/FlowNameViewRedu
 import BodyInputReducer from '../components/flow/request/BodyInput/BodyInputReducer';
 import ProtofileManagerReducer from '../components/collection/protofile/ProtofileManagerReducer';
 import FlowViewReducers from '../components/flow/FlowView/FlowViewReducer';
+import ExpectedBodyInputReducer from '../components/flow/request/ExpectedBodyInput/ExpectedBodyInputReducer';
 
 type BigReducer = (s: AppState, a: AnyAction) => AppState;
 
@@ -28,6 +29,7 @@ const AppReducer = applyAll([
   BodyInputReducer,
   ProtofileManagerReducer,
   FlowViewReducers,
+  ExpectedBodyInputReducer,
 ]);
 
 export default AppReducer;

@@ -22,14 +22,6 @@ export default function BodyInputReducer(s: AppState, action: AnyAction): AppSta
           if (dv.type.tag !== 'message') return s;
           flow.requestBuilder.bodies.protobuf = dv as Draft<MessageValue>;
         });
-      case 'SELECT_RESPONSE_MESSAGE_NAME':
-        return produce(s, draft => {
-          const collection = getByKey(draft.collections, draft.currentCollection);
-          if (!collection) return s;
-          const flow = getByKey(collection.flows, draft.currentFlow);
-          if (!flow) return s;
-          flow.requestBuilder.responseMessageName = a.name;
-        });
       case 'SELECT_BODY_TYPE':
         return produce(s, draft => {
           const collection = getByKey(draft.collections, draft.currentCollection);

@@ -55,7 +55,7 @@ const LeanCollapse = styled(Collapse)`
   border-radius: 0;
 `;
 
-export const COLLECTION_SIDER_WIDTH = 230;
+export const COLLECTION_SIDER_WIDTH = 210;
 
 const CollectionSider: React.FunctionComponent<{}> = ({}) => {
   const dispatch = useDispatch();

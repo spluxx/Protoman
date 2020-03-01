@@ -6,6 +6,7 @@ import BodyInput from '../BodyInput/BodyInput';
 import styled from 'styled-components';
 import { RequestBuilder } from '../../../../models/http/request_builder';
 import { ProtoCtx } from '../../../../models/http/body/protobuf';
+import ExpectedBodyInput from '../ExpectedBodyInput/ExpectedBodyInput';
 
 const { TabPane } = Tabs;
 
@@ -49,13 +50,10 @@ const RequestBuilderView: React.FunctionComponent<Props> = ({ requestBuilder, pr
           <HeaderView editable headers={headers} />
         </PaddedTabPane>
         <PaddedTabPane tab="Body" key="body">
-          <BodyInput
-            bodyType={bodyType}
-            bodies={bodies}
-            protoCtx={protoCtx}
-            messageNames={messageNames}
-            responseMessageName={responseMessageName}
-          />
+          <BodyInput bodyType={bodyType} bodies={bodies} protoCtx={protoCtx} messageNames={messageNames} />
+        </PaddedTabPane>
+        <PaddedTabPane tab="Expected Message" key="expectedMessage">
+          <ExpectedBodyInput messageNames={messageNames} responseMessageName={responseMessageName} />
         </PaddedTabPane>
       </Tabs>
     </BuilderWrapper>

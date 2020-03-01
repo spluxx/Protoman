@@ -13,7 +13,7 @@ A [Postman](https://www.postman.com/)-like API client for [protobuf](https://dev
 - [x] Persisting view state
 - [x] Collections
 - [ ] Environments from [Postman](https://learning.postman.com/docs/postman/variables-and-environments/variables/)
-- [ ] Response metadata - execution time, body size, ...
+- [x] Response metadata - execution time, body size, ...
 - [ ] Expose more request configurations
 - [ ] Support bytes datatype - with something like base64 strings.
 

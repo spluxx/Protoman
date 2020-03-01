@@ -33,18 +33,40 @@ export async function protoRequest(request: RequestBuilder, protoCtx: ProtoCtx):
       body = undefined;
   }
 
+  const headers = convertHeaders(request.headers);
+
+  const sTime = Date.now();
   const resp = await fetch(request.url, {
     method: request.method,
     body: body,
-    headers: convertHeaders(request.headers),
+    headers,
   });
+  const dt = Date.now() - sTime;
+
+  const responseHeaders = unconvertHeaders(resp.headers);
 
   let responseType: ResponseBodyType = 'unknown';
-  let responseBody: MessageValue | undefined = undefined;
+  let responseBody: MessageValue | string | undefined = undefined;
   const buf = new Uint8Array(await resp.arrayBuffer());
+
+  const saidContentType = responseHeaders.find(([name]) => name === 'content-type')?.[1];
 
   if (buf.length === 0) {
     responseType = 'empty';
+  } else if (saidContentType === 'application/json') {
+    responseType = 'string';
+    try {
+      responseBody = JSON.stringify(JSON.parse(new TextDecoder().decode(buf)), null, 2);
+    } catch (err) {
+      responseBody = 'Error occurred while parsing json:\n' + err.message;
+    }
+  } else if (saidContentType?.includes('text/html')) {
+    responseType = 'string';
+    try {
+      responseBody = new TextDecoder().decode(buf);
+    } catch (err) {
+      responseBody = 'Error occurred while decoding html:\n' + err.message;
+    }
   } else if (request.responseMessageName) {
     responseType = 'protobuf';
     responseBody = await deserialize(
@@ -55,8 +77,6 @@ export async function protoRequest(request: RequestBuilder, protoCtx: ProtoCtx):
     );
   }
 
-  const responseHeaders = unconvertHeaders(resp.headers);
-
   return {
     statusCode: resp.status,
     headers: responseHeaders,
@@ -64,5 +84,7 @@ export async function protoRequest(request: RequestBuilder, protoCtx: ProtoCtx):
       type: responseType,
       value: responseBody,
     },
+    time: dt,
+    bodySize: buf.length,
   };
 }
