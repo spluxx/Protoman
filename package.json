@@ -17,7 +17,7 @@
     "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
     "postinstall": "electron-builder install-app-deps",
     "pack": "electron-builder --dir",
-		"dist:all": "electron-builder -mwl",
+    "dist:all": "electron-builder -mwl",
     "dist:mac": "electron-builder --mac",
     "dist:win": "electron-builder --win",
     "dist:linux": "electron-builder --linux"
@@ -81,6 +81,7 @@
     "@types/google-protobuf": "^3.7.2",
     "@types/html-webpack-plugin": "^3.2.2",
     "@types/lodash": "^4.14.149",
+    "@types/node-fetch": "^2.5.5",
     "@types/react": "^16.9.19",
     "@types/react-dom": "^16.9.5",
     "@types/react-redux": "^7.1.7",

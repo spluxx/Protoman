@@ -1,20 +1,24 @@
-import { MessageValue } from './body/protobuf';
+import { MessageValue } from '../protobuf/protobuf';
 
-export interface Response {
+// string for json and html - deserves better support, but this will do for now.
+export type ResponseBodyType = 'empty' | 'protobuf' | 'json' | 'html' | 'unknown';
+export type ResponseBodyValue = undefined | MessageValue | string;
+
+export interface ResponseBody {
+  readonly type: ResponseBodyType;
+  readonly value: ResponseBodyValue;
+  readonly bodySize: number;
+}
+
+export interface ResponseMetadata {
+  readonly time: number; // ms
+}
+
+export interface ResponseDescriptor {
   readonly statusCode: number;
   readonly headers: ReadonlyArray<[string, string]>;
   readonly body: ResponseBody;
-
-  readonly time: number; // ms
-  readonly bodySize: number; // bytes
-}
-
-// string for json and html - deserves better support, but this will do for now.
-export type ResponseBodyType = 'empty' | 'protobuf' | 'string' | 'unknown';
-
-export interface ResponseBody {
-  type: ResponseBodyType;
-  value: undefined | MessageValue | string;
+  readonly metadata: ResponseMetadata;
 }
 
 // from https://en.wikipedia.org/wiki/List_of_HTTP_status_codes

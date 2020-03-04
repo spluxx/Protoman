@@ -1,8 +1,4 @@
-import { MessageValue } from './body/protobuf';
-
-export const HTTP_METHODS: string[] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'COPY', 'HEAD', 'OPTIONS'];
-
-export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'COPY' | 'HEAD' | 'OPTIONS';
+import { MessageValue } from './protobuf';
 
 export type BodyType = 'none' | 'protobuf';
 export const BODY_TYPES: string[] = ['none', 'protobuf'];

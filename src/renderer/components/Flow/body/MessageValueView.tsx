@@ -165,18 +165,10 @@ const EnumValueView: FunctionComponent<EVVProps> = ({ editable, value, handlers 
     width: VALUE_INPUT_WIDTH,
   };
 
-  return editable ? (
-    <Select value={selected} style={style} size="small" onChange={(s: string): void => handlers.valueChange('', s)}>
-      {options.map((option, idx) => (
-        <Select.Option key={idx} value={option}>
-          {option}
-        </Select.Option>
-      ))}
-    </Select>
-  ) : (
+  return (
     <Select
       value={selected}
-      open={false} // block
+      {...(editable ? {} : { open: false })}
       style={style}
       size="small"
       onChange={(s: string): void => handlers.valueChange('', s)}

@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
-// M - Not part of the vm tree
-
 export type ProtobufType = PrimitiveType | MessageType | EnumType;
 export type ProtobufValue = PrimitiveValue | MessageValue | EnumValue;
 export type FieldName = string;
@@ -11,13 +9,12 @@ export type Fields<T> = ReadonlyArray<Field<T>>;
 export type Entry<T> = [string, T];
 export type Entries<T> = ReadonlyArray<Entry<T>>;
 
-export type ProtoCtx = {
-  types: { [key: string]: ProtobufType };
-  origin: { [key: string]: string }; // file path
-};
+export interface ProtoCtx {
+  readonly types: { [key: string]: ProtobufType };
+  readonly origin: { [key: string]: string }; // file path
+}
 
 export function typeNameToType(name: TypeName, ctx: ProtoCtx): ProtobufType {
-  // mocked implementation
   return ctx.types[name];
 }
 
@@ -42,8 +39,6 @@ export interface EnumType {
   readonly options: ReadonlyArray<string>;
   readonly optionValues: Readonly<{ [key: string]: number }>;
 }
-
-// VM
 
 export interface MessageValue {
   readonly type: MessageType;

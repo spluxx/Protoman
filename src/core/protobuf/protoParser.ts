@@ -1,5 +1,5 @@
 import protobuf from 'protobufjs';
-import { ProtobufType, MessageType, EnumType, ProtoCtx } from '../../http/body/protobuf';
+import { ProtobufType, MessageType, EnumType, ProtoCtx } from './protobuf';
 import { allPrimitiveTypes } from './primitiveTypes';
 
 type FieldPair<T> = [string, T];

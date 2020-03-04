@@ -1,7 +1,8 @@
 import React from 'react';
-import { Row, Col, Input, Button, Icon } from 'antd';
+import { Row, Col, Input, Button, Icon, AutoComplete } from 'antd';
 import { useDispatch } from 'react-redux';
 import { deleteHeader, createHeader, changeHeaderName, changeHeaderValue } from './HeaderViewActions';
+import { COMMON_HEADER_NAMES } from '../../../../models/poc/http/headers';
 
 type Props = {
   editable?: boolean;
@@ -66,22 +67,47 @@ const SingleHeaderView: React.FunctionComponent<SingleProps> = ({
   onNameChange,
   onValueChange,
 }) => {
+  const nameOptions = COMMON_HEADER_NAMES;
+
   return (
     <Row gutter={8} type="flex" style={{ alignItems: 'center', marginBottom: 8 }}>
       <Col span={6}>
-        <Input
+        <AutoComplete
+          style={{ width: '100%' }}
           placeholder="name"
-          readOnly={!editable}
           value={name}
-          onChange={(e): void => onNameChange(e.target.value)}
-        />
+          {...(editable ? {} : { open: false })}
+          onChange={(s): void => {
+            if (editable) {
+              onNameChange(s.toString());
+            }
+          }}
+          filterOption={(inputValue, option): boolean => {
+            return (
+              inputValue.length > 0 &&
+              (option.key || '')
+                .toString()
+                .toLowerCase()
+                .includes(inputValue.toLowerCase())
+            );
+          }}
+        >
+          {nameOptions.map(option => (
+            <AutoComplete.Option key={option} value={option}>
+              {option}
+            </AutoComplete.Option>
+          ))}
+        </AutoComplete>
       </Col>
       <Col span={editable ? 16 : 18}>
         <Input
           placeholder="value"
-          readOnly={!editable}
           value={value}
-          onChange={(e): void => onValueChange(e.target.value)}
+          onChange={(e): void => {
+            if (editable) {
+              onValueChange(e.target.value);
+            }
+          }}
         />
       </Col>
       {editable ? (

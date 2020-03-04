@@ -1,5 +1,5 @@
-import { readProtos, buildContext } from '../engine/protoParser';
-import { MessageType } from '../../http/body/protobuf';
+import { readProtos, buildContext } from '../protoParser';
+import { MessageType } from '../protobuf';
 import { isEqual } from 'lodash';
 import { equal, strictEqual } from 'assert';
 

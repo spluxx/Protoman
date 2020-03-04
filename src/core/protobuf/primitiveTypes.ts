@@ -1,4 +1,4 @@
-import { PrimitiveType } from '../../http/body/protobuf';
+import { PrimitiveType } from './protobuf';
 
 const double: PrimitiveType = {
   tag: 'primitive',

@@ -1,5 +1,5 @@
-import { createMessageRecurse } from '../http/serializer';
-import { createMessageValue } from '../http/deserializer';
+import { createMessageRecurse } from '../serializer';
+import { createMessageValue } from '../deserializer';
 import { userValue, userType, sampleCtx, test3UserExpectedJson } from './test3dummyValue';
 import { classType, classValue, sampleCtx2, test4UserExpectedJson } from './test4dummyValue';
 import { test4UserValueExpected } from './test4JSON';
@@ -29,6 +29,7 @@ export async function testMessageParser(): Promise<void> {
   equal(isEqual(null, errResult2), true);
   console.log('-------Part B: json to message value ----------');
   const messageValue2 = createMessageValue(classType, test4UserExpectedJson, sampleCtx2);
+  // number/boolean values in the expected object were changed to strings - Inchan
   equal(isEqual(messageValue2, test4UserValueExpected), true);
 
   console.log('all tests passed, good to go');

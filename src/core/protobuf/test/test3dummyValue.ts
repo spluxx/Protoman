@@ -1,13 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import {
-  MessageType,
-  PrimitiveType,
-  EnumType,
-  ProtoCtx,
-  PrimitiveValue,
-  EnumValue,
-  MessageValue,
-} from '../../http/body/protobuf';
+import { MessageType, PrimitiveType, EnumType, ProtoCtx, PrimitiveValue, EnumValue, MessageValue } from '../protobuf';
 
 const stringType: PrimitiveType = {
   tag: 'primitive',
