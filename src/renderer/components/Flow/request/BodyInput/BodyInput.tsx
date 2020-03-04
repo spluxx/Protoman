@@ -1,12 +1,12 @@
 import React, { FunctionComponent } from 'react';
-import { ProtoCtx } from '../../../../models/http/body/protobuf';
 import { Radio, Select } from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio';
 import MessageValueView, { dispatchingHandler } from '../../body/MessageValueView';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { selectRequestMessageName, selectBodyType } from './BodyInputActions';
-import { RequestBody, BodyType } from '../../../../models/http/request_builder';
+import { BodyType, RequestBody } from '../../../../models/request_builder';
+import { ProtoCtx } from '../../../../../core/protobuf/protobuf';
 
 type Props = {
   bodyType: BodyType;

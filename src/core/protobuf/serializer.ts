@@ -3,7 +3,7 @@ import { MessageValue, ProtobufValue, PrimitiveValue, EnumValue } from './protob
 import protobuf from 'protobufjs';
 import { ProtoJson, JsonObject, JsonArray } from './protoJson';
 
-export async function serialize(body: MessageValue, path: string): Promise<Buffer> {
+export async function serializeProtobuf(body: MessageValue, path: string): Promise<Buffer> {
   const root = await protobuf.load(path);
   const messageType = root.lookupType(body.type.name);
   const rec = makeMessageValue(body);

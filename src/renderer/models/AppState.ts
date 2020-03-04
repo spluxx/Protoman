@@ -1,8 +1,5 @@
 // contains the entire state of the application
 
-// function loadMostRecentState(): Promise<AppState> {
-// }
-
 import { Env } from './Env';
 import { Collection } from './Collection';
 

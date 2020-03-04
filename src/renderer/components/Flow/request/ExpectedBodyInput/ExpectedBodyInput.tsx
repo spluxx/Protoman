@@ -6,10 +6,10 @@ import { MESSAGE_NAME_WIDTH } from '../BodyInput/BodyInput';
 
 type Props = {
   messageNames: ReadonlyArray<string>;
-  responseMessageName: string | undefined;
+  expectedProtobufMsg: string | undefined;
 };
 
-const ExpectedBodyInput: React.FunctionComponent<Props> = ({ messageNames, responseMessageName }) => {
+const ExpectedBodyInput: React.FunctionComponent<Props> = ({ messageNames, expectedProtobufMsg }) => {
   const dispatch = useDispatch();
 
   function onSelectResponseMsg(msgName: string): void {
@@ -20,7 +20,7 @@ const ExpectedBodyInput: React.FunctionComponent<Props> = ({ messageNames, respo
     <div>
       <span style={{ marginRight: 4 }}>Expected protobuf message: </span>
       <Select
-        value={responseMessageName}
+        value={expectedProtobufMsg}
         onChange={onSelectResponseMsg}
         size="small"
         style={{ width: MESSAGE_NAME_WIDTH }}

@@ -3,8 +3,8 @@ import { AnyAction } from 'redux';
 import { BodyInputActionTypes, BodyInputActions } from './BodyInputActions';
 import { AppState } from '../../../../models/AppState';
 import { getByKey } from '../../../../utils/utils';
-import { typeToDefaultValue, MessageValue } from '../../../../models/http/body/protobuf';
-import { BODY_TYPES, BodyType } from '../../../../models/http/request_builder';
+import { typeToDefaultValue, MessageValue } from '../../../../../core/protobuf/protobuf';
+import { BODY_TYPES, BodyType } from '../../../../models/request_builder';
 
 export default function BodyInputReducer(s: AppState, action: AnyAction): AppState {
   if (BodyInputActionTypes.includes(action.type)) {

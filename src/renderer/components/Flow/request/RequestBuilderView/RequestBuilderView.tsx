@@ -4,9 +4,9 @@ import { Tabs, Button } from 'antd';
 import HeaderView from '../../shared/HeaderView/HeaderView';
 import BodyInput from '../BodyInput/BodyInput';
 import styled from 'styled-components';
-import { RequestBuilder } from '../../../../models/http/request_builder';
-import { ProtoCtx } from '../../../../models/http/body/protobuf';
 import ExpectedBodyInput from '../ExpectedBodyInput/ExpectedBodyInput';
+import { RequestBuilder } from '../../../../models/request_builder';
+import { ProtoCtx } from '../../../../../core/protobuf/protobuf';
 
 const { TabPane } = Tabs;
 
@@ -37,7 +37,7 @@ type Props = {
 };
 
 const RequestBuilderView: React.FunctionComponent<Props> = ({ requestBuilder, protoCtx, messageNames, onSend }) => {
-  const { method, url, headers, bodyType, bodies, responseMessageName } = requestBuilder;
+  const { method, url, headers, bodyType, bodies, expectedProtobufMsg } = requestBuilder;
 
   return (
     <BuilderWrapper>
@@ -53,7 +53,7 @@ const RequestBuilderView: React.FunctionComponent<Props> = ({ requestBuilder, pr
           <BodyInput bodyType={bodyType} bodies={bodies} protoCtx={protoCtx} messageNames={messageNames} />
         </PaddedTabPane>
         <PaddedTabPane tab="Expected Message" key="expectedMessage">
-          <ExpectedBodyInput messageNames={messageNames} responseMessageName={responseMessageName} />
+          <ExpectedBodyInput messageNames={messageNames} expectedProtobufMsg={expectedProtobufMsg} />
         </PaddedTabPane>
       </Tabs>
     </BuilderWrapper>

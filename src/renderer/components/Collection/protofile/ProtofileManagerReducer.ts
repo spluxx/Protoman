@@ -3,8 +3,7 @@ import { AnyAction } from 'redux';
 import { ProtofileManagerActionTypes, ProtofileManagerActions } from './ProtofileManagerActions';
 import { AppState } from '../../../models/AppState';
 import { getByKey } from '../../../utils/utils';
-import { ProtoCtx } from '../../../models/http/body/protobuf';
-
+import { ProtoCtx } from '../../../../core/protobuf/protobuf';
 export default function ProtofileManagerReducer(s: AppState, action: AnyAction): AppState {
   if (ProtofileManagerActionTypes.includes(action.type)) {
     const a = action as ProtofileManagerActions;

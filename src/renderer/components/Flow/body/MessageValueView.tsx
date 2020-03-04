@@ -1,10 +1,10 @@
 import React, { FunctionComponent } from 'react';
-import { MessageValue, PrimitiveValue, EnumValue, ProtobufValue, ProtoCtx } from '../../../models/http/body/protobuf';
 import styled from 'styled-components';
 import { Input, Select, Button, Icon } from 'antd';
 import { Dispatch, AnyAction } from 'redux';
 import { valueChange, fieldChange, entryAdd, entryRemove } from './MessageValueViewActions';
 import { getByKey } from '../../../utils/utils';
+import { ProtoCtx, MessageValue, PrimitiveValue, EnumValue, ProtobufValue } from '../../../../core/protobuf/protobuf';
 
 type ValueChangeHandler = (path: string, v: string) => void;
 type FieldChangeHandler = (path: string, t: string) => void; // for oneof

@@ -1,8 +1,8 @@
 import { ThunkAction } from 'redux-thunk';
-import { ProtoCtx } from '../../../models/http/body/protobuf';
 import { AppState } from '../../../models/AppState';
 import { AnyAction } from 'redux';
-import { buildContext } from '../../../models/poc/engine/protoParser';
+import { ProtoCtx } from '../../../../core/protobuf/protobuf';
+import { buildContext } from '../../../../core/protobuf/protoParser';
 
 type SetProtofiles = {
   type: 'SET_PROTOFILES';

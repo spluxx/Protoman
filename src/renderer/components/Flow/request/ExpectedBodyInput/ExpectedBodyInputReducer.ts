@@ -15,7 +15,7 @@ export default function ExpectedBodyInputReducer(s: AppState, action: AnyAction)
           if (!collection) return s;
           const flow = getByKey(collection.flows, draft.currentFlow);
           if (!flow) return s;
-          flow.requestBuilder.responseMessageName = a.name;
+          flow.requestBuilder.expectedProtobufMsg = a.name;
         });
       default:
         return s;

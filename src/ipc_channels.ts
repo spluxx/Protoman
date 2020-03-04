@@ -4,6 +4,6 @@ export default {
   MAIN_ERROR: 'MAIN_ERROR',
 
   SEND_REQUEST: 'SEND_REQUEST',
+  REQUEST_SUCCESS: 'REQUEST_SUCCESS',
+  REQUEST_FAILURE: 'REQUEST_FAILURE',
 };
-
-export type RequestInfo = {};

@@ -3,13 +3,13 @@ import { RequestDescriptor } from './request';
 import { ProtoCtx } from '../protobuf/protobuf';
 import { convertHeaders, unconvertHeaders } from './headers';
 import { ResponseBodyValue, ResponseDescriptor, ResponseBodyType } from './response';
-import { deserialize } from '../protobuf/deserializer';
 import fetch, { Response } from 'node-fetch';
+import { deserializeProtobuf } from '../protobuf/deserializer';
 
 const CONTENT_TYPE_JSON = 'application/json';
 const CONTENT_TYPE_HTML = 'text/html';
 
-export async function protoRequest(request: RequestDescriptor, protoCtx: ProtoCtx): Promise<ResponseDescriptor> {
+export async function makeRequest(request: RequestDescriptor, protoCtx: ProtoCtx): Promise<ResponseDescriptor> {
   const { url, method, body } = request;
 
   const headers = convertHeaders(request.headers);
@@ -22,6 +22,7 @@ export async function protoRequest(request: RequestDescriptor, protoCtx: ProtoCt
 
   return translateResponse(resp, request, protoCtx, dt);
 }
+
 async function translateResponse(
   response: Response,
   request: RequestDescriptor,
@@ -49,7 +50,7 @@ async function translateResponse(
     responseBodyValue = toStr(buf);
   } else if (expectedProtobufMsg) {
     responseBodyType = 'protobuf';
-    responseBodyValue = await deserialize(buf, expectedProtobufMsg, protoCtx);
+    responseBodyValue = await deserializeProtobuf(buf, expectedProtobufMsg, protoCtx);
   } else {
     responseBodyType = 'unknown';
     responseBodyValue = undefined;
@@ -63,9 +64,7 @@ async function translateResponse(
       value: responseBodyValue,
       bodySize: buf.length,
     },
-    metadata: {
-      time: dt,
-    },
+    time: dt,
   };
 }
 

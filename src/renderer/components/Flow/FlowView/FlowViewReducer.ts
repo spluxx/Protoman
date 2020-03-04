@@ -3,7 +3,7 @@ import { AnyAction } from 'redux';
 import { AppState } from '../../../models/AppState';
 import { FlowViewActionTypes, FlowViewActions } from './FlowViewActions';
 import { getByKey } from '../../../utils/utils';
-import { Response } from '../../../models/http/response';
+import { ResponseDescriptor } from '../../../../core/http_client/response';
 
 export default function FlowViewReducers(s: AppState, action: AnyAction): AppState {
   if (FlowViewActionTypes.includes(action.type)) {
@@ -22,7 +22,7 @@ export default function FlowViewReducers(s: AppState, action: AnyAction): AppSta
         return produce(s, draft => {
           const flow = getByKey(getByKey(draft.collections, a.collectionName)?.flows, a.flowName);
           if (!flow) return draft;
-          flow.response = a.response as Draft<Response>;
+          flow.response = a.response as Draft<ResponseDescriptor>;
           flow.requestStatus = 'success';
           flow.requestError = undefined;
         });

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Input, Select } from 'antd';
-import { HTTP_METHODS, HttpMethod } from '../../../../models/http/request_builder';
 import { useDispatch } from 'react-redux';
 import { changeURL, changeMethod } from './EndpointInputActions';
+import { HTTP_METHODS, HttpMethod } from '../../../../../core/http_client/request';
 
 type Props = {
   method: HttpMethod;

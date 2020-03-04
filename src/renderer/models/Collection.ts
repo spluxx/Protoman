@@ -1,5 +1,5 @@
-import { Flow } from './http/flow';
-import { ProtoCtx } from './http/body/protobuf';
+import { ProtoCtx } from '../../core/protobuf/protobuf';
+import { Flow } from './flow';
 
 export interface Collection {
   readonly protoFilepaths: ReadonlyArray<string>;

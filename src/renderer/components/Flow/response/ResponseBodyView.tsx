@@ -1,19 +1,15 @@
 import React, { FunctionComponent } from 'react';
 import MessageValueView from '../body/MessageValueView';
-import { ResponseBody } from '../../../models/http/response';
-import { MessageValue } from '../../../models/http/body/protobuf';
 import styled from 'styled-components';
 import TextArea from 'antd/lib/input/TextArea';
+import { ResponseBody } from '../../../../core/http_client/response';
+import { MessageValue } from '../../../../core/protobuf/protobuf';
 
 const TextView = styled(TextArea)`
   width: 100%;
   resize: none;
   overflow: hidden;
 `;
-
-type Props = {
-  body: ResponseBody;
-};
 
 const UnknownBody: FunctionComponent<{}> = () => {
   return <div>The given content-type is unsupported.</div>;
@@ -31,6 +27,10 @@ const NO_OP = (): void => {
   // no_op
 };
 
+type Props = {
+  body: ResponseBody;
+};
+
 const ResponseBodyView: FunctionComponent<Props> = ({ body }) => {
   const { type, value } = body;
 
@@ -44,12 +44,15 @@ const ResponseBodyView: FunctionComponent<Props> = ({ body }) => {
   switch (type) {
     case 'empty':
       return <EmptyBody />;
-    case 'protobuf':
-      return <MessageValueView value={value as MessageValue} handlers={handlers} />;
-    case 'string':
-      return <StringBody s={value as string} />;
     case 'unknown':
       return <UnknownBody />;
+    case 'protobuf':
+      return <MessageValueView value={value as MessageValue} handlers={handlers} />;
+    case 'json':
+    case 'html':
+      return <StringBody s={value as string} />;
+    default:
+      return null;
   }
 };
 

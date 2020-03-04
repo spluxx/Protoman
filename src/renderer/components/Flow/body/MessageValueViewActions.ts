@@ -1,4 +1,4 @@
-import { ProtoCtx } from '../../../models/http/body/protobuf';
+import { ProtoCtx } from '../../../../core/protobuf/protobuf';
 
 type ValueChangeAction = {
   type: 'VALUE_CHANGE';

@@ -2,7 +2,7 @@ import React from 'react';
 import { Row, Col, Input, Button, Icon, AutoComplete } from 'antd';
 import { useDispatch } from 'react-redux';
 import { deleteHeader, createHeader, changeHeaderName, changeHeaderValue } from './HeaderViewActions';
-import { COMMON_HEADER_NAMES } from '../../../../models/poc/http/headers';
+import { COMMON_HEADER_NAMES } from './HeaderNames';
 
 type Props = {
   editable?: boolean;

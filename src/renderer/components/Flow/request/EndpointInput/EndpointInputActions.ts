@@ -1,4 +1,4 @@
-import { HttpMethod } from '../../../../models/http/request_builder';
+import { HttpMethod } from '../../../../../core/http_client/request';
 
 type URLChange = {
   type: 'URL_CHANGE';

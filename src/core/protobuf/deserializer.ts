@@ -15,7 +15,11 @@ import protobuf from 'protobufjs';
 import { createMessageType } from './protoParser';
 import { ProtoJson, JsonObject, JsonArray } from './protoJson';
 
-export async function deserialize(arrayBuffer: Uint8Array, expectedMsg: string, ctx: ProtoCtx): Promise<MessageValue> {
+export async function deserializeProtobuf(
+  arrayBuffer: Uint8Array,
+  expectedMsg: string,
+  ctx: ProtoCtx,
+): Promise<MessageValue> {
   const root = await protobuf.load(ctx.origin[expectedMsg]);
   const messageType = root.lookupType(expectedMsg);
   const decoded = messageType.decode(arrayBuffer);

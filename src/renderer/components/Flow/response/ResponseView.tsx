@@ -2,8 +2,9 @@ import React from 'react';
 import { Tabs, Row, Col } from 'antd';
 import styled from 'styled-components';
 import HeaderView from '../shared/HeaderView/HeaderView';
-import { Response, statusCodeToText } from '../../../models/http/response';
 import ResponseBodyView from './ResponseBodyView';
+import { ResponseDescriptor } from '../../../../core/http_client/response';
+import { statusCodeToText } from './StatusCodes';
 
 const { TabPane } = Tabs;
 
@@ -94,11 +95,13 @@ const BodySizeText: React.FunctionComponent<{ bodySize: number }> = ({ bodySize 
 };
 
 type Props = {
-  response: Response;
+  response: ResponseDescriptor;
 };
 
 const ResponseView: React.FunctionComponent<Props> = ({ response }) => {
-  const { statusCode, headers, time, bodySize, body } = response;
+  const { statusCode, headers, time, body } = response;
+  const { bodySize } = body;
+
   return (
     <ResponseWrapper>
       <TitleWrapper type="flex" align="bottom">

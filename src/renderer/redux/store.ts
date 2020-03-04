@@ -2,12 +2,12 @@ import { createStore, applyMiddleware, Store } from 'redux';
 import AppReducer from './AppReducer';
 import { AppState } from '../models/AppState';
 import produce, { Draft } from 'immer';
-import { Flow } from '../models/http/flow';
 import { Collection } from '../models/Collection';
 import { Env } from '../models/Env';
 import thunk from 'redux-thunk';
 import encoding from 'text-encoding';
 import { getByKey, getEntryByKey } from '../utils/utils';
+import { Flow } from '../models/flow';
 
 const { TextEncoder, TextDecoder } = encoding;
 
@@ -26,7 +26,7 @@ export function createDefaultFlow(): Draft<Flow> {
         none: undefined,
         protobuf: undefined,
       },
-      responseMessageName: undefined,
+      expectedProtobufMsg: undefined,
     },
     requestStatus: 'default',
     requestError: undefined,

@@ -1,10 +1,10 @@
-import { RequestBuilder } from '../../../models/http/request_builder';
-import { ProtoCtx } from '../../../models/http/body/protobuf';
-import { Response } from '../../../models/http/response';
 import { ThunkAction } from 'redux-thunk';
 import { AppState } from '../../../models/AppState';
 import { AnyAction } from 'redux';
-import { protoRequest } from '../../../models/poc/http/request';
+import { makeRequest } from '../../../events';
+import { ProtoCtx } from '../../../../core/protobuf/protobuf';
+import { RequestBuilder, toRequestDescriptor } from '../../../models/request_builder';
+import { ResponseDescriptor } from '../../../../core/http_client/response';
 
 type SendRequest = {
   type: 'SEND_REQUEST';
@@ -18,7 +18,7 @@ type SetResponse = {
   type: 'SET_RESPONSE';
   collectionName: string;
   flowName: string;
-  response: Response;
+  response: ResponseDescriptor;
 };
 
 const SET_RESPONSE = 'SET_RESPONSE';
@@ -45,7 +45,8 @@ export function sendRequest(
   return async (dispatch): Promise<void> => {
     dispatch({ type: SEND_REQUEST, collectionName, flowName });
     try {
-      const response = await protoRequest(builder, ctx);
+      const rd = await toRequestDescriptor(builder, ctx);
+      const response = await makeRequest(rd, ctx);
       dispatch({ type: SET_RESPONSE, collectionName, flowName, response });
     } catch (err) {
       dispatch({ type: SET_REQUEST_ERROR, collectionName, flowName, err });

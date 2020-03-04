@@ -3,7 +3,7 @@ import { AnyAction } from 'redux';
 import { AppState } from '../../../../models/AppState';
 import { EndpointInputActionTypes, EndpointInputAction } from './EndpointInputActions';
 import { getByKey } from '../../../../utils/utils';
-import { RequestBuilder } from '../../../../models/http/request_builder';
+import { RequestBuilder } from '../../../../models/request_builder';
 
 function extractRB(d: Draft<AppState>): Draft<RequestBuilder> | undefined {
   const flow = getByKey(getByKey(d.collections, d.currentCollection)?.flows, d.currentFlow);

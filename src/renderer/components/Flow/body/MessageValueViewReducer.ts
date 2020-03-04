@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import {
-  MessageValue,
-  ProtobufValue,
-  EnumValue,
-  PrimitiveValue,
-  typeToDefaultValue,
-  ProtoCtx,
-  PrimitiveType,
-} from '../../../models/http/body/protobuf';
 import produce, { Draft } from 'immer';
 import { AnyAction } from 'redux';
 import { MessageValueViewActionTypes, MessageValueViewAction } from './MessageValueViewActions';
 import { AppState } from '../../../models/AppState';
 import { getByKey, getEntryByKey } from '../../../utils/utils';
+import {
+  MessageValue,
+  ProtobufValue,
+  PrimitiveValue,
+  EnumValue,
+  ProtoCtx,
+  typeToDefaultValue,
+  PrimitiveType,
+} from '../../../../core/protobuf/protobuf';
 
 function extractBody(d: Draft<AppState>): Draft<MessageValue> | undefined {
   const flow = getByKey(getByKey(d.collections, d.currentCollection)?.flows, d.currentFlow);
