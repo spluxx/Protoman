@@ -1,6 +1,6 @@
 import { readProtos, buildContext } from '../protoParser';
 import { MessageType } from '../protobuf';
-import { isEqual } from 'lodash';
+import isEqual from 'lodash.isequal';
 import { equal, strictEqual } from 'assert';
 
 const testFilePaths1: string[] = ['./test1.proto'];

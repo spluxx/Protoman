@@ -4,7 +4,7 @@ import { userValue, userType, sampleCtx, test3UserExpectedJson } from './test3du
 import { classType, classValue, sampleCtx2, test4UserExpectedJson } from './test4dummyValue';
 import { test4UserValueExpected } from './test4JSON';
 import { verifyJson } from './testUtils';
-import { isEqual } from 'lodash';
+import isEqual from 'lodash.isequal';
 import { equal } from 'assert';
 export async function testMessageParser(): Promise<void> {
   console.log('-------Test1: testfile is test3.proto---------');

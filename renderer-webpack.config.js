@@ -1,9 +1,16 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const tsImportPluginFactory = require('ts-import-plugin');
+
+const NODE_ENV = process.env.NODE_ENV;
 
 module.exports = {
+  mode: NODE_ENV,
   devtool: 'inline-source-map',
   entry: './src/renderer/index.tsx',
+  target: 'electron-renderer',
   output: {
     filename: 'renderer.js',
     path: path.resolve(__dirname, 'dist'),
@@ -12,10 +19,23 @@ module.exports = {
     rules: [
       {
         test: /\.(ts|tsx)$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'ts-loader',
+        loader: 'ts-loader',
+        options: {
+          transpileOnly: true,
+          compilerOptions: {
+            module: 'esnext',
+          },
+          getCustomTransformers: () => ({
+            before: [
+              tsImportPluginFactory({
+                libraryName: 'antd',
+                libraryDirectory: 'es',
+                style: 'css',
+              }),
+            ],
+          }),
         },
+        exclude: /node_modules/,
       },
       {
         test: /\.css$/i,
@@ -40,5 +60,7 @@ module.exports = {
       title: 'ProtoMan',
       template: './templates/index.html',
     }),
+    new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /ja|it/),
+    ...(NODE_ENV === 'production' ? [new BundleAnalyzerPlugin()] : []),
   ],
 };

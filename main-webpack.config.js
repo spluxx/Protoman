@@ -1,9 +1,13 @@
 const path = require('path');
+const tsImportPluginFactory = require('ts-import-plugin');
+
+const NODE_ENV = process.env.NODE_ENV;
 
 module.exports = {
+  mode: NODE_ENV,
   devtool: 'inline-source-map',
   entry: './src/main/index.ts',
-  target: 'electron-renderer',
+  target: 'electron-main',
   output: {
     filename: 'main.js',
     path: path.resolve(__dirname, 'dist'),
@@ -12,10 +16,8 @@ module.exports = {
     rules: [
       {
         test: /\.(ts|tsx)$/,
+        loader: 'ts-loader',
         exclude: /node_modules/,
-        use: {
-          loader: 'ts-loader',
-        },
       },
       {
         test: /\.node$/,

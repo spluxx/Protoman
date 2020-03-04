@@ -5,11 +5,8 @@ import produce, { Draft } from 'immer';
 import { Collection } from '../models/Collection';
 import { Env } from '../models/Env';
 import thunk from 'redux-thunk';
-import encoding from 'text-encoding';
 import { getByKey, getEntryByKey } from '../utils/utils';
 import { Flow } from '../models/flow';
-
-const { TextEncoder, TextDecoder } = encoding;
 
 const DEFAULT_FLOW_NAME = 'Request1';
 const DEFAULT_COLLECTION_NAME = 'Collection1';
