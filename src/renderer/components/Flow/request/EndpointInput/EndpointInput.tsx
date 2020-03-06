@@ -1,8 +1,9 @@
 import React from 'react';
-import { Input, Select } from 'antd';
 import { useDispatch } from 'react-redux';
 import { changeURL, changeMethod } from './EndpointInputActions';
 import { HTTP_METHODS, HttpMethod } from '../../../../../core/http_client/request';
+import { Select } from 'antd';
+import HighlightInput from '../../../base/HighlightInput/HighlightInput';
 
 type Props = {
   method: HttpMethod;
@@ -30,9 +31,10 @@ const EndpointInput: React.FunctionComponent<Props> = ({ method, url, onSend }) 
   );
 
   return (
-    <Input
+    <HighlightInput
       addonBefore={HttpMethodPicker}
       value={url}
+      colored
       placeholder="http://localhost:8000/api/hello"
       onChange={(e): void => handleURLChange(e.target.value)}
       onPressEnter={onSend}

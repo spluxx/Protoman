@@ -1,8 +1,9 @@
 import React from 'react';
-import { Row, Col, Input, Button, Icon, AutoComplete } from 'antd';
+import { Row, Col, Button, Icon, AutoComplete } from 'antd';
 import { useDispatch } from 'react-redux';
 import { deleteHeader, createHeader, changeHeaderName, changeHeaderValue } from './HeaderViewActions';
 import { COMMON_HEADER_NAMES } from './HeaderNames';
+import HighlightInput from '../../../base/HighlightInput/HighlightInput';
 
 type Props = {
   editable?: boolean;
@@ -82,13 +83,13 @@ const SingleHeaderView: React.FunctionComponent<SingleProps> = ({
               onNameChange(s.toString());
             }
           }}
-          filterOption={(inputValue, option): boolean => {
+          filterOption={(HighlightInputValue, option): boolean => {
             return (
-              inputValue.length > 0 &&
+              HighlightInputValue.length > 0 &&
               (option.key || '')
                 .toString()
                 .toLowerCase()
-                .includes(inputValue.toLowerCase())
+                .includes(HighlightInputValue.toLowerCase())
             );
           }}
         >
@@ -100,9 +101,10 @@ const SingleHeaderView: React.FunctionComponent<SingleProps> = ({
         </AutoComplete>
       </Col>
       <Col span={editable ? 16 : 18}>
-        <Input
+        <HighlightInput
           placeholder="value"
           value={value}
+          colored={editable}
           onChange={(e): void => {
             if (editable) {
               onValueChange(e.target.value);

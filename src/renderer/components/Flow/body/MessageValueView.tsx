@@ -1,10 +1,11 @@
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
-import { Input, Select, Button, Icon } from 'antd';
+import { Select, Button, Icon } from 'antd';
 import { Dispatch, AnyAction } from 'redux';
 import { valueChange, fieldChange, entryAdd, entryRemove } from './MessageValueViewActions';
 import { getByKey } from '../../../utils/utils';
 import { ProtoCtx, MessageValue, PrimitiveValue, EnumValue, ProtobufValue } from '../../../../core/protobuf/protobuf';
+import HighlightInput from '../../base/HighlightInput/HighlightInput';
 
 type ValueChangeHandler = (path: string, v: string) => void;
 type FieldChangeHandler = (path: string, t: string) => void; // for oneof
@@ -140,10 +141,11 @@ const PrimitiveValueView: FunctionComponent<PVVProps> = ({ editable, value, hand
   const { type, value: v } = value;
 
   return (
-    <Input
+    <HighlightInput
       size="small"
       addonAfter={<LightText>{type.name}</LightText>}
       readOnly={!editable}
+      colored
       value={v}
       style={{ width: VALUE_INPUT_WIDTH }}
       onChange={(e): void => handlers.valueChange('', e.target.value)}
@@ -313,9 +315,10 @@ const MapFieldView: FunctionComponent<MFVProps> = ({ editable, fieldName, kvPair
       <span>: </span>
       {kvPairs.map(([k, v], idx) => (
         <IndentationBlock key={idx}>
-          <Input
+          <HighlightInput
             value={k}
             style={{ width: KEY_INPUT_WIDTH, marginRight: 4 }}
+            colored
             size="small"
             onChange={(e): void => handlers.valueChange(`${idx.toString()}/0/`, e.target.value)}
           />

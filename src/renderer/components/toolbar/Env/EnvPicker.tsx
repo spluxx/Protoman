@@ -39,12 +39,11 @@ const EnvPicker: React.FunctionComponent<{}> = ({}) => {
 
   return (
     <>
-      <Button shape="circle-outline" style={{ marginLeft: 4 }} onClick={showModal} disabled>
+      <Button shape="circle-outline" style={{ marginLeft: 4 }} onClick={showModal}>
         <Icon type="setting" />
       </Button>
       <Select
         onSelect={handleEnvSwitch}
-        disabled
         value={currentEnv}
         style={{ width: 100 }}
         dropdownRender={(menu): React.ReactNode => (
