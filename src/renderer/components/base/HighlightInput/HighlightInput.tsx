@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { selectCurrentEnv } from '../../../redux/store';
 import styled from 'styled-components';
 import { colorIntervals, materializeSpans } from './HighlightInputHelpers';
+import produce from 'immer';
 
 const Wrapper = styled('div')`
   display: inline-flex;
@@ -54,8 +55,18 @@ const medium = {
   top: 4,
 };
 
+// at the moment, only for medium
 const AddonBeforeWrapper = styled('div')`
   margin-right: 4px;
+`;
+
+// at the moment, only for small, with span inside.
+const AddonAfterWrapper = styled('div')`
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 4px;
+  border: 1px solid rgb(217, 217, 217);
+  border-radius: 4px;
 `;
 
 const INSERTION_POINT_CHANGING_EVENTS = [
@@ -79,8 +90,15 @@ const ColoringInput: React.FunctionComponent<InputProps> = props => {
     return vars.reduce((acc, [k, v]) => Object.assign(acc, { [k]: v }), {});
   }, [vars]);
 
-  const { value, placeholder, addonBefore, size } = props;
-  const newProps = { ...props, addonBefore: null, placeholder: '' };
+  const { value, placeholder, addonBefore, addonAfter, size } = props;
+  const newProps = produce(props, draft => {
+    delete draft.addonBefore;
+    delete draft.addonAfter;
+    delete draft.placeholder;
+    if (draft.style) {
+      delete draft.style.width;
+    }
+  });
   const width = props.style?.width;
   const offsets = size === 'small' ? small : medium;
 
@@ -121,10 +139,11 @@ const ColoringInput: React.FunctionComponent<InputProps> = props => {
       {addonBefore ? <AddonBeforeWrapper>{addonBefore}</AddonBeforeWrapper> : null}
       <InputWrapper>
         <FakeInputWrapper style={{ ...offsets, width: clientWidth }}>
-          <FakeInput ref={fakeInputRef}>{coloredInputStr || ph}</FakeInput>
+          <FakeInput ref={fakeInputRef}>{value ? coloredInputStr : ph}</FakeInput>
         </FakeInputWrapper>
         <ModInput ref={inputRef} {...newProps} />
       </InputWrapper>
+      {addonAfter ? <AddonAfterWrapper>{addonAfter}</AddonAfterWrapper> : null}
     </Wrapper>
   );
 };

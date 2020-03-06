@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tooltip } from 'antd';
+import ReactTooltip from 'react-tooltip';
 
 /**
  *  It's such a waste to listen to window mouse events, but since the current implementation of
@@ -7,20 +7,29 @@ import { Tooltip } from 'antd';
  */
 
 type TooltipSpanProps = {
+  id?: string;
   text: string;
   color?: string;
   tooltip?: string;
 };
 
-const TooltipSpan: React.FunctionComponent<TooltipSpanProps> = ({ text, color, tooltip }) => {
-  const [visible, setVisible] = React.useState(false);
+const TooltipSpan: React.FunctionComponent<TooltipSpanProps> = ({ id, text, color, tooltip }) => {
   const spanRef = React.useRef<HTMLSpanElement>(null);
+  const nonce = React.useMemo(() => {
+    return Math.floor(Math.random() * 100007);
+  }, []);
+  const nID = `${nonce}${id || ''}`;
+
   React.useEffect(() => {
     const checkHover = (evt: MouseEvent): void => {
       if (spanRef.current) {
         const { left, right, top, bottom } = spanRef.current.getBoundingClientRect();
         const isInside = left <= evt.clientX && evt.clientX <= right && top <= evt.clientY && evt.clientY <= bottom;
-        setVisible(isInside);
+        if (isInside) {
+          ReactTooltip.show(spanRef.current);
+        } else {
+          ReactTooltip.hide(spanRef.current);
+        }
       }
     };
     window.addEventListener('mousemove', checkHover);
@@ -29,18 +38,13 @@ const TooltipSpan: React.FunctionComponent<TooltipSpanProps> = ({ text, color, t
     };
   }, [spanRef.current]);
 
-  const inner = (
-    <span ref={spanRef} style={{ color }}>
-      {text}
-    </span>
-  );
-
-  return tooltip ? (
-    <Tooltip title={tooltip} visible={visible}>
-      {inner}
-    </Tooltip>
-  ) : (
-    inner
+  return (
+    <>
+      <span ref={spanRef} style={{ color }} data-tip={tooltip || ''} data-for={nID}>
+        {text}
+      </span>
+      <ReactTooltip id={nID} />
+    </>
   );
 };
 

@@ -103,6 +103,7 @@ function preprocess(appState: AppState): AppState {
   function procFlow(flow: Draft<Flow>): Draft<Flow> {
     flow.requestError = undefined;
     flow.requestStatus = 'default';
+    flow.response = undefined;
     return flow;
   }
 

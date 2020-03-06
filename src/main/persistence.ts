@@ -3,7 +3,7 @@ import path from 'path';
 
 export const DATA_FOLDER_NAME = 'data';
 const EXT = '.pm';
-const SAFE_TIME = 60 * 1000; // a minute
+const SAFE_TIME = 60 * 60 * 1000; // an hour
 const EXPIRATION = 7 * 24 * 60 * 60 * 1000; // a week
 
 function checkExistence(path: string): Promise<boolean> {

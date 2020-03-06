@@ -41,8 +41,10 @@ function prefix(prefix: string, h: EventHandlers): EventHandlers {
   };
 }
 
-const KEY_INPUT_WIDTH = 150;
-const VALUE_INPUT_WIDTH = 300;
+const KEY_INPUT_WIDTH = 200;
+const SHORT_VALUE_INPUT_WIDTH = 300;
+const LONG_VALUE_INPUT_WIDTH = 500;
+const LONG_PRIMITIVE_TYPES = ['string', 'bytes'];
 
 const IndentationBlock = styled('div')`
   display: block;
@@ -145,9 +147,9 @@ const PrimitiveValueView: FunctionComponent<PVVProps> = ({ editable, value, hand
       size="small"
       addonAfter={<LightText>{type.name}</LightText>}
       readOnly={!editable}
-      colored
+      colored={editable}
       value={v}
-      style={{ width: VALUE_INPUT_WIDTH }}
+      style={{ width: LONG_PRIMITIVE_TYPES.includes(type.name) ? LONG_VALUE_INPUT_WIDTH : SHORT_VALUE_INPUT_WIDTH }}
       onChange={(e): void => handlers.valueChange('', e.target.value)}
     />
   );
@@ -164,7 +166,7 @@ const EnumValueView: FunctionComponent<EVVProps> = ({ editable, value, handlers 
   const { options } = type;
 
   const style = {
-    width: VALUE_INPUT_WIDTH,
+    width: SHORT_VALUE_INPUT_WIDTH,
   };
 
   return (
@@ -318,7 +320,7 @@ const MapFieldView: FunctionComponent<MFVProps> = ({ editable, fieldName, kvPair
           <HighlightInput
             value={k}
             style={{ width: KEY_INPUT_WIDTH, marginRight: 4 }}
-            colored
+            colored={editable}
             size="small"
             onChange={(e): void => handlers.valueChange(`${idx.toString()}/0/`, e.target.value)}
           />

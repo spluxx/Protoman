@@ -7,7 +7,7 @@ export async function serializeProtobuf(body: MessageValue, path: string): Promi
   const root = await protobuf.load(path);
   const messageType = root.lookupType(body.type.name);
   const rec = makeMessageValue(body);
-  return new Buffer(messageType.encode(messageType.create(rec)).finish());
+  return Buffer.from(messageType.encode(messageType.create(rec)).finish());
 }
 
 export function createMessageRecurse(protobufValue: ProtobufValue): ProtoJson {

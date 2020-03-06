@@ -20,7 +20,7 @@ const BodyWrapper = styled('div')`
   margin-top: 8px;
 `;
 
-export const MESSAGE_NAME_WIDTH = 350;
+export const MESSAGE_NAME_WIDTH = 500;
 
 const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies, protoCtx, messageNames }) => {
   const dispatch = useDispatch();
