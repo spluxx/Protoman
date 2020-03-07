@@ -65,3 +65,7 @@ export function replaceEnvVars(s: string, intervals: ResolvedInterval[]): string
 
   return frags.join('');
 }
+
+export function applyEnvs(s: string, vars: EnvVars): string {
+  return replaceEnvVars(s, matchEnvs(s, vars));
+}

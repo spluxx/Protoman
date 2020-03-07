@@ -1,3 +1,5 @@
+import { EnvVars } from '../../core/env';
+
 /*
   Environment variables - PostMan's double curly substitution feature
 */
@@ -14,4 +16,8 @@ export function validateNewEnvName(name: string, nameList: string[]): boolean {
 
 export function validateEnvName(newName: string, currentName: string, nameList: string[]): boolean {
   return currentName === newName || validateNewEnvName(newName, nameList);
+}
+
+export function toVarMap(env: Env): EnvVars {
+  return env.vars.reduce((acc, [k, v]) => Object.assign(acc, { [k]: v }), {});
 }

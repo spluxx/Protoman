@@ -5,6 +5,7 @@ import { makeRequest } from '../../../events';
 import { ProtoCtx } from '../../../../core/protobuf/protobuf';
 import { RequestBuilder, toRequestDescriptor } from '../../../models/request_builder';
 import { ResponseDescriptor } from '../../../../core/http_client/response';
+import { Env } from '../../../models/Env';
 
 type SendRequest = {
   type: 'SEND_REQUEST';
@@ -40,12 +41,13 @@ export function sendRequest(
   collectionName: string,
   flowName: string,
   builder: RequestBuilder,
+  env: Env,
   ctx: ProtoCtx,
 ): ThunkAction<Promise<void>, AppState, {}, AnyAction> {
   return async (dispatch): Promise<void> => {
     dispatch({ type: SEND_REQUEST, collectionName, flowName });
     try {
-      const rd = await toRequestDescriptor(builder, ctx);
+      const rd = await toRequestDescriptor(builder, env, ctx);
       const response = await makeRequest(rd, ctx);
       dispatch({ type: SET_RESPONSE, collectionName, flowName, response });
     } catch (err) {

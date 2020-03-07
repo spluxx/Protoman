@@ -6,6 +6,7 @@ import { selectCurrentEnv } from '../../../redux/store';
 import styled from 'styled-components';
 import { colorIntervals, materializeSpans } from './HighlightInputHelpers';
 import produce from 'immer';
+import { toVarMap } from '../../../models/Env';
 
 const Wrapper = styled('div')`
   display: inline-flex;
@@ -85,10 +86,10 @@ const INSERTION_POINT_CHANGING_EVENTS = [
 ];
 
 const ColoringInput: React.FunctionComponent<InputProps> = props => {
-  const vars = useSelector(selectCurrentEnv)?.vars || [];
+  const env = useSelector(selectCurrentEnv);
   const varMap = React.useMemo(() => {
-    return vars.reduce((acc, [k, v]) => Object.assign(acc, { [k]: v }), {});
-  }, [vars]);
+    return env ? toVarMap(env) : {};
+  }, [env]);
 
   const { value, placeholder, addonBefore, addonAfter, size } = props;
   const newProps = produce(props, draft => {

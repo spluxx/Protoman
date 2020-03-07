@@ -1,6 +1,9 @@
 import { HttpMethod, RequestDescriptor } from '../../core/http_client/request';
 import { MessageValue, ProtoCtx } from '../../core/protobuf/protobuf';
 import { serializeProtobuf } from '../../core/protobuf/serializer';
+import { Env, toVarMap } from './Env';
+import { applyEnvs } from '../../core/env';
+import { applyToProtoMessage } from '../../core/protobuf/ap';
 
 export type BodyType = 'none' | 'protobuf';
 export const BODY_TYPES: string[] = ['none', 'protobuf'];
@@ -19,19 +22,26 @@ export interface RequestBody {
   protobuf: MessageValue | undefined;
 }
 
-export async function toRequestDescriptor(builder: RequestBuilder, ctx: ProtoCtx): Promise<RequestDescriptor> {
+export async function toRequestDescriptor(
+  builder: RequestBuilder,
+  env: Env,
+  ctx: ProtoCtx,
+): Promise<RequestDescriptor> {
   const { url, method, headers, bodyType, bodies, expectedProtobufMsg } = builder;
+  const varMap = toVarMap(env);
+
   let body;
   if (bodyType === 'protobuf' && bodies.protobuf) {
-    body = await serializeProtobuf(bodies.protobuf, ctx.origin[bodies.protobuf?.type.name]);
+    const withEnv = applyToProtoMessage(bodies.protobuf, (s: string): string => applyEnvs(s, varMap));
+    body = await serializeProtobuf(withEnv, ctx.origin[bodies.protobuf?.type.name]);
   } else {
     body = undefined;
   }
 
   return {
-    url,
+    url: applyEnvs(url, varMap),
     method,
-    headers,
+    headers: headers.map(([k, v]) => [k, applyEnvs(v, varMap)]),
     body,
     expectedProtobufMsg,
   };

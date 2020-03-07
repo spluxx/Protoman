@@ -4,7 +4,7 @@ import ResponseView from '../response/ResponseView';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { sendRequest } from './FlowViewActions';
-import { selectCurrentColWithName, selectCurrentFlowWithName } from '../../../redux/store';
+import { selectCurrentColWithName, selectCurrentFlowWithName, selectCurrentEnv } from '../../../redux/store';
 import { Alert, Spin } from 'antd';
 
 const Wrapper = styled('div')`
@@ -20,17 +20,19 @@ const FlowView: React.FunctionComponent<{}> = ({}) => {
 
   const col = useSelector(selectCurrentColWithName);
   const flo = useSelector(selectCurrentFlowWithName);
+  const env = useSelector(selectCurrentEnv);
 
-  if (!col || !flo) return null;
+  if (!col || !flo || !env) return null;
 
   const [collectionName, collection] = col;
   const [flowName, flow] = flo;
+  const curEnv = env;
 
   const { requestBuilder, requestStatus, requestError, response } = flow;
   const { protoCtx } = collection;
 
   function send(): void {
-    dispatch(sendRequest(collectionName, flowName, requestBuilder, protoCtx));
+    dispatch(sendRequest(collectionName, flowName, requestBuilder, curEnv, protoCtx));
   }
 
   return (
