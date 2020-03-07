@@ -12,10 +12,10 @@ A [Postman](https://www.postman.com/)-like API client for [protobuf](https://dev
 - [x] Viewing response with protobuf messages.
 - [x] Persisting view state
 - [x] Collections
-- [ ] Environments from [Postman](https://learning.postman.com/docs/postman/variables-and-environments/variables/)
+- [x] Environments from [Postman](https://learning.postman.com/docs/postman/variables-and-environments/variables/)
 - [x] Response metadata - execution time, body size, ...
 - [ ] Expose more request configurations
-- [ ] Support bytes datatype - with something like base64 strings.
+- [x] Support bytes datatype - use base64 strings!.
 
 ## Usage
 
@@ -37,19 +37,26 @@ A [Postman](https://www.postman.com/)-like API client for [protobuf](https://dev
 
 <img src="assets/req_resp.png" width=800>
 
-3. **That's it for the current version. Enjoy and leave a star if you like it !**
+3. **As of version, 0.2.0 you can also set up environments, and reuse variables there throughout your requests on the top-right corner!**
 
+<img src="assets/env_manager.png" width=800>
+<img src="assets/envs.png" width=800>
+
+4. **That's it for the current version. Enjoy and leave a star if you like it !**
 
 ## Installation
 
 ### Mac
-[Protoman-0.1.1.dmg](http://protoman.co/mac/Protoman-0.1.1.dmg)
+
+[Protoman-0.2.0.dmg](http://protoman.co/mac/Protoman-0.2.0.dmg)
 
 ### Windows
-[Protoman Setup 0.1.1.exe](http://protoman.co/win/Protoman%20Setup%200.1.1.exe) - Unlike mac, I don't currently own a license to sign the app. So it might give you some security warnings!
+
+[Protoman Setup 0.2.0.exe](http://protoman.co/win/Protoman%20Setup%200.2.0.exe) - Unlike mac, I don't currently own a license to sign the app. So it might give you some security warnings!
 
 ### Linux
-[Protoman-0.1.1.AppImage](http://protoman.co/linux/Protoman-0.1.1.AppImage)
+
+[Protoman-0.2.0.AppImage](http://protoman.co/linux/Protoman-0.2.0.AppImage)
 
 As a fallback, you can clone the repo and run npm install && npm run build to build, and npm run start to launch the app. Or, you can actually find configurations on [electron builder](https://www.electron.build/) to get the right distribution version yourself!
 
