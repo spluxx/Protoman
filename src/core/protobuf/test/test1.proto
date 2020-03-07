@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package test1;
 
-message Fuck {
+message Ck {
     string male = 1; 
     string female =2; 
 }
@@ -17,7 +17,7 @@ message User {
     uint32 num_thanks = 7;
     uint32 num_revokes = 8;
     bool is_admin = 9;
-    Fuck fuck = 10; 
+    Ck ck = 10; 
     map<string, int32> asset = 11; 
     oneof answer{
         bool boolean_value = 12;

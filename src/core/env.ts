@@ -5,7 +5,7 @@ export type ResolvedInterval = {
   envValue: string | null;
 };
 
-export function lookup(s: string, interval: Interval, vars: EnvVars): ResolvedInterval {
+function lookup(s: string, interval: Interval, vars: EnvVars): ResolvedInterval {
   const pattern = s.substring(interval[0] + 2, interval[1] - 2); // exclude {{ }}
   const v = vars[pattern];
   return {

@@ -12,6 +12,5 @@ export function convertHeaders(headers: ReadonlyArray<[string, string]>): Header
 export function unconvertHeaders(headers: Headers): ReadonlyArray<[string, string]> {
   const h: [string, string][] = [];
   headers.forEach((value: string, name: string) => h.push([name, value]));
-  console.log(headers.get('set-cookie'));
   return h;
 }
