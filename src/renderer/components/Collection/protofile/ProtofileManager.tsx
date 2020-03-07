@@ -141,7 +141,14 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName }) =>
           )}
         />
       </Scrollable>
-      <input type="file" multiple hidden ref={filepickerRef} onChange={(e): void => handleFileInput(e.target.files)} />
+      <input
+        type="file"
+        accept=".proto"
+        multiple
+        hidden
+        ref={filepickerRef}
+        onChange={(e): void => handleFileInput(e.target.files)}
+      />
 
       {buildStatus === 'failure' ? <Alert message={buildError?.message || ' '} type="error" closeText="Close" /> : null}
       {buildStatus === 'success' ? <Alert message="Build success!" type="success" closeText="Close" /> : null}

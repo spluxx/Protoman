@@ -45,7 +45,7 @@ const EnvPicker: React.FunctionComponent<{}> = ({}) => {
       <Select
         onSelect={handleEnvSwitch}
         value={currentEnv}
-        style={{ width: 100 }}
+        style={{ width: 300 }}
         dropdownRender={(menu): React.ReactNode => (
           <div>
             {menu}
