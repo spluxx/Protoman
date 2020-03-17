@@ -7,7 +7,7 @@
   "main": "dist/main.js",
   "scripts": {
     "start": "electron dist/main.js",
-		"test": "jest",
+    "test": "jest",
     "dev": "npm run dev-renderer & npm run dev-main &",
     "kill-dev": "killall node",
     "dev-renderer": "NODE_ENV=development webpack --config renderer-webpack.config.js --watch",
@@ -62,8 +62,11 @@
     }
   },
   "dependencies": {
+    "@grpc/grpc-js": "^0.7.1",
+    "@grpc/proto-loader": "^0.5.3",
     "antd": "^3.26.9",
     "assert": "^2.0.0",
+    "grpc-web": "^1.0.7",
     "immer": "^5.3.6",
     "lodash.isequal": "^4.5.0",
     "node-fetch": "^2.6.0",
