@@ -1,8 +1,11 @@
 syntax = "proto3";
 service Greeter {
+    rpc SayHello (HelloRequest) returns (HelloReply) {}    
+  }
+
+  service Greeter2 {
     rpc SayHello (HelloRequest) returns (HelloReply) {}
   }
-  
   message HelloRequest {
     string name = 1;
   }
