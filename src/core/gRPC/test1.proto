@@ -1,15 +1,15 @@
 syntax = "proto3";
+//package package1;
+//import "test2.proto"; 
+
 service Greeter {
-    rpc SayHello (HelloRequest) returns (HelloReply) {}    
+    rpc SayHello (HelloRequest1) returns (HelloReply1) {}    
   }
 
-  service Greeter2 {
-    rpc SayHello (HelloRequest) returns (HelloReply) {}
-  }
-  message HelloRequest {
+  message HelloRequest1 {
     string name = 1;
   }
   
-  message HelloReply {
+  message HelloReply1 {
     string message = 1;
   }

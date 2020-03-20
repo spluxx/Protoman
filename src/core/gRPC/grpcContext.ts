@@ -1,5 +1,4 @@
 import { ProtobufType, TypeName } from '../protobuf/protobuf';
-import { GrpcObject } from '@grpc/grpc-js';
 
 export type GrpcType = ServiceType | MethodType | ProtobufType;
 
@@ -12,7 +11,7 @@ export interface ServiceType {
 export interface MethodType {
   readonly tag: 'Method';
   readonly name: TypeName; //ex)Sayhello
-  readonly path: string;
+  readonly path: string; //'/Greeter/SayHello'
   readonly requestStream: boolean;
   readonly responseStream: boolean;
   readonly requestType: ProtobufType;
