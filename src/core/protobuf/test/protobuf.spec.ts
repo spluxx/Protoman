@@ -6,7 +6,7 @@ import { classValue, test4UserExpectedJson, classType, sampleCtx2 } from './test
 import { test4UserValueExpected } from './test4JSON';
 import path from 'path';
 import { readProtos, buildContext } from '../protoParser';
-import { MessageType } from '../protobuf';
+import { MessageType, EnumType } from '../protobuf';
 import { allPrimitiveTypes } from '../primitiveTypes';
 
 function resolvePath(filename: string): string {
@@ -50,7 +50,7 @@ test('parser should successfully build a ProtoCtx with the given filepath', asyn
   const res = await readProtos(filepaths);
   const [testTypes, origin] = res;
 
-  const [ckType, userType] = testTypes;
+  const [ckType, userType, userRole] = testTypes;
 
   const ckTypeExpected: MessageType = {
     tag: 'message',
@@ -94,20 +94,32 @@ test('parser should successfully build a ProtoCtx with the given filepath', asyn
     mapFields: [['asset', ['string', 'int32']]],
   };
 
+  const userRoleExpected: EnumType = {
+    tag: 'enum',
+    name: '.test1.User.UserRole',
+    options: ['NORMAL_USER', 'ADMIN'],
+    optionValues: {
+      NORMAL_USER: 0,
+      ADMIN: 1,
+    },
+  };
+
   expect(userType).toStrictEqual(userTypeExpected);
+  expect(userRole).toStrictEqual(userRoleExpected);
   expect(ckType).toStrictEqual(ckTypeExpected);
   expect(origin['.test1.User']).toBe(filepaths[0]);
+  expect(origin['.test1.User.UserRole']).toBe(filepaths[0]);
   expect(origin['.test1.Ck']).toBe(filepaths[0]);
 });
 
 test('parser should successfully build a ProtoCtx with a .proto file', async () => {
   const filepaths = [resolvePath('test1.proto')];
   const protoCtx = await buildContext(filepaths);
-  expect(Object.keys(protoCtx.types).length).toBe(2 + allPrimitiveTypes.length);
+  expect(Object.keys(protoCtx.types).length).toBe(3 + allPrimitiveTypes.length);
 });
 
 test('parser should successfully build a ProtoCtx with multiple .proto files', async () => {
   const filepaths = [resolvePath('test1.proto'), resolvePath('test2.proto')];
   const protoCtx = await buildContext(filepaths);
-  expect(Object.keys(protoCtx.types).length).toBe(4 + allPrimitiveTypes.length);
+  expect(Object.keys(protoCtx.types).length).toBe(5 + allPrimitiveTypes.length);
 });

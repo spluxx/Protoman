@@ -8,6 +8,10 @@ message Ck {
 }
 
 message User {
+    enum UserRole {
+        NORMAL_USER = 0;
+        ADMIN = 1;
+    }
     string user_id = 1;
     string first_name = 2;
     string last_name = 3;
