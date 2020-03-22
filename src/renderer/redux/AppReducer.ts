@@ -1,15 +1,15 @@
 import { AnyAction } from 'redux';
 import { AppState } from '../models/AppState';
-import MessageValueViewReducer from '../components/flow/body/MessageValueViewReducer';
+import MessageValueViewReducer from '../components/Flow/body/MessageValueViewReducer';
 import EnvPickerReducer from '../components/toolbar/Env/EnvPickerReducer';
-import HeaderViewReducer from '../components/flow/shared/HeaderView/HeaderViewReducer';
-import CollectionReducer from '../components/collection/CollectionReducer';
-import EndpointInputReducer from '../components/flow/request/EndpointInput/EndpointInputReducer';
+import HeaderViewReducer from '../components/Flow/shared/HeaderView/HeaderViewReducer';
+import CollectionReducer from '../components/Collection/CollectionReducer';
+import EndpointInputReducer from '../components/Flow/request/EndpointInput/EndpointInputReducer';
 import FlowNameViewReducer from '../components/toolbar/FlowName/FlowNameViewReducer';
-import BodyInputReducer from '../components/flow/request/BodyInput/BodyInputReducer';
-import ProtofileManagerReducer from '../components/collection/protofile/ProtofileManagerReducer';
-import FlowViewReducers from '../components/flow/FlowView/FlowViewReducer';
-import ExpectedBodyInputReducer from '../components/flow/request/ExpectedBodyInput/ExpectedBodyInputReducer';
+import BodyInputReducer from '../components/Flow/request/BodyInput/BodyInputReducer';
+import ProtofileManagerReducer from '../components/Collection/protofile/ProtofileManagerReducer';
+import FlowViewReducers from '../components/Flow/FlowView/FlowViewReducer';
+import ExpectedBodyInputReducer from '../components/Flow/request/ExpectedBodyInput/ExpectedBodyInputReducer';
 
 type BigReducer = (s: AppState, a: AnyAction) => AppState;
 
