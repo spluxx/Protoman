@@ -69,7 +69,9 @@ function createEnumType(enumType: protobuf.Enum): EnumType {
 function traverseTypes(current: any): ProtobufType[] {
   switch (current.constructor) {
     case protobuf.Type:
-      return [createMessageType(current)];
+      return current.nestedArray.reduce((acc: ProtobufType[], nested: any) => [...acc, ...traverseTypes(nested)], [
+        createMessageType(current),
+      ]);
     case protobuf.Enum:
       return [createEnumType(current)];
     default:
