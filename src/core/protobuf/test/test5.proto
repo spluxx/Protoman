@@ -1,0 +1,15 @@
+syntax = "proto3";
+//package package1;
+service Greeter {
+    rpc SayHello1 (HelloRequest1) returns (stream HelloReply1) {} 
+    rpc SayHello2 (HelloRequest1) returns (HelloReply1) {}    
+  }
+
+  message HelloRequest1 {
+    string name = 1;
+  }
+  
+  message HelloReply1 {
+    string message = 1;
+  }
+
