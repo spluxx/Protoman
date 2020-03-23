@@ -63,7 +63,6 @@
   },
   "dependencies": {
     "@grpc/grpc-js": "^0.7.1",
-    "@grpc/proto-loader": "^0.5.3",
     "antd": "^3.26.9",
     "assert": "^2.0.0",
     "grpc-web": "^1.0.7",

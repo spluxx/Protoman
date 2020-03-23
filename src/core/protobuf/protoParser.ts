@@ -1,5 +1,5 @@
 import protobuf from 'protobufjs';
-import { ProtobufType, MessageType, EnumType, ProtoCtx } from './protobuf';
+import { ProtobufType, MessageType, EnumType, ProtoCtx, ServiceType, MethodType, TypeName, Field } from './protobuf';
 import { allPrimitiveTypes } from './primitiveTypes';
 
 type FieldPair<T> = [string, T];
@@ -66,12 +66,40 @@ function createEnumType(enumType: protobuf.Enum): EnumType {
   return temp;
 }
 
-function createServiceType(enumType: protobuf.Service) {}
+function createMethodType(methodType: protobuf.Method): MethodType {
+  const requestMessageTemp: Field<string> = [methodType.requestType, 'message'];
+  const responseMessageTemp: Field<string> = [methodType.responseType, 'message'];
+
+  return {
+    tag: 'method',
+    name: methodType.fullName,
+    type: methodType.type,
+    requestMessage: requestMessageTemp,
+    requestStream: methodType.requestStream ? true : false, // if undefined change it to false,
+    responseMessage: responseMessageTemp,
+    responseStream: methodType.responseStream ? true : false,
+  };
+}
+
+function createServiceType(serviceType: protobuf.Service): ServiceType {
+  const methodsTemps: MethodType[] = serviceType.methodsArray.map(createMethodType);
+  const temp: ServiceType = {
+    tag: 'service',
+    name: serviceType.fullName,
+    methods: methodsTemps.map(methodsTemp => {
+      //make [string, string] -> [methodName, 'method'] thus a fieldpair
+      return [methodsTemp.name, methodsTemp.tag];
+    }),
+  };
+  return temp;
+}
 
 function traverseTypes(current: any): ProtobufType[] {
   switch (current.constructor) {
     case protobuf.Service:
-      return createServiceType(current);
+      return [createServiceType(current)];
+    case protobuf.Method:
+      return [createMethodType(current)];
     case protobuf.Type:
       return [createMessageType(current)];
     case protobuf.Enum:
