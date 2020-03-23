@@ -66,8 +66,12 @@ function createEnumType(enumType: protobuf.Enum): EnumType {
   return temp;
 }
 
+function createServiceType(enumType: protobuf.Service) {}
+
 function traverseTypes(current: any): ProtobufType[] {
   switch (current.constructor) {
+    case protobuf.Service:
+      return createServiceType(current);
     case protobuf.Type:
       return [createMessageType(current)];
     case protobuf.Enum:

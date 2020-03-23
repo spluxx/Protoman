@@ -3,7 +3,8 @@ syntax = "proto3";
 //import "test2.proto"; 
 
 service Greeter {
-    rpc SayHello (HelloRequest1) returns (HelloReply1) {}    
+    rpc SayHello (HelloRequest1) returns (stream HelloReply1) {} 
+    rpc SayHello2 (HelloRequest1) returns (HelloReply1) {}    
   }
 
   message HelloRequest1 {

@@ -1,5 +1,5 @@
 import { ServiceType, MethodType } from './grpcContext';
-import { ChannelCredentials } from '@grpc/grpc-js';
+import { ChannelCredentials, Client } from '@grpc/grpc-js';
 
 export type channelID = number | undefined;
 
@@ -15,5 +15,5 @@ export interface ChannelInitiator {
 export interface ChannelDescriptor {
   readonly channelInitiator: ChannelInitiator;
   readonly id: channelID;
-  //readonly credentials: object;
+  readonly client: Client;
 }

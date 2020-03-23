@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
-export type ProtobufType = PrimitiveType | MessageType | EnumType;
-export type ProtobufValue = PrimitiveValue | MessageValue | EnumValue;
+export type ProtobufType = ServiceType | MethodType | PrimitiveType | MessageType | EnumType;
+export type ProtobufValue = ServiceValue | MethodValue | PrimitiveValue | MessageValue | EnumValue;
 export type FieldName = string;
 export type TypeName = string;
+export type MethodTypeName = string;
+export type IsStream = boolean;
 export type Field<T> = [FieldName, T];
 export type Fields<T> = ReadonlyArray<Field<T>>;
 export type Entry<T> = [string, T];
@@ -16,6 +18,23 @@ export interface ProtoCtx {
 
 export function typeNameToType(name: TypeName, ctx: ProtoCtx): ProtobufType {
   return ctx.types[name];
+}
+
+export interface ServiceType {
+  readonly tag: 'service';
+  readonly name: TypeName; // ex) ProtoModel.Coordinates
+  readonly methods: Fields<MethodType>;
+}
+
+//everything should be a tree
+export interface MethodType {
+  readonly tag: 'method';
+  readonly name: TypeName;
+  readonly type: MethodTypeName;
+  readonly requestMessage: MessageType;
+  readonly requestStream: IsStream;
+  readonly responseMessage: MessageType;
+  readonly responseStream: IsStream;
 }
 
 export interface MessageType {
@@ -38,6 +57,17 @@ export interface EnumType {
   readonly name: TypeName;
   readonly options: ReadonlyArray<string>;
   readonly optionValues: Readonly<{ [key: string]: number }>;
+}
+
+export interface ServiceValue {
+  readonly type: ServiceType;
+  readonly methods: Fields<MethodValue>;
+}
+
+export interface MethodValue {
+  readonly type: MethodType;
+  readonly requestMessages: Field<MessageValue>;
+  readonly responseMessages: Field<MessageValue>;
 }
 
 export interface MessageValue {
@@ -67,6 +97,10 @@ export const typeToDefaultValue = genDefault;
 
 function genDefault(type: ProtobufType, ctx: ProtoCtx): ProtobufValue {
   switch (type.tag) {
+    case 'service':
+      return genDefaultService(type as ServiceType, ctx);
+    case 'method':
+      return genDefaultMethod(type as MethodType, ctx);
     case 'message':
       return genDefaultMessage(type as MessageType, ctx);
     case 'primitive':
@@ -76,9 +110,20 @@ function genDefault(type: ProtobufType, ctx: ProtoCtx): ProtobufValue {
   }
 }
 
+function genDefaultService(type: ServiceType, ctx: ProtoCtx): ServiceValue {
+  const { methods } = type;
+  const methodValues = methods.map(f => genField(f, ctx));
+  return {
+    type,
+    methods: methodValues,
+  };
+}
+
+function genDefaultMethod(type: MethodType, ctx: ProtoCtx): MethodValue {
+  const {} = type;
+}
 function genDefaultMessage(type: MessageType, ctx: ProtoCtx): MessageValue {
   const { singleFields, repeatedFields, oneOfFields, mapFields } = type;
-
   const fieldValues = singleFields.map(f => genField(f, ctx));
   const repeatedFieldValues = repeatedFields.map(genRepeatedField);
   const oneOfFieldValues = oneOfFields.map(f => genOneOfField(f, ctx));
