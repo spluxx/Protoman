@@ -30,7 +30,7 @@ module.exports = {
               tsImportPluginFactory({
                 libraryName: 'antd',
                 libraryDirectory: 'es',
-                style: 'css',
+                style: true,
               }),
             ],
           }),
@@ -38,8 +38,17 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
+        test: /\.less$/,
+        loader: [
+          'style-loader',
+          'css-loader',
+          {
+            loader: 'less-loader',
+            options: {
+              javascriptEnabled: true,
+            },
+          },
+        ],
       },
       {
         enforce: 'pre',
