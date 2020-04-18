@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Form, Input, Button, Icon } from 'antd';
+import { Form, Input, Button } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { changeFlowName } from './FlowNameViewActions';
 import { selectCurrentCol } from '../../../redux/store';
@@ -80,7 +81,7 @@ const FlowNameView: React.FunctionComponent<Props> = ({}) => {
         <>
           <Title>{draftName}</Title>
           <Button shape="circle" size="small" onClick={startEditing} style={{ marginLeft: 4 }}>
-            <Icon type="edit" />
+            <EditOutlined />
           </Button>
         </>
       )}

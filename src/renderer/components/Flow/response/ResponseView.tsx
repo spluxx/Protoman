@@ -104,7 +104,7 @@ const ResponseView: React.FunctionComponent<Props> = ({ response }) => {
 
   return (
     <ResponseWrapper>
-      <TitleWrapper type="flex" align="bottom">
+      <TitleWrapper align="bottom">
         <LeftyCol span={6}>Response</LeftyCol>
         <RightyCol span={18}>
           <StatusText code={statusCode} />

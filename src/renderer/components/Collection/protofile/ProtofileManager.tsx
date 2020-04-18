@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Typography, List, Button, Icon, Row, Col, Checkbox, Divider, Alert, message } from 'antd';
+import { Typography, List, Button, Row, Col, Checkbox, Divider, Alert } from 'antd';
+import { PlusOutlined, CloseOutlined, BuildOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { buildProtofiles, resetProtofileStatus } from './ProtofileManagerActions';
 import { AppState } from '../../../models/AppState';
@@ -105,7 +106,7 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName }) =>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Typography.Title level={4}>.proto files for {collectionName}</Typography.Title>
         <Button shape="circle" type="danger" size="small" ghost onClick={handleCloseFM}>
-          <Icon type="close" />
+          <CloseOutlined />
         </Button>
       </div>
 
@@ -126,7 +127,7 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName }) =>
           dataSource={draft} // won't update by itself
           renderItem={(filepath): React.ReactNode => (
             <List.Item style={{ padding: '4px 0px', width: '100%' }}>
-              <Row type="flex" style={{ alignItems: 'center', width: '100%' }}>
+              <Row align="middle" style={{ width: '100%' }}>
                 <Col span={1}>
                   <Checkbox
                     checked={selected.includes(filepath)}
@@ -156,7 +157,7 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName }) =>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
         <div>
           <Button onClick={triggerFileDialog}>
-            <Icon type="plus" />
+            <PlusOutlined />
           </Button>
           <Button
             onClick={handleFileDelete}
@@ -176,7 +177,7 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName }) =>
             loading={buildStatus === 'building'}
             ghost
           >
-            <Icon type="build" />
+            <BuildOutlined />
             Build and Save
           </Button>
         </div>

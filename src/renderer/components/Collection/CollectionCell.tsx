@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { validateCollectionName } from '../../models/Collection';
-import { Input, Form, Button, Icon, message } from 'antd';
+import { Input, Form, Button, message } from 'antd';
+import { FilePptOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { prevent, getByKey } from '../../utils/utils';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from '../../models/AppState';
@@ -117,10 +118,10 @@ const CollectionCell: React.FunctionComponent<Props> = ({ collectionName }) => {
           <Title>{draftName}</Title>
           <div>
             <Button shape="circle" size="small" onClick={prevent(handleOpenFM)} style={{ marginLeft: 4 }}>
-              <Icon type="file-ppt" />
+              <FilePptOutlined />
             </Button>
             <Button shape="circle" size="small" onClick={prevent(startEditing)} style={{ marginLeft: 4 }}>
-              <Icon type="edit" />
+              <EditOutlined />
             </Button>
             <Button
               ghost
@@ -130,7 +131,7 @@ const CollectionCell: React.FunctionComponent<Props> = ({ collectionName }) => {
               onClick={prevent(handleDelete)}
               style={{ marginLeft: 4 }}
             >
-              <Icon type="delete" />
+              <DeleteOutlined />
             </Button>
           </div>
         </div>

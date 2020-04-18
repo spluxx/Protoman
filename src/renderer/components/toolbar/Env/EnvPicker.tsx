@@ -1,13 +1,12 @@
 import React from 'react';
-import { Select, Button, Icon, Modal, Divider, message } from 'antd';
+import { Select, Button, Modal, Divider } from 'antd';
+import { PlusOutlined, SettingOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from '../../../models/AppState';
 import { EnvEditor } from './EnvEditor';
 import { validateNewEnvName } from '../../../models/Env';
 import { createEnv, switchEnv } from './EnvPickerActions';
 import { selectEnvNames } from '../../../redux/store';
-
-const { Option } = Select;
 
 const ENV_MODAL_WIDTH = 800;
 
@@ -40,13 +39,13 @@ const EnvPicker: React.FunctionComponent<{}> = ({}) => {
   return (
     <>
       <Button shape="circle-outline" style={{ marginLeft: 4 }} onClick={showModal}>
-        <Icon type="setting" />
+        <SettingOutlined />
       </Button>
       <Select
         onSelect={handleEnvSwitch}
         value={currentEnv}
         style={{ width: 300 }}
-        dropdownRender={(menu): React.ReactNode => (
+        dropdownRender={(menu): React.ReactElement => (
           <div>
             {menu}
             <Divider style={{ margin: '4px 0' }} />
@@ -55,13 +54,15 @@ const EnvPicker: React.FunctionComponent<{}> = ({}) => {
               onMouseDown={(e): void => e.preventDefault()}
               onClick={createNewEnv}
             >
-              <Icon type="plus" /> New
+              <PlusOutlined /> New
             </div>
           </div>
         )}
       >
-        {envList.map(([name]) => (
-          <Option key={name}>{name}</Option>
+        {envList.map(([name], idx) => (
+          <Select.Option key={idx} value={name}>
+            {name}
+          </Select.Option>
         ))}
       </Select>
       {modalVisible ? (

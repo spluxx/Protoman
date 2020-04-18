@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Icon } from 'antd';
+import { Button } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
 const TableData = styled('div')`
@@ -17,7 +18,7 @@ const NewCollectionCell: React.FunctionComponent<Props> = ({ onCreate }) => {
   return (
     <TableData>
       <Button type="primary" ghost onClick={onCreate}>
-        <Icon type="plus" />
+        <PlusOutlined />
         New Collection
       </Button>
     </TableData>

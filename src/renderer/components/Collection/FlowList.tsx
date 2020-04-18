@@ -1,5 +1,6 @@
 import React from 'react';
-import { List, Typography, Button, Icon, message } from 'antd';
+import { List, Typography, Button, message } from 'antd';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { prevent, getByKey } from '../../utils/utils';
 import { useSelector, useDispatch } from 'react-redux';
@@ -63,7 +64,7 @@ const FlowList: React.FunctionComponent<Props> = ({ collectionName }) => {
   const footer = (
     <Footer>
       <Button type="primary" ghost onClick={handleCreate}>
-        <Icon type="plus" />
+        <PlusOutlined />
         New Request
       </Button>
     </Footer>
@@ -85,7 +86,7 @@ const FlowList: React.FunctionComponent<Props> = ({ collectionName }) => {
               onClick={prevent((): void => handleDelete(flowName))}
               style={{ marginLeft: 4 }}
             >
-              <Icon type="delete" />
+              <DeleteOutlined />
             </Button>
           </div>
         </ClickableItem>

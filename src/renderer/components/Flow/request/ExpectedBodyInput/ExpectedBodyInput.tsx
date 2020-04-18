@@ -27,11 +27,13 @@ const ExpectedBodyInput: React.FunctionComponent<Props> = ({ messageNames, expec
         allowClear
         showSearch
         filterOption={(input, option): boolean => {
-          return (option.props.children as string).includes(input);
+          return option && option.children.toString().includes(input.toString());
         }}
       >
-        {messageNames.map(messageName => (
-          <Select.Option key={messageName}>{messageName}</Select.Option>
+        {messageNames.map((messageName, idx) => (
+          <Select.Option key={idx} value={messageName}>
+            {messageName}
+          </Select.Option>
         ))}
       </Select>
     </div>

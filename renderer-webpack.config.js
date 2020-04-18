@@ -3,8 +3,13 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const tsImportPluginFactory = require('ts-import-plugin');
+const { getThemeVariables } = require('antd/dist/theme');
 
 const NODE_ENV = process.env.NODE_ENV;
+
+const antdThemeOverrides = getThemeVariables({
+  dark: true,
+});
 
 module.exports = {
   mode: NODE_ENV,
@@ -46,6 +51,7 @@ module.exports = {
             loader: 'less-loader',
             options: {
               javascriptEnabled: true,
+              modifyVars: antdThemeOverrides,
             },
           },
         ],
