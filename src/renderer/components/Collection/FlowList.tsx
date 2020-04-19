@@ -82,8 +82,8 @@ const FlowCell: React.FC<CellProps> = ({ flowName, emphasize, handleSelection, h
   const menu = (
     <div>
       <Button type="link" danger onClick={prevent(deleteFlow)}>
-        Delete Request
         <DeleteOutlined />
+        Delete Request
       </Button>
     </div>
   );

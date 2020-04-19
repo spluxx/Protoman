@@ -10,6 +10,7 @@ import BodyInputReducer from '../components/Flow/request/BodyInput/BodyInputRedu
 import ProtofileManagerReducer from '../components/Collection/protofile/ProtofileManagerReducer';
 import FlowViewReducers from '../components/Flow/FlowView/FlowViewReducer';
 import ExpectedBodyInputReducer from '../components/Flow/request/ExpectedBodyInput/ExpectedBodyInputReducer';
+import BulkReducer from '../bulk/BulkReducer';
 
 type BigReducer = (s: AppState, a: AnyAction) => AppState;
 
@@ -30,6 +31,7 @@ const AppReducer = applyAll([
   ProtofileManagerReducer,
   FlowViewReducers,
   ExpectedBodyInputReducer,
+  BulkReducer,
 ]);
 
 export default AppReducer;

@@ -1,6 +1,6 @@
 import { ipcMain, app, dialog } from 'electron';
 import ipcChannel from '../ipc_channels';
-import { save, DATA_FOLDER_NAME, createDataFolder, cleanup, getMostRecent, saveBackup } from './persistence';
+import { save, DATA_FOLDER_NAME, createDataFolder, cleanup, getMostRecent, saveBackup, open } from './persistence';
 import path from 'path';
 import { sendToWindow } from './index';
 import { RequestDescriptor } from '../core/http_client/request';
@@ -63,6 +63,21 @@ export async function initializeEvents(): Promise<void> {
           event.reply(ipcChannel.EXPORT_SUCCESS);
         } catch (e) {
           event.reply(ipcChannel.EXPORT_ERROR, [e]);
+        }
+      }
+    });
+
+    ipcMain.on(ipcChannel.IMPORT_COLLECTION, async event => {
+      const path = dialog.showOpenDialogSync({ properties: ['openFile'] });
+
+      if (!path) {
+        event.reply(ipcChannel.IMPORT_CANCELLED);
+      } else {
+        try {
+          const data = await open(path[0]);
+          event.reply(ipcChannel.IMPORT_SUCCESS, [data]);
+        } catch (e) {
+          event.reply(ipcChannel.IMPORT_ERROR, [e]);
         }
       }
     });

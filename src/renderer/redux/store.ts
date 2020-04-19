@@ -2,12 +2,14 @@ import { createStore, applyMiddleware, Store } from 'redux';
 import AppReducer from './AppReducer';
 import { AppState } from '../models/AppState';
 import produce, { Draft } from 'immer';
-import { Collection } from '../models/Collection';
+import { Collection, validateCollectionName } from '../models/Collection';
 import { Env } from '../models/Env';
 import thunk from 'redux-thunk';
 import { getByKey, getEntryByKey } from '../utils/utils';
 import { Flow } from '../models/flow';
 import { ProtoCtx } from '../../core/protobuf/protobuf';
+import { message } from 'antd';
+import { importCollection } from '../bulk/BulkActions';
 
 const DEFAULT_FLOW_NAME = 'Request1';
 const DEFAULT_COLLECTION_NAME = 'Collection1';

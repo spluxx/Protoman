@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from '../../models/AppState';
 import { selectColNames } from '../../redux/store';
 import { deleteCollection, changeCollectionName, openFM, createFlow } from './CollectionActions';
-import { exportCollection } from './export';
+import { exportCollection } from '../../bulk/trigger';
 
 export const TableData = styled('div')`
   padding: 4px 8px;
@@ -128,28 +128,28 @@ const CollectionCell: React.FunctionComponent<Props> = ({ collectionName }) => {
   const menu = (
     <>
       <Button type="link" onClick={prevent(handleOpenFM)}>
-        Manage .proto files
         <FilePptOutlined />
+        Manage .proto files
       </Button>
       <Separator />
       <Button type="link" onClick={prevent(handleCreate)}>
-        New Request
         <PlusOutlined />
+        New Request
       </Button>
       <Separator />
       <Button type="link" onClick={prevent(startEditing)}>
-        Edit Name
         <EditOutlined />
+        Edit Name
       </Button>
       <Separator />
       <Button type="link" onClick={prevent(handleExport)}>
-        Export Collection
         <ExportOutlined />
+        Export Collection
       </Button>
       <Separator />
       <Button type="link" danger onClick={prevent(handleDelete)}>
-        Delete Collection
         <DeleteOutlined />
+        Delete Collection
       </Button>
     </>
   );

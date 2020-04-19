@@ -1,25 +1,15 @@
 import React from 'react';
-import { Layout, Collapse, Modal } from 'antd';
+import { Layout, Collapse, Modal, Button, Row } from 'antd';
 import styled from 'styled-components';
 import CollectionCell from './CollectionCell';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from '../../models/AppState';
 import NewCollectionCell from './NewCollectionCell';
-import {
-  createCollection,
-  toggleCollections,
-  selectFlow,
-  deleteFlow,
-  createFlow,
-  closeFM,
-  openFM,
-} from './CollectionActions';
+import { toggleCollections } from './CollectionActions';
 import GhostCollectionCell from './GhostCollectionCell';
 import FlowList from './FlowList';
-import { getByKey } from '../../utils/utils';
 import ProtofileManager from './protofile/ProtofileManager';
-import { selectColNames } from '../../redux/store';
-import { validateNewCollectionName } from '../../models/Collection';
+import { importCollection } from '../../bulk/trigger';
 
 const { Panel } = Collapse;
 
@@ -40,7 +30,7 @@ const Header = styled('div')`
   text-align: center;
   width: 100%;
   flex: 0 0 auto;
-  padding: 16px 0px;
+  padding: 16px 8px 8px 8px;
 `;
 
 const Title = styled('h1')`
@@ -53,6 +43,10 @@ const LeanCollapse = styled(Collapse)`
   overflow: auto;
   height: 90%;
   border-radius: 0;
+`;
+
+const LinkButton = styled(Button)`
+  padding: 0;
 `;
 
 export const COLLECTION_SIDER_WIDTH = 210;
@@ -72,11 +66,18 @@ const CollectionSider: React.FunctionComponent<{}> = ({}) => {
     dispatch(toggleCollections(openCollections));
   }
 
+  function handleImport(): void {
+    importCollection();
+  }
+
   return (
     <Sider width={COLLECTION_SIDER_WIDTH} theme="light">
       <Wrapper>
         <Header>
           <Title>Collections</Title>
+          <LinkButton type="link" onClick={handleImport}>
+            Import
+          </LinkButton>
         </Header>
         <LeanCollapse
           activeKey={[...openCollections]}
