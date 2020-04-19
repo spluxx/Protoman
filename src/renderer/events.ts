@@ -5,6 +5,7 @@ import { ResponseDescriptor } from '../core/http_client/response';
 import { RequestDescriptor } from '../core/http_client/request';
 import { ProtoCtx } from '../core/protobuf/protobuf';
 import { IpcRenderer } from 'electron';
+import { message } from 'antd';
 
 export function setupListeners(ipcRenderer: IpcRenderer): void {
   ipcRenderer.on(ipcChannels.LOAD_MOST_RECENT, (event, args) => {
@@ -16,6 +17,18 @@ export function setupListeners(ipcRenderer: IpcRenderer): void {
 
   ipcRenderer.on(ipcChannels.MAIN_ERROR, (event, args) => {
     console.log('Error from the main process: ', args[0].message);
+  });
+
+  ipcRenderer.on(ipcChannels.EXPORT_CANCELLED, () => {
+    message.warn('Export cancelled');
+  });
+
+  ipcRenderer.on(ipcChannels.EXPORT_SUCCESS, () => {
+    message.success('Export success!');
+  });
+
+  ipcRenderer.on(ipcChannels.EXPORT_ERROR, (event, [e]) => {
+    message.error(`Export error : ${JSON.stringify(e, null, 2)}`, 5);
   });
 }
 

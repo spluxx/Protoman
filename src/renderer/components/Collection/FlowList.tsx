@@ -69,13 +69,19 @@ const FlowCell: React.FC<CellProps> = ({ flowName, emphasize, handleSelection, h
   function showMenu(): void {
     setMenuVisible(true);
   }
-  // function hideMenu(): void {
-  //   setMenuVisible(false);
-  // }
+
+  function hideMenu(): void {
+    setMenuVisible(false);
+  }
+
+  function deleteFlow(): void {
+    handleDelete(flowName);
+    hideMenu();
+  }
 
   const menu = (
     <div>
-      <Button type="link" danger onClick={prevent((): void => handleDelete(flowName))}>
+      <Button type="link" danger onClick={prevent(deleteFlow)}>
         Delete Request
         <DeleteOutlined />
       </Button>

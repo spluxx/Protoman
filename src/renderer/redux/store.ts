@@ -7,6 +7,7 @@ import { Env } from '../models/Env';
 import thunk from 'redux-thunk';
 import { getByKey, getEntryByKey } from '../utils/utils';
 import { Flow } from '../models/flow';
+import { ProtoCtx } from '../../core/protobuf/protobuf';
 
 const DEFAULT_FLOW_NAME = 'Request1';
 const DEFAULT_COLLECTION_NAME = 'Collection1';
@@ -31,15 +32,19 @@ export function createDefaultFlow(): Draft<Flow> {
   };
 }
 
+export function createDefaultProtoCtx(): Draft<ProtoCtx> {
+  return {
+    types: {},
+    origin: {},
+  };
+}
+
 export function createDefaultCollection(): Draft<Collection> {
   return {
     protoFilepaths: [],
     buildStatus: 'default',
     buildError: undefined,
-    protoCtx: {
-      types: {},
-      origin: {},
-    },
+    protoCtx: createDefaultProtoCtx(),
     messageNames: [],
     flows: [[DEFAULT_FLOW_NAME, createDefaultFlow()]],
   };
@@ -98,22 +103,21 @@ export function selectEnvNames(s: AppState): string[] {
 }
 
 /** Serialize/Deserialize */
+function procFlow(flow: Draft<Flow>): Draft<Flow> {
+  flow.requestError = undefined;
+  flow.requestStatus = 'default';
+  flow.response = undefined;
+  return flow;
+}
+
+export function procCol(collection: Draft<Collection>): Draft<Collection> {
+  collection.buildError = undefined;
+  collection.buildStatus = 'default';
+  collection.flows = collection.flows.map(([fn, f]) => [fn, procFlow(f)]);
+  return collection;
+}
 
 function preprocess(appState: AppState): AppState {
-  function procFlow(flow: Draft<Flow>): Draft<Flow> {
-    flow.requestError = undefined;
-    flow.requestStatus = 'default';
-    flow.response = undefined;
-    return flow;
-  }
-
-  function procCol(collection: Draft<Collection>): Draft<Collection> {
-    collection.buildError = undefined;
-    collection.buildStatus = 'default';
-    collection.flows = collection.flows.map(([fn, f]) => [fn, procFlow(f)]);
-    return collection;
-  }
-
   return produce(appState, draft => {
     draft.collections = draft.collections.map(([cn, c]) => [cn, procCol(c)]);
     draft.fmOpenCollection = undefined;
