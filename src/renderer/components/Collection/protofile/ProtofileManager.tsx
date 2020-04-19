@@ -105,7 +105,7 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName }) =>
     <Wrapper>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Typography.Title level={4}>.proto files for {collectionName}</Typography.Title>
-        <Button shape="circle" type="danger" size="small" ghost onClick={handleCloseFM}>
+        <Button shape="circle" danger size="small" onClick={handleCloseFM}>
           <CloseOutlined />
         </Button>
       </div>
@@ -159,13 +159,7 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName }) =>
           <Button onClick={triggerFileDialog}>
             <PlusOutlined />
           </Button>
-          <Button
-            onClick={handleFileDelete}
-            type="danger"
-            style={{ marginLeft: 8 }}
-            ghost
-            disabled={selected.length === 0}
-          >
+          <Button onClick={handleFileDelete} danger style={{ marginLeft: 8 }} disabled={selected.length === 0}>
             Delete
           </Button>
         </div>

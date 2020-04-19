@@ -242,8 +242,7 @@ const RepeatedFieldView: FunctionComponent<RFVProps> = ({ editable, fieldName, v
             <Button
               shape="circle"
               size="small"
-              ghost
-              type="danger"
+              danger
               style={{ marginLeft: 4 }}
               onClick={(): void => handlers.entryRemove(`${idx.toString()}/`)}
             >
@@ -332,8 +331,7 @@ const MapFieldView: FunctionComponent<MFVProps> = ({ editable, fieldName, kvPair
             <Button
               shape="circle"
               size="small"
-              ghost
-              type="danger"
+              danger
               style={{ marginLeft: 4 }}
               onClick={(): void => handlers.entryRemove(`${idx.toString()}/`)}
             >

@@ -27,7 +27,7 @@ const ExpectedBodyInput: React.FunctionComponent<Props> = ({ messageNames, expec
         allowClear
         showSearch
         filterOption={(input, option): boolean => {
-          return option && option.children.toString().includes(input.toString());
+          return option && option.value.toString().includes(input.toString());
         }}
       >
         {messageNames.map((messageName, idx) => (

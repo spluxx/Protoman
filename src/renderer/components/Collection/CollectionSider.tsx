@@ -93,7 +93,7 @@ const CollectionSider: React.FunctionComponent<{}> = ({}) => {
           {collections.map(([name]) => {
             const header = <CollectionCell collectionName={name} />;
             return (
-              <Panel key={name} header={header}>
+              <Panel key={name} header={header} style={{ paddingBottom: 4 }}>
                 <FlowList collectionName={name} />
               </Panel>
             );

@@ -148,14 +148,7 @@ export const EnvEditor: React.FunctionComponent<Props> = ({ onCancel }) => {
               <Button shape="circle" size="small" onClick={startEditing} style={{ marginLeft: 4 }}>
                 <EditOutlined />
               </Button>
-              <Button
-                ghost
-                shape="circle"
-                type="danger"
-                size="small"
-                onClick={handleEnvDelete}
-                style={{ marginLeft: 4 }}
-              >
+              <Button danger shape="circle" size="small" onClick={handleEnvDelete} style={{ marginLeft: 4 }}>
                 <DeleteOutlined />
               </Button>
             </div>
@@ -180,7 +173,6 @@ export const EnvEditor: React.FunctionComponent<Props> = ({ onCancel }) => {
 
       <ButtonWrapper>
         <Button
-          ghost
           onClick={(): void => {
             if (!isInvalidName) {
               handleEnvChange();
@@ -190,7 +182,7 @@ export const EnvEditor: React.FunctionComponent<Props> = ({ onCancel }) => {
         >
           Update
         </Button>
-        <Button ghost style={{ marginRight: 4 }} onClick={onCancel} type="danger">
+        <Button ghost type="primary" style={{ marginRight: 4 }} onClick={onCancel}>
           Cancel
         </Button>
         <Spacing />
@@ -226,7 +218,7 @@ const SingleEnvVarView: React.FunctionComponent<SingleProps> = ({
         <Input placeholder="value" value={value} onChange={(e): void => onValueChange(e.target.value)} />
       </Col>
       <Col span={1}>
-        <Button shape="circle" size="small" ghost type="danger" onClick={onDelete}>
+        <Button shape="circle" size="small" danger onClick={onDelete}>
           <DeleteOutlined />
         </Button>
       </Col>

@@ -85,7 +85,7 @@ const SingleHeaderView: React.FunctionComponent<SingleProps> = ({
             }
           }}
           filterOption={(input, option): boolean => {
-            return option && option.children.toString().includes(input.toString());
+            return option && option.value.toString().includes(input.toString());
           }}
         >
           {nameOptions.map(option => (
@@ -109,7 +109,7 @@ const SingleHeaderView: React.FunctionComponent<SingleProps> = ({
       </Col>
       {editable ? (
         <Col span={2}>
-          <Button shape="circle" size="small" ghost type="danger" onClick={onDelete} disabled={!editable}>
+          <Button shape="circle" size="small" danger onClick={onDelete} disabled={!editable}>
             <DeleteOutlined />
           </Button>
         </Col>

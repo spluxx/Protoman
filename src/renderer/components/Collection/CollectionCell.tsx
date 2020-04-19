@@ -1,16 +1,20 @@
 import React from 'react';
 import styled from 'styled-components';
 import { validateCollectionName } from '../../models/Collection';
-import { Input, Form, Button, message } from 'antd';
-import { FilePptOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Input, Form, Button, message, Popover, Divider } from 'antd';
+import { FilePptOutlined, EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { prevent, getByKey } from '../../utils/utils';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from '../../models/AppState';
 import { selectColNames } from '../../redux/store';
-import { deleteCollection, changeCollectionName, openFM } from './CollectionActions';
+import { deleteCollection, changeCollectionName, openFM, createFlow } from './CollectionActions';
 
 export const TableData = styled('div')`
   padding: 4px 8px;
+`;
+
+const Separator = styled(Divider)`
+  margin: 4px 0;
 `;
 
 const Title = styled('span')`
@@ -49,15 +53,31 @@ const CollectionCell: React.FunctionComponent<Props> = ({ collectionName }) => {
   const collection = useSelector((s: AppState) => getByKey(s.collections, collectionName));
   const collectionNames = useSelector(selectColNames);
 
+  const [menuVisible, setMenuVisible] = React.useState(false);
   const [isEditingName, setIsEditingName] = React.useState(false);
-  const startEditing = (): void => setIsEditingName(true);
-  const stopEditing = (): void => setIsEditingName(false);
   const [isInvalidName, setIsInvalidName] = React.useState(false);
   const [draftName, setDraftName] = React.useState(collectionName);
 
   React.useEffect(() => {
     setDraftName(collectionName);
   }, [collectionName]);
+
+  function showMenu(): void {
+    setMenuVisible(true);
+  }
+
+  function hideMenu(): void {
+    setMenuVisible(false);
+  }
+
+  function startEditing(): void {
+    setIsEditingName(true);
+    hideMenu();
+  }
+
+  function stopEditing(): void {
+    setIsEditingName(false);
+  }
 
   const collectionSize = Object.keys(collection?.flows || {}).length;
 
@@ -67,6 +87,7 @@ const CollectionCell: React.FunctionComponent<Props> = ({ collectionName }) => {
     } else {
       message.error("Can't delete the last collection");
     }
+    hideMenu();
   }
 
   function checkName(newName: string): boolean {
@@ -81,65 +102,90 @@ const CollectionCell: React.FunctionComponent<Props> = ({ collectionName }) => {
 
   function handleOpenFM(): void {
     dispatch(openFM(collectionName));
+    hideMenu();
   }
 
+  function validateFlowName(flowName: string): boolean {
+    return !collection?.flows?.map(([n]) => n)?.includes(flowName);
+  }
+
+  function handleCreate(): void {
+    const tmpName = 'Request';
+    let tmpNameIdx = 1;
+    while (!validateFlowName(`${tmpName}${tmpNameIdx}`)) tmpNameIdx++;
+    dispatch(createFlow(collectionName, `${tmpName}${tmpNameIdx}`));
+    hideMenu();
+  }
+
+  const menu = (
+    <>
+      <Button type="link" onClick={prevent(handleOpenFM)}>
+        Manage .proto files
+        <FilePptOutlined />
+      </Button>
+      <Separator />
+      <Button type="link" onClick={prevent(handleCreate)}>
+        New Request
+        <PlusOutlined />
+      </Button>
+      <Separator />
+      <Button type="link" onClick={prevent(startEditing)}>
+        Edit Name
+        <EditOutlined />
+      </Button>
+      <Separator />
+      <Button type="link" danger onClick={prevent(handleDelete)}>
+        Delete Collection
+        <DeleteOutlined />
+      </Button>
+    </>
+  );
+
   return (
-    <TableData>
-      {isEditingName ? (
-        <Form.Item
-          validateStatus={isInvalidName ? 'error' : ''}
-          style={{ margin: 0 }}
-          help={isInvalidName ? 'Invalid Name' : ''}
-        >
-          <TitleInput
-            value={draftName}
-            onChange={(e): void => {
-              setIsInvalidName(!checkName(e.target.value));
-              setDraftName(e.target.value);
-            }}
-            onKeyDown={(e): void => {
-              switch (e.keyCode) {
-                case 27: // esc
-                  setDraftName(collectionName);
-                  stopEditing();
-                  break;
-                case 13: // enter
-                  if (!isInvalidName) {
-                    handleNameChange(draftName);
+    <Popover
+      placement="rightTop"
+      content={menu}
+      visible={menuVisible}
+      trigger="contextMenu"
+      onVisibleChange={setMenuVisible}
+    >
+      <TableData onContextMenu={prevent(showMenu)}>
+        {isEditingName ? (
+          <Form.Item
+            validateStatus={isInvalidName ? 'error' : ''}
+            style={{ margin: 0 }}
+            help={isInvalidName ? 'Invalid Name' : ''}
+          >
+            <TitleInput
+              value={draftName}
+              onChange={(e): void => {
+                setIsInvalidName(!checkName(e.target.value));
+                setDraftName(e.target.value);
+              }}
+              onKeyDown={(e): void => {
+                switch (e.keyCode) {
+                  case 27: // esc
+                    setDraftName(collectionName);
                     stopEditing();
-                  }
-              }
-            }}
-            onClick={prevent(e => e)}
-          />
-        </Form.Item>
-      ) : (
-        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                    break;
+                  case 13: // enter
+                    if (!isInvalidName) {
+                      handleNameChange(draftName);
+                      stopEditing();
+                    }
+                }
+              }}
+              onClick={prevent(e => e)}
+            />
+          </Form.Item>
+        ) : (
           <Title>{draftName}</Title>
-          <div>
-            <Button shape="circle" size="small" onClick={prevent(handleOpenFM)} style={{ marginLeft: 4 }}>
-              <FilePptOutlined />
-            </Button>
-            <Button shape="circle" size="small" onClick={prevent(startEditing)} style={{ marginLeft: 4 }}>
-              <EditOutlined />
-            </Button>
-            <Button
-              ghost
-              shape="circle"
-              type="danger"
-              size="small"
-              onClick={prevent(handleDelete)}
-              style={{ marginLeft: 4 }}
-            >
-              <DeleteOutlined />
-            </Button>
-          </div>
-        </div>
-      )}
-      <Description>
-        {collectionSize} {collectionSize === 1 ? 'entry' : 'entries'}
-      </Description>
-    </TableData>
+        )}
+        <Description>
+          {collectionSize} {collectionSize === 1 ? 'entry' : 'entries'}
+        </Description>
+      </TableData>
+    </Popover>
   );
 };
 
