@@ -1,6 +1,6 @@
-import { ipcMain, app } from 'electron';
+import { ipcMain, app, dialog } from 'electron';
 import ipcChannel from '../ipc_channels';
-import { save, DATA_FOLDER_NAME, createDataFolder, cleanup, getMostRecent } from './persistence';
+import { save, DATA_FOLDER_NAME, createDataFolder, cleanup, getMostRecent, saveBackup, open } from './persistence';
 import path from 'path';
 import { sendToWindow } from './index';
 import { RequestDescriptor } from '../core/http_client/request';
@@ -22,7 +22,7 @@ export async function initializeEvents(): Promise<void> {
     ipcMain.on(ipcChannel.SAVE, (event, args) => {
       if (args[0]) {
         console.log('Saving...');
-        save(dataDir, args[0]);
+        saveBackup(dataDir, args[0]);
       }
     });
 
@@ -45,6 +45,41 @@ export async function initializeEvents(): Promise<void> {
       await makeRequest(rd, ctx)
         .then(r => event.reply(ipcChannel.REQUEST_SUCCESS, [nonce, r]))
         .catch(e => event.reply(ipcChannel.REQUEST_FAILURE, [nonce, e]));
+    });
+
+    ipcMain.on(ipcChannel.EXPORT_COLLECTION, async (event, args) => {
+      const [name, data] = args;
+
+      const { filePath, canceled } = await dialog.showSaveDialog({
+        defaultPath: `${name}.json`,
+        properties: ['createDirectory', 'showOverwriteConfirmation'],
+      });
+
+      if (canceled) {
+        event.reply(ipcChannel.EXPORT_CANCELLED);
+      } else if (filePath) {
+        try {
+          await save(filePath, data);
+          event.reply(ipcChannel.EXPORT_SUCCESS);
+        } catch (e) {
+          event.reply(ipcChannel.EXPORT_ERROR, [e]);
+        }
+      }
+    });
+
+    ipcMain.on(ipcChannel.IMPORT_COLLECTION, async event => {
+      const path = dialog.showOpenDialogSync({ properties: ['openFile'] });
+
+      if (!path) {
+        event.reply(ipcChannel.IMPORT_CANCELLED);
+      } else {
+        try {
+          const data = await open(path[0]);
+          event.reply(ipcChannel.IMPORT_SUCCESS, [data]);
+        } catch (e) {
+          event.reply(ipcChannel.IMPORT_ERROR, [e]);
+        }
+      }
     });
 
     console.log('Starting cleanup process');

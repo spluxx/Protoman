@@ -26,14 +26,27 @@ export async function createDataFolder(dir: string): Promise<void> {
   }
 }
 
-export function save(dir: string, blob: Uint8Array): Promise<void> {
-  const timestamp = Date.now();
+export function save(path: string, blob: Uint8Array): Promise<void> {
   return new Promise((resolve, reject) => {
-    fs.writeFile(path.join(dir, timestamp + EXT), blob, err => {
+    fs.writeFile(path, blob, err => {
       if (err) reject(err);
       else resolve();
     });
   });
+}
+
+export function open(path: string): Promise<Uint8Array> {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path, (err, data) => {
+      if (err) reject(err);
+      else resolve(data);
+    });
+  });
+}
+
+export function saveBackup(dir: string, blob: Uint8Array): Promise<void> {
+  const timestamp = Date.now();
+  return save(path.join(dir, timestamp + EXT), blob);
 }
 
 function getFilepaths(dir: string): Promise<string[]> {

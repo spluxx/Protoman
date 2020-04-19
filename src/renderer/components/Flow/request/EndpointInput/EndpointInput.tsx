@@ -24,8 +24,10 @@ const EndpointInput: React.FunctionComponent<Props> = ({ method, url, onSend }) 
 
   const HttpMethodPicker = (
     <Select value={method} style={{ width: 100 }} onChange={handleMethodChange}>
-      {HTTP_METHODS.map(methodName => (
-        <Select.Option key={methodName}>{methodName}</Select.Option>
+      {HTTP_METHODS.map((methodName, idx) => (
+        <Select.Option key={idx} value={methodName}>
+          {methodName}
+        </Select.Option>
       ))}
     </Select>
   );

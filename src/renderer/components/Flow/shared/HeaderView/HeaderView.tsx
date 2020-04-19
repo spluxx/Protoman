@@ -1,5 +1,6 @@
 import React from 'react';
-import { Row, Col, Button, Icon, AutoComplete } from 'antd';
+import { Row, Col, Button, AutoComplete } from 'antd';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { deleteHeader, createHeader, changeHeaderName, changeHeaderValue } from './HeaderViewActions';
 import { COMMON_HEADER_NAMES } from './HeaderNames';
@@ -44,7 +45,7 @@ const HeaderView: React.FunctionComponent<Props> = ({ editable, headers }) => {
       ))}
       {editable ? (
         <Button shape="circle" size="small" ghost type="primary" onClick={handleCreate} disabled={!editable}>
-          <Icon type="plus" />
+          <PlusOutlined />
         </Button>
       ) : null}
     </div>
@@ -71,7 +72,7 @@ const SingleHeaderView: React.FunctionComponent<SingleProps> = ({
   const nameOptions = COMMON_HEADER_NAMES;
 
   return (
-    <Row gutter={8} type="flex" style={{ alignItems: 'center', marginBottom: 8 }}>
+    <Row gutter={8} align="middle" style={{ marginBottom: 8 }}>
       <Col span={6}>
         <AutoComplete
           style={{ width: '100%' }}
@@ -83,14 +84,8 @@ const SingleHeaderView: React.FunctionComponent<SingleProps> = ({
               onNameChange(s.toString());
             }
           }}
-          filterOption={(HighlightInputValue, option): boolean => {
-            return (
-              HighlightInputValue.length > 0 &&
-              (option.key || '')
-                .toString()
-                .toLowerCase()
-                .includes(HighlightInputValue.toLowerCase())
-            );
+          filterOption={(input, option): boolean => {
+            return option && option.value.toString().includes(input.toString());
           }}
         >
           {nameOptions.map(option => (
@@ -114,8 +109,8 @@ const SingleHeaderView: React.FunctionComponent<SingleProps> = ({
       </Col>
       {editable ? (
         <Col span={2}>
-          <Button shape="circle" size="small" ghost type="danger" onClick={onDelete} disabled={!editable}>
-            <Icon type="delete" />
+          <Button shape="circle" size="small" danger onClick={onDelete} disabled={!editable}>
+            <DeleteOutlined />
           </Button>
         </Col>
       ) : null}

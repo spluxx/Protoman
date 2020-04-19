@@ -66,17 +66,23 @@ function createEnumType(enumType: protobuf.Enum): EnumType {
   return temp;
 }
 
-function traverseTypes(current: any): ProtobufType[] {
-  switch (current.constructor) {
-    case protobuf.Type:
-      return current.nestedArray.reduce((acc: ProtobufType[], nested: any) => [...acc, ...traverseTypes(nested)], [
-        createMessageType(current),
-      ]);
-    case protobuf.Enum:
-      return [createEnumType(current)];
-    default:
-      return current.nestedArray.reduce((acc: ProtobufType[], nested: any) => [...acc, ...traverseTypes(nested)], []);
+function traverseTypes(
+  current: protobuf.ReflectionObject & { nestedArray?: protobuf.ReflectionObject[] },
+): ProtobufType[] {
+  const types: ProtobufType[] = [];
+  if (current instanceof protobuf.Type) {
+    types.push(createMessageType(current));
+  } else if (current instanceof protobuf.Enum) {
+    types.push(createEnumType(current));
   }
+
+  if (current.nestedArray) {
+    types.push(
+      ...current.nestedArray.reduce((acc: ProtobufType[], nested: any) => [...acc, ...traverseTypes(nested)], []),
+    );
+  }
+
+  return types;
 }
 
 function readProto(path: string): Promise<ProtobufType[]> {

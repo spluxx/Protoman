@@ -1,6 +1,7 @@
 import React from 'react';
 import { Env, validateNewEnvName } from '../../../models/Env';
-import { Button, Row, Col, Input, Divider, Icon, Form, message } from 'antd';
+import { Button, Row, Col, Input, Divider, Form, message } from 'antd';
+import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { Draft } from 'immer';
 import { useDispatch, useSelector } from 'react-redux';
@@ -145,17 +146,10 @@ export const EnvEditor: React.FunctionComponent<Props> = ({ onCancel }) => {
             <Title>{draftName}</Title>
             <div>
               <Button shape="circle" size="small" onClick={startEditing} style={{ marginLeft: 4 }}>
-                <Icon type="edit" />
+                <EditOutlined />
               </Button>
-              <Button
-                ghost
-                shape="circle"
-                type="danger"
-                size="small"
-                onClick={handleEnvDelete}
-                style={{ marginLeft: 4 }}
-              >
-                <Icon type="delete" />
+              <Button danger shape="circle" size="small" onClick={handleEnvDelete} style={{ marginLeft: 4 }}>
+                <DeleteOutlined />
               </Button>
             </div>
           </div>
@@ -179,7 +173,6 @@ export const EnvEditor: React.FunctionComponent<Props> = ({ onCancel }) => {
 
       <ButtonWrapper>
         <Button
-          ghost
           onClick={(): void => {
             if (!isInvalidName) {
               handleEnvChange();
@@ -189,12 +182,12 @@ export const EnvEditor: React.FunctionComponent<Props> = ({ onCancel }) => {
         >
           Update
         </Button>
-        <Button ghost style={{ marginRight: 4 }} onClick={onCancel} type="danger">
+        <Button ghost type="primary" style={{ marginRight: 4 }} onClick={onCancel}>
           Cancel
         </Button>
         <Spacing />
         <Button shape="circle" size="small" ghost type="primary" onClick={createEntry}>
-          <Icon type="plus" />
+          <PlusOutlined />
         </Button>
       </ButtonWrapper>
     </Wrapper>
@@ -217,7 +210,7 @@ const SingleEnvVarView: React.FunctionComponent<SingleProps> = ({
   onDelete,
 }) => {
   return (
-    <Row gutter={8} type="flex" style={{ alignItems: 'center', marginBottom: 8 }}>
+    <Row gutter={8} align="middle" style={{ marginBottom: 8 }}>
       <Col span={6}>
         <Input placeholder="name" value={name} onChange={(e): void => onNameChange(e.target.value)} />
       </Col>
@@ -225,8 +218,8 @@ const SingleEnvVarView: React.FunctionComponent<SingleProps> = ({
         <Input placeholder="value" value={value} onChange={(e): void => onValueChange(e.target.value)} />
       </Col>
       <Col span={1}>
-        <Button shape="circle" size="small" ghost type="danger" onClick={onDelete}>
-          <Icon type="delete" />
+        <Button shape="circle" size="small" danger onClick={onDelete}>
+          <DeleteOutlined />
         </Button>
       </Col>
     </Row>

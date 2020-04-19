@@ -4,24 +4,13 @@
 
 A [Postman](https://www.postman.com/)-like API client for [protobuf](https://developers.google.com/protocol-buffers)-based messages.
 
-## Specs
-
-- [x] Parsing .proto files to collect metadata.
-- [x] UI to view/edit protobuf messages.
-- [x] Sending requests with protobuf messages.
-- [x] Viewing response with protobuf messages.
-- [x] Persisting view state
-- [x] Collections
-- [x] Environments from [Postman](https://learning.postman.com/docs/postman/variables-and-environments/variables/)
-- [x] Response metadata - execution time, body size, ...
-- [ ] Expose more request configurations
-- [x] Support bytes datatype - use base64 strings!.
-
 ## Usage
 
-1. **Register your .proto files to enable protobuf-related features. <span>By clicking on the button with <img src="assets/p_icon.png" width=15/> icon next to your collection to register the file paths.</span>**
+1. **Register your .proto files to enable protobuf-related features. Right click on the collection, select 'Manage .proto files' to register the file paths.</span>**
 
-<img src="assets/protofile_manager.png" width=800>
+<img src="assets/protofile_manager1.png" width=800>
+
+<img src="assets/protofile_manager2.png" width=800>
 
 2.  **The rest of the request-building interface is similar to Postman.**
 
@@ -37,26 +26,30 @@ A [Postman](https://www.postman.com/)-like API client for [protobuf](https://dev
 
 <img src="assets/req_resp.png" width=800>
 
-3. **As of version, 0.2.0 you can also set up environments, and reuse variables there throughout your requests on the top-right corner!**
+3. **As of version 0.2.0, you can also set up environments, and reuse variables there throughout your requests on the top-right corner!**
 
 <img src="assets/env_manager.png" width=800>
 <img src="assets/envs.png" width=800>
 
-4. **That's it for the current version. Enjoy and leave a star if you like it !**
+4. **As of version 0.3.0, you can also import / export collections as JSON**
+
+- When importing a collection, all the proto definitions / path to .proto files are also imported. Hence, it's recommended to fix the paths to keep the proto definitions up-to-date.
+
+5. **That's it for the current version. Enjoy and leave a star if you like it !**
 
 ## Installation
 
 ### Mac
 
-[Protoman-0.2.0.dmg](https://github.com/spluxx/Protoman/releases/download/v0.2.0/Protoman-0.2.0.dmg)
+[Protoman-0.3.0.dmg](https://github.com/spluxx/Protoman/releases/download/v0.3.0/Protoman-0.3.0.dmg)
 
 ### Windows
 
-[Protoman Setup 0.2.0.exe](https://github.com/spluxx/Protoman/releases/download/v0.2.0/Protoman.Setup.0.2.0.exe) - Unlike mac, I don't currently own a license to sign the app. So it might give you some security warnings!
+[Protoman Setup 0.3.0.exe](https://github.com/spluxx/Protoman/releases/download/v0.3.0/Protoman.Setup.0.3.0.exe) - Unlike mac, I don't currently own a license to sign the app. So it might give you some security warnings!
 
 ### Linux
 
-[Protoman-0.2.0.AppImage](https://github.com/spluxx/Protoman/releases/download/v0.2.0/Protoman-0.2.0.AppImage)
+[Protoman-0.3.0.AppImage](https://github.com/spluxx/Protoman/releases/download/v0.3.0/Protoman-0.3.0.AppImage)
 
 As a fallback, you can clone the repo and run npm install && npm run build to build, and npm run start to launch the app. Or, you can actually find configurations on [electron builder](https://www.electron.build/) to get the right distribution version yourself!
 

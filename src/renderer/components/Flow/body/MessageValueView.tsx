@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
-import { Select, Button, Icon } from 'antd';
+import { Select, Button } from 'antd';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Dispatch, AnyAction } from 'redux';
 import { valueChange, fieldChange, entryAdd, entryRemove } from './MessageValueViewActions';
 import { getByKey } from '../../../utils/utils';
@@ -169,7 +170,7 @@ const EnumValueView: FunctionComponent<EVVProps> = ({ editable, value, handlers 
     width: SHORT_VALUE_INPUT_WIDTH,
   };
 
-  return (
+  return editable ? (
     <Select
       value={selected}
       {...(editable ? {} : { open: false })}
@@ -183,6 +184,8 @@ const EnumValueView: FunctionComponent<EVVProps> = ({ editable, value, handlers 
         </Select.Option>
       ))}
     </Select>
+  ) : (
+    <span>{selected}</span>
   );
 };
 
@@ -239,12 +242,11 @@ const RepeatedFieldView: FunctionComponent<RFVProps> = ({ editable, fieldName, v
             <Button
               shape="circle"
               size="small"
-              ghost
-              type="danger"
+              danger
               style={{ marginLeft: 4 }}
               onClick={(): void => handlers.entryRemove(`${idx.toString()}/`)}
             >
-              <Icon type="delete" />
+              <DeleteOutlined />
             </Button>
           ) : null}
         </IndentationBlock>
@@ -252,7 +254,7 @@ const RepeatedFieldView: FunctionComponent<RFVProps> = ({ editable, fieldName, v
       {editable ? (
         <IndentationBlock>
           <Button shape="circle" size="small" ghost type="primary" onClick={(): void => handlers.entryAdd('')}>
-            <Icon type="plus" />
+            <PlusOutlined />
           </Button>
         </IndentationBlock>
       ) : null}
@@ -329,12 +331,11 @@ const MapFieldView: FunctionComponent<MFVProps> = ({ editable, fieldName, kvPair
             <Button
               shape="circle"
               size="small"
-              ghost
-              type="danger"
+              danger
               style={{ marginLeft: 4 }}
               onClick={(): void => handlers.entryRemove(`${idx.toString()}/`)}
             >
-              <Icon type="delete" />
+              <DeleteOutlined />
             </Button>
           ) : null}
         </IndentationBlock>
@@ -342,7 +343,7 @@ const MapFieldView: FunctionComponent<MFVProps> = ({ editable, fieldName, kvPair
       {editable ? (
         <IndentationBlock>
           <Button shape="circle" size="small" ghost type="primary" onClick={(): void => handlers.entryAdd('')}>
-            <Icon type="plus" />
+            <PlusOutlined />
           </Button>
         </IndentationBlock>
       ) : null}

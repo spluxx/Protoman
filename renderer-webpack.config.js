@@ -1,8 +1,14 @@
+const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
+const lessToJs = require('less-vars-to-js');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const tsImportPluginFactory = require('ts-import-plugin');
+
+const antdThemeOverrides = lessToJs(fs.readFileSync(path.join(__dirname, './theme.less'), 'utf8'));
+
+console.log(antdThemeOverrides);
 
 const NODE_ENV = process.env.NODE_ENV;
 
@@ -30,7 +36,7 @@ module.exports = {
               tsImportPluginFactory({
                 libraryName: 'antd',
                 libraryDirectory: 'es',
-                style: 'css',
+                style: true,
               }),
             ],
           }),
@@ -38,8 +44,18 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
+        test: /\.less$/,
+        loader: [
+          'style-loader',
+          'css-loader',
+          {
+            loader: 'less-loader',
+            options: {
+              javascriptEnabled: true,
+              modifyVars: antdThemeOverrides,
+            },
+          },
+        ],
       },
       {
         enforce: 'pre',
@@ -57,7 +73,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'ProtoMan',
+      title: 'Protoman',
       template: './templates/index.html',
     }),
     new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /ja|it/),

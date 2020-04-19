@@ -49,11 +49,13 @@ const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies, protoCtx, messa
             style={{ width: MESSAGE_NAME_WIDTH }}
             showSearch
             filterOption={(input, option): boolean => {
-              return (option.props.children as string).includes(input);
+              return option && option.value.toString().includes(input.toString());
             }}
           >
-            {messageNames.map(messageName => (
-              <Select.Option key={messageName}>{messageName}</Select.Option>
+            {messageNames.map((messageName, idx) => (
+              <Select.Option key={idx} value={messageName}>
+                {messageName}
+              </Select.Option>
             ))}
           </Select>
         </div>
