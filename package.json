@@ -1,6 +1,6 @@
 {
   "name": "Protoman",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Basic Postman clone with protobuf functionalities",
   "author": "Inchan Hwang, Louis Lee",
   "license": "MIT",
