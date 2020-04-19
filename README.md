@@ -4,19 +4,6 @@
 
 A [Postman](https://www.postman.com/)-like API client for [protobuf](https://developers.google.com/protocol-buffers)-based messages.
 
-## Specs
-
-- [x] Parsing .proto files to collect metadata.
-- [x] UI to view/edit protobuf messages.
-- [x] Sending requests with protobuf messages.
-- [x] Viewing response with protobuf messages.
-- [x] Persisting view state
-- [x] Collections
-- [x] Environments from [Postman](https://learning.postman.com/docs/postman/variables-and-environments/variables/)
-- [x] Response metadata - execution time, body size, ...
-- [ ] Expose more request configurations
-- [x] Support bytes datatype - use base64 strings!.
-
 ## Usage
 
 1. **Register your .proto files to enable protobuf-related features. Right click on the collection, select 'Manage .proto files' to register the file paths.</span>**
