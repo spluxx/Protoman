@@ -30,16 +30,19 @@ export function createMessageValue(messageProto: ProtobufType, messageJson: Prot
   switch (messageProto.tag) {
     case 'message':
       const messageType = messageProto as MessageType;
-      assertType(messageJson, ['object']);
-      return handleMessage(messageType, messageJson as JsonObject, ctx);
+      const obj = messageJson ?? {};
+      assertType(obj, ['object']);
+      return handleMessage(messageType, obj as JsonObject, ctx);
     case 'primitive':
       const primitiveType = messageProto as PrimitiveType;
-      assertType(messageJson, ['string', 'number', 'boolean']);
-      return handlePrimitive(primitiveType, messageJson as string | number | boolean);
+      const prim = messageJson ?? primitiveType.defaultValue;
+      assertType(prim, ['string', 'number', 'boolean']);
+      return handlePrimitive(primitiveType, prim as string | number | boolean);
     case 'enum':
       const enumType = messageProto as EnumType;
-      assertType(messageJson, ['number']);
-      return handleEnum(enumType, messageJson as number);
+      const e = messageJson ?? 0;
+      assertType(e, ['number']);
+      return handleEnum(enumType, e as number);
   }
 }
 
@@ -68,11 +71,9 @@ function handleMessage(messageType: MessageType, messageJson: JsonObject, ctx: P
   });
 
   const repeatedFields = messageType.repeatedFields.map(([fieldName, typeName]): [string, ProtobufValue[]] => {
-    assertType(messageJson[fieldName], ['array']);
-    return [
-      fieldName,
-      (messageJson[fieldName] as JsonArray).map(value => createMessageValue(typeNameToType(typeName, ctx), value, ctx)),
-    ];
+    const arr = messageJson[fieldName] ?? [];
+    assertType(arr, ['array']);
+    return [fieldName, (arr as JsonArray).map(value => createMessageValue(typeNameToType(typeName, ctx), value, ctx))];
   });
 
   const oneOfFields = messageType.oneOfFields
@@ -93,8 +94,9 @@ function handleMessage(messageType: MessageType, messageJson: JsonObject, ctx: P
     .filter(a => !!a);
 
   const mapFields = messageType.mapFields.map(([fieldName, [valueTypeName]]): [string, [string, ProtobufValue][]] => {
-    assertType(messageJson[fieldName], ['object']);
-    const entries: [string, ProtoJson][] = Object.entries(messageJson[fieldName]);
+    const obj = messageJson[fieldName] ?? {};
+    assertType(obj, ['object']);
+    const entries: [string, ProtoJson][] = Object.entries(obj);
     const temp: [string, ProtobufValue][] = entries.map(([key, value]) => {
       const valueType: ProtobufType = typeNameToType(valueTypeName, ctx);
       return [key, createMessageValue(valueType, value, ctx)];
