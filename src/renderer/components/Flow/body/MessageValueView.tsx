@@ -282,7 +282,7 @@ const OneOfFieldView: FunctionComponent<OFVProps> = ({
     <Block>
       <FieldName>{fieldName}</FieldName>
       <span>: </span>
-      {editable ? (
+      {editable && (
         <Select
           value={name}
           size="small"
@@ -295,8 +295,6 @@ const OneOfFieldView: FunctionComponent<OFVProps> = ({
             </Select.Option>
           ))}
         </Select>
-      ) : (
-        <span>{`${name} (${value.type.name})`}</span>
       )}
       <IndentationBlock>
         <SingleFieldView editable={editable} fieldName={name} value={value} handlers={prefix(name, handlers)} />
