@@ -3,6 +3,7 @@ import { Flow } from './flow';
 
 export interface Collection {
   readonly protoFilepaths: ReadonlyArray<string>;
+  readonly protoRootPath?: string;
   readonly buildStatus: 'default' | 'building' | 'success' | 'failure';
   readonly buildError: Error | undefined;
   readonly protoCtx: ProtoCtx;

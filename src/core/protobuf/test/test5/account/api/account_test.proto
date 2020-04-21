@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+import "account/data/account.proto";
+
+message AccountList {
+    repeated account.data.Account accounts = 1;
+}

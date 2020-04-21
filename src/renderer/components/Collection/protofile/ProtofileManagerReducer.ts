@@ -14,6 +14,7 @@ export default function ProtofileManagerReducer(s: AppState, action: AnyAction):
           const collection = getByKey(draft.collections, a.collectionName);
           if (collection) {
             collection.protoFilepaths = a.filepaths;
+            collection.protoRootPath = a.rootPath;
             collection.buildError = undefined;
           }
         });

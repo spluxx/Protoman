@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package account.data;
+
+import "common/valid.proto";
+
+message Account {
+    int64 account_id = 1;
+    string first_name = 2 [(valid.pattern) = "[a-zA-Z]{5,20}"];
+    string last_name = 3 [(valid.pattern) = "[a-zA-Z]{5,20}"];
+    string email = 4 [(valid.email) = true];
+    string phone = 5 [(valid.pattern) = "[a-zA-Z]{5,20}"];
+}

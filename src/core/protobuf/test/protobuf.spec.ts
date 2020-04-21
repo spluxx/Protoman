@@ -123,3 +123,16 @@ test('parser should successfully build a ProtoCtx with multiple .proto files', a
   const protoCtx = await buildContext(filepaths);
   expect(Object.keys(protoCtx.types).length).toBe(5 + allPrimitiveTypes.length);
 });
+
+test('parser should successfully build a ProtoCtx that imports using root directory', async () => {
+  const filepaths = [
+    resolvePath('test5/account/api/account_test.proto'),
+    resolvePath('test5/account/data/account.proto'),
+    resolvePath('test5/common/valid.proto'),
+  ];
+
+  const rootPath = resolvePath('test5');
+
+  const protoCtx = await buildContext(filepaths, rootPath);
+  expect(Object.keys(protoCtx.types).length).toBe(3 + allPrimitiveTypes.length);
+});
