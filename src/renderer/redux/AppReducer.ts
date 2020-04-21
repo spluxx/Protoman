@@ -20,6 +20,11 @@ function applyAll(reducers: BigReducer[]): BigReducer {
   };
 }
 
+function Logger(s: AppState, a: AnyAction): AppState {
+  console.log(a);
+  return s;
+}
+
 const AppReducer = applyAll([
   MessageValueViewReducer,
   EnvPickerReducer,
@@ -32,6 +37,7 @@ const AppReducer = applyAll([
   FlowViewReducers,
   ExpectedBodyInputReducer,
   BulkReducer,
+  // Logger,
 ]);
 
 export default AppReducer;

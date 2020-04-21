@@ -8,6 +8,7 @@ type SetProtofiles = {
   type: 'SET_PROTOFILES';
   collectionName: string;
   filepaths: string[];
+  rootPath?: string;
 };
 
 const SET_PROTOFILES = 'SET_PROTOFILES';
@@ -16,6 +17,7 @@ type BuildProtofiles = {
   type: 'BUILD_PROTOFILES';
   collectionName: string;
   filepaths: string[];
+  rootPath?: string;
 };
 
 const BUILD_PROTOFILES = 'BUILD_PROTOFILES';
@@ -60,14 +62,15 @@ export type ProtofileManagerActions =
 export function buildProtofiles(
   collectionName: string,
   filepaths: string[],
+  rootPath?: string,
 ): ThunkAction<Promise<void>, AppState, {}, AnyAction> {
   return async (dispatch): Promise<void> => {
     if (filepaths) {
       dispatch({ type: BUILD_PROTOFILES, collectionName, filepaths });
       try {
-        const ctx = await buildContext(filepaths);
+        const ctx = await buildContext(filepaths, rootPath);
         dispatch({ type: BUILD_PROTOFILES_SUCCESS, collectionName, ctx });
-        dispatch({ type: SET_PROTOFILES, collectionName, filepaths });
+        dispatch({ type: SET_PROTOFILES, collectionName, filepaths, rootPath });
       } catch (err) {
         dispatch({ type: BUILD_PROTOFILES_FAILURE, collectionName, err });
       }

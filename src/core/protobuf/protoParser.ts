@@ -1,6 +1,7 @@
 import protobuf from 'protobufjs';
 import { ProtobufType, MessageType, EnumType, ProtoCtx } from './protobuf';
 import { allPrimitiveTypes } from './primitiveTypes';
+import path from 'path';
 
 type FieldPair<T> = [string, T];
 type Fields<T> = Array<FieldPair<T>>;
@@ -85,17 +86,27 @@ function traverseTypes(
   return types;
 }
 
-function readProto(path: string): Promise<ProtobufType[]> {
-  return protobuf
+function readProto(root: protobuf.Root, path: string): Promise<ProtobufType[]> {
+  return root
     .load(path)
     .then(traverseTypes)
     .catch(err => {
-      throw new Error('Protobuf cannot be read');
+      throw new Error('Protobuf cannot be read: ' + err);
     });
 }
 
-export async function readProtos(paths: ReadonlyArray<string>): Promise<[ProtobufType[], { [key: string]: string }]> {
-  const typeLists = await Promise.all(paths.map(readProto));
+export async function readProtos(
+  paths: ReadonlyArray<string>,
+  rootPath?: string,
+): Promise<[ProtobufType[], { [key: string]: string }]> {
+  const root = new protobuf.Root();
+  root.resolvePath = (origin, target): string => path.resolve(rootPath ?? origin, target);
+
+  const typeLists = [];
+  for (let i = 0; i < paths.length; i++) {
+    typeLists.push(await readProto(root, paths[i]));
+  }
+
   const [types, origin] = typeLists.reduce(
     (acc, typesFromFile, idx) => {
       const [types, origin] = acc;
@@ -113,8 +124,8 @@ export async function readProtos(paths: ReadonlyArray<string>): Promise<[Protobu
   return [types.concat(allPrimitiveTypes), origin];
 }
 
-export async function buildContext(filepaths: ReadonlyArray<string>): Promise<ProtoCtx> {
-  const [protoTypes, origin] = await readProtos(filepaths);
+export async function buildContext(filepaths: ReadonlyArray<string>, rootPath?: string): Promise<ProtoCtx> {
+  const [protoTypes, origin] = await readProtos(filepaths, rootPath);
   return {
     types: protoTypes.reduce((acc, type) => {
       acc[type.name] = type;

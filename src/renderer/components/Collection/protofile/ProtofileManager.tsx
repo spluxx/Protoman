@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Typography, List, Button, Row, Col, Checkbox, Divider, Alert } from 'antd';
+import { Typography, List, Button, Row, Col, Checkbox, Divider, Alert, Input } from 'antd';
 import { PlusOutlined, CloseOutlined, BuildOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { buildProtofiles, resetProtofileStatus } from './ProtofileManagerActions';
@@ -26,11 +26,13 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName }) =>
 
   const collection = useSelector((s: AppState) => getByKey(s.collections, collectionName));
   const filepaths = collection?.protoFilepaths;
+  const rootPath = collection?.protoRootPath;
   const buildStatus = collection?.buildStatus;
   const buildError = collection?.buildError;
 
   const [selected, setSelected] = React.useState<string[]>([]);
   const [draft, setDraft] = React.useState<string[]>([]);
+  const [draftRootPath, setDraftRootPath] = React.useState<string>('');
 
   const filepickerRef = React.useRef<HTMLInputElement>(null);
 
@@ -39,6 +41,12 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName }) =>
       setDraft([...filepaths]);
     }
   }, [filepaths]);
+
+  React.useEffect(() => {
+    if (rootPath) {
+      setDraftRootPath(rootPath ?? '');
+    }
+  }, [rootPath]);
 
   if (!collection) return null;
 
@@ -75,7 +83,7 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName }) =>
   }
 
   function tryBuilding(): void {
-    dispatch(buildProtofiles(collectionName, draft));
+    dispatch(buildProtofiles(collectionName, draft, draftRootPath || undefined));
   }
 
   const triggerFileDialog = (): void => filepickerRef.current?.click();
@@ -110,6 +118,14 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName }) =>
         </Button>
       </div>
 
+      <div style={{ marginBottom: 8 }}>
+        <Input
+          addonBefore="proto_path"
+          value={draftRootPath}
+          onChange={(e): void => setDraftRootPath(e.target.value)}
+        />
+      </div>
+
       {draft.length > 0 ? (
         <>
           <Checkbox
@@ -135,7 +151,7 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName }) =>
                   />
                 </Col>
                 <Col span={23}>
-                  <span style={{ textOverflow: 'ellipsis', width: '100%', marginLeft: 8 }}>{filepath}</span>
+                  <p style={{ width: '100%', marginLeft: 8, marginBottom: 0 }}>{filepath}</p>
                 </Col>
               </Row>
             </List.Item>
