@@ -50,7 +50,7 @@ export const sampleCtx: ProtoCtx = {
     SmallUser: smallUserType,
     Sports: sportsType,
   },
-  origin: {},
+  descriptorJson: '{}',
 };
 
 const firstNameValue: PrimitiveValue = {

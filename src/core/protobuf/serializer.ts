@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { MessageValue, ProtobufValue, PrimitiveValue, EnumValue } from './protobuf';
+import { MessageValue, ProtobufValue, PrimitiveValue, EnumValue, ProtoCtx } from './protobuf';
 import protobuf from 'protobufjs';
 import { ProtoJson, JsonObject, JsonArray } from './protoJson';
 
-export async function serializeProtobuf(body: MessageValue, path: string): Promise<Buffer> {
-  const root = await protobuf.load(path);
+export async function serializeProtobuf(body: MessageValue, ctx: ProtoCtx): Promise<Buffer> {
+  const root = protobuf.Root.fromJSON(JSON.parse(ctx.descriptorJson));
   const messageType = root.lookupType(body.type.name);
   const rec = makeMessageValue(body);
   return Buffer.from(messageType.encode(messageType.create(rec)).finish());

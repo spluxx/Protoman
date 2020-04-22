@@ -33,7 +33,7 @@ export async function toRequestDescriptor(
   let body;
   if (bodyType === 'protobuf' && bodies.protobuf) {
     const withEnv = applyToProtoMessage(bodies.protobuf, (s: string): string => applyEnvs(s, varMap));
-    body = await serializeProtobuf(withEnv, ctx.origin[bodies.protobuf?.type.name]);
+    body = await serializeProtobuf(withEnv, ctx);
   } else {
     body = undefined;
   }
