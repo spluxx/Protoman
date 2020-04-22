@@ -13,7 +13,7 @@ const Wrapper = styled('div')`
 `;
 
 const Scrollable = styled('div')`
-  height: 350px;
+  height: 300px;
   overflow: auto;
 `;
 
@@ -167,7 +167,9 @@ const ProtofileManager: React.FunctionComponent<Props> = ({ collectionName }) =>
         onChange={(e): void => handleFileInput(e.target.files)}
       />
 
-      {buildStatus === 'failure' ? <Alert message={buildError?.message || ' '} type="error" closeText="Close" /> : null}
+      {buildStatus === 'failure' ? (
+        <Alert message={buildError?.toString() || ' '} type="error" closeText="Close" />
+      ) : null}
       {buildStatus === 'success' ? <Alert message="Build success!" type="success" closeText="Close" /> : null}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>

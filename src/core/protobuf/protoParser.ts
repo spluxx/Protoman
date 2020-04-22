@@ -86,15 +86,13 @@ function traverseTypes(
   return types;
 }
 
-function readProto(root: protobuf.Root, paths: string[]): Promise<[ProtobufType[], protobuf.Root]> {
-  return root
-    .load(paths)
-    .then(root => {
-      return [traverseTypes(root), root] as [ProtobufType[], protobuf.Root];
-    })
-    .catch(err => {
-      throw new Error('Protobuf cannot be read: ' + err);
-    });
+async function readProto(root: protobuf.Root, paths: string[]): Promise<[ProtobufType[], protobuf.Root]> {
+  try {
+    const newRoot = await root.load(paths);
+    return [traverseTypes(newRoot), newRoot];
+  } catch (e) {
+    throw new Error('Protobuf cannot be read: ' + e);
+  }
 }
 
 export async function buildContext(filepaths: string[], rootPath?: string): Promise<ProtoCtx> {

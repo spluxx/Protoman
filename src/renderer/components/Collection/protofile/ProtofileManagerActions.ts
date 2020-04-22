@@ -3,6 +3,7 @@ import { AppState } from '../../../models/AppState';
 import { AnyAction } from 'redux';
 import { ProtoCtx } from '../../../../core/protobuf/protobuf';
 import { buildContext } from '../../../../core/protobuf/protoParser';
+const fs = require('electron').remote.require('fs');
 
 type SetProtofiles = {
   type: 'SET_PROTOFILES';
@@ -59,6 +60,15 @@ export type ProtofileManagerActions =
   | BuildProtofilesFailure
   | ResetProtofileStatus;
 
+async function isReadable(path: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    fs.access(path, fs.constants.R_OK, (err?: Error) => {
+      if (err) reject(`${path} is not readable.`);
+      else resolve();
+    });
+  });
+}
+
 export function buildProtofiles(
   collectionName: string,
   filepaths: string[],
@@ -68,6 +78,7 @@ export function buildProtofiles(
     if (filepaths) {
       dispatch({ type: BUILD_PROTOFILES, collectionName, filepaths });
       try {
+        await Promise.all(filepaths.map(isReadable));
         const ctx = await buildContext(filepaths, rootPath);
         dispatch({ type: BUILD_PROTOFILES_SUCCESS, collectionName, ctx });
         dispatch({ type: SET_PROTOFILES, collectionName, filepaths, rootPath });
