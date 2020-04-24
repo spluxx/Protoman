@@ -105,7 +105,7 @@ export const sampleCtx2: ProtoCtx = {
     Title: titleType,
     Class: classType,
   },
-  origin: {},
+  descriptorJson: '{}',
 };
 
 const courseNameValue: PrimitiveValue = {

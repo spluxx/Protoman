@@ -86,51 +86,28 @@ function traverseTypes(
   return types;
 }
 
-function readProto(root: protobuf.Root, path: string): Promise<ProtobufType[]> {
-  return root
-    .load(path)
-    .then(traverseTypes)
-    .catch(err => {
-      throw new Error('Protobuf cannot be read: ' + err);
-    });
-}
-
-export async function readProtos(
-  paths: ReadonlyArray<string>,
-  rootPath?: string,
-): Promise<[ProtobufType[], { [key: string]: string }]> {
-  const root = new protobuf.Root();
-  root.resolvePath = (origin, target): string => path.resolve(rootPath ?? origin, target);
-
-  const typeLists = [];
-  for (let i = 0; i < paths.length; i++) {
-    typeLists.push(await readProto(root, paths[i]));
+async function readProto(root: protobuf.Root, paths: string[]): Promise<[ProtobufType[], protobuf.Root]> {
+  try {
+    const newRoot = await root.load(paths);
+    return [traverseTypes(newRoot), newRoot];
+  } catch (e) {
+    throw new Error('Protobuf cannot be read: ' + e);
   }
-
-  const [types, origin] = typeLists.reduce(
-    (acc, typesFromFile, idx) => {
-      const [types, origin] = acc;
-      return [
-        [...types, ...typesFromFile],
-        typesFromFile.reduce((o, t) => {
-          o[t.name] = paths[idx];
-          return o;
-        }, origin),
-      ];
-    },
-    [[] as ProtobufType[], {} as { [key: string]: string }],
-  );
-
-  return [types.concat(allPrimitiveTypes), origin];
 }
 
-export async function buildContext(filepaths: ReadonlyArray<string>, rootPath?: string): Promise<ProtoCtx> {
-  const [protoTypes, origin] = await readProtos(filepaths, rootPath);
+export async function buildContext(filepaths: string[], rootPath?: string): Promise<ProtoCtx> {
+  const baseRoot = new protobuf.Root();
+  baseRoot.resolvePath = (origin, target): string => path.resolve(rootPath ?? origin, target);
+
+  const [types, root] = await readProto(baseRoot, filepaths);
+
+  const descriptorJson = JSON.stringify(root.toJSON());
+
   return {
-    types: protoTypes.reduce((acc, type) => {
-      acc[type.name] = type;
+    types: types.concat(allPrimitiveTypes).reduce<ProtoCtx['types']>((acc, t) => {
+      acc[t.name] = t;
       return acc;
-    }, {} as { [key: string]: ProtobufType }),
-    origin,
+    }, {}),
+    descriptorJson,
   };
 }

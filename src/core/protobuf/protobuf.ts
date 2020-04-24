@@ -11,7 +11,7 @@ export type Entries<T> = ReadonlyArray<Entry<T>>;
 
 export interface ProtoCtx {
   readonly types: { [key: string]: ProtobufType };
-  readonly origin: { [key: string]: string }; // file path
+  readonly descriptorJson: string;
 }
 
 export function typeNameToType(name: TypeName, ctx: ProtoCtx): ProtobufType {

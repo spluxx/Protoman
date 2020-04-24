@@ -2,14 +2,12 @@ import { createStore, applyMiddleware, Store } from 'redux';
 import AppReducer from './AppReducer';
 import { AppState } from '../models/AppState';
 import produce, { Draft } from 'immer';
-import { Collection, validateCollectionName } from '../models/Collection';
+import { Collection } from '../models/Collection';
 import { Env } from '../models/Env';
 import thunk from 'redux-thunk';
 import { getByKey, getEntryByKey } from '../utils/utils';
 import { Flow } from '../models/flow';
 import { ProtoCtx } from '../../core/protobuf/protobuf';
-import { message } from 'antd';
-import { importCollection } from '../bulk/BulkActions';
 
 const DEFAULT_FLOW_NAME = 'Request1';
 const DEFAULT_COLLECTION_NAME = 'Collection1';
@@ -37,7 +35,7 @@ export function createDefaultFlow(): Draft<Flow> {
 export function createDefaultProtoCtx(): Draft<ProtoCtx> {
   return {
     types: {},
-    origin: {},
+    descriptorJson: '{}',
   };
 }
 
@@ -138,6 +136,7 @@ function deserialize(buf: Uint8Array): AppState {
 
 export function makeStore(loaded: Uint8Array | null): Store {
   const initialState = loaded ? deserialize(loaded) : createDefaultAppState();
+
   return createStore((s, a) => AppReducer(s || initialState, a), initialState, applyMiddleware(thunk));
 }
 

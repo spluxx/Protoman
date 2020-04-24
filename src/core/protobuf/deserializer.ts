@@ -20,7 +20,7 @@ export async function deserializeProtobuf(
   expectedMsg: string,
   ctx: ProtoCtx,
 ): Promise<MessageValue> {
-  const root = await protobuf.load(ctx.origin[expectedMsg]);
+  const root = protobuf.Root.fromJSON(JSON.parse(ctx.descriptorJson));
   const messageType = root.lookupType(expectedMsg);
   const decoded = messageType.decode(arrayBuffer);
   return handleMessage(createMessageType(messageType), decoded.toJSON(), ctx);

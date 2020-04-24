@@ -1,12 +1,12 @@
 import protobuf from 'protobufjs';
 import { test3UserExpectedJson, userValue, sampleCtx, userType } from './test3dummyValue';
-import { createMessageRecurse } from '../serializer';
-import { createMessageValue } from '../deserializer';
+import { createMessageRecurse, serializeProtobuf } from '../serializer';
+import { createMessageValue, deserializeProtobuf } from '../deserializer';
 import { classValue, test4UserExpectedJson, classType, sampleCtx2 } from './test4dummyValue';
 import { test4UserValueExpected } from './test4JSON';
 import path from 'path';
-import { readProtos, buildContext } from '../protoParser';
-import { MessageType, EnumType } from '../protobuf';
+import { buildContext } from '../protoParser';
+import { MessageType, EnumType, PrimitiveType, MessageValue } from '../protobuf';
 import { allPrimitiveTypes } from '../primitiveTypes';
 
 function resolvePath(filename: string): string {
@@ -47,10 +47,12 @@ test('createMessageValue(deserialize) should successfully deserialize a json', (
 test('parser should successfully build a ProtoCtx with the given filepath', async () => {
   const filepaths = [resolvePath('test1.proto')];
 
-  const res = await readProtos(filepaths);
-  const [testTypes, origin] = res;
+  const res = await buildContext(filepaths);
+  const testTypes = res.types;
 
-  const [ckType, userType, userRole] = testTypes;
+  const ckType = testTypes['.test1.Ck'];
+  const userType = testTypes['.test1.User'];
+  const userRole = testTypes['.test1.User.UserRole'];
 
   const ckTypeExpected: MessageType = {
     tag: 'message',
@@ -107,9 +109,6 @@ test('parser should successfully build a ProtoCtx with the given filepath', asyn
   expect(userType).toStrictEqual(userTypeExpected);
   expect(userRole).toStrictEqual(userRoleExpected);
   expect(ckType).toStrictEqual(ckTypeExpected);
-  expect(origin['.test1.User']).toBe(filepaths[0]);
-  expect(origin['.test1.User.UserRole']).toBe(filepaths[0]);
-  expect(origin['.test1.Ck']).toBe(filepaths[0]);
 });
 
 test('parser should successfully build a ProtoCtx with a .proto file', async () => {
@@ -135,4 +134,72 @@ test('parser should successfully build a ProtoCtx that imports using root direct
 
   const protoCtx = await buildContext(filepaths, rootPath);
   expect(Object.keys(protoCtx.types).length).toBe(3 + allPrimitiveTypes.length);
+});
+
+test('serialize -> deserialize should give the same MessageValue', async () => {
+  const filepaths = [
+    resolvePath('test5/account/api/account_test.proto'),
+    resolvePath('test5/account/data/account.proto'),
+    resolvePath('test5/common/valid.proto'),
+  ];
+
+  const rootPath = resolvePath('test5');
+
+  const protoCtx = await buildContext(filepaths, rootPath);
+
+  const messageTypeName = '.account.data.Account';
+
+  const accountType = protoCtx.types[messageTypeName] as MessageType;
+  const int64Type = protoCtx.types['int64'] as PrimitiveType;
+  const stringType = protoCtx.types['string'] as PrimitiveType;
+
+  const messageValue: MessageValue = {
+    type: accountType,
+    singleFields: [
+      [
+        'accountId',
+        {
+          type: int64Type,
+          value: '1',
+        },
+      ],
+      [
+        'firstName',
+        {
+          type: stringType,
+          value: 'proto',
+        },
+      ],
+      [
+        'lastName',
+        {
+          type: stringType,
+          value: 'man',
+        },
+      ],
+      [
+        'email',
+        {
+          type: stringType,
+          value: 'example@gmail.com',
+        },
+      ],
+      [
+        'phone',
+        {
+          type: stringType,
+          value: '9196410306',
+        },
+      ],
+    ],
+    repeatedFields: [],
+    oneOfFields: [],
+    mapFields: [],
+  };
+
+  const serialized = await serializeProtobuf(messageValue, protoCtx);
+
+  const deserialized = await deserializeProtobuf(serialized, messageTypeName, protoCtx);
+
+  expect(deserialized).toStrictEqual(messageValue);
 });
