@@ -14,5 +14,6 @@ export interface ResponseDescriptor {
   readonly statusCode: number;
   readonly headers: ReadonlyArray<[string, string]>;
   readonly body: ResponseBody;
+  readonly warning?: string;
   readonly time: number; // ms
 }

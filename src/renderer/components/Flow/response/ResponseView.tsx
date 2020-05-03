@@ -99,7 +99,7 @@ type Props = {
 };
 
 const ResponseView: React.FunctionComponent<Props> = ({ response }) => {
-  const { statusCode, headers, time, body } = response;
+  const { statusCode, headers, time, body, warning } = response;
   const { bodySize } = body;
 
   return (
@@ -114,7 +114,7 @@ const ResponseView: React.FunctionComponent<Props> = ({ response }) => {
       </TitleWrapper>
       <Tabs defaultActiveKey="body" animated={false}>
         <PaddedTabPane tab="Body" key="body">
-          <ResponseBodyView body={body} />
+          <ResponseBodyView body={body} warning={warning ?? ''} />
         </PaddedTabPane>
         <PaddedTabPane tab="Headers" key="header">
           <HeaderView headers={headers} />

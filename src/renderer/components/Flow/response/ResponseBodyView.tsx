@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import TextArea from 'antd/lib/input/TextArea';
 import { ResponseBody } from '../../../../core/http_client/response';
 import { MessageValue } from '../../../../core/protobuf/protobuf';
+import { Alert } from 'antd';
 
 const TextView = styled(TextArea)`
   width: 100%;
@@ -29,9 +30,10 @@ const NO_OP = (): void => {
 
 type Props = {
   body: ResponseBody;
+  warning: string;
 };
 
-const ResponseBodyView: FunctionComponent<Props> = ({ body }) => {
+const ResponseBodyView: FunctionComponent<Props> = ({ body, warning }) => {
   const { type, value } = body;
 
   const handlers = {
@@ -41,19 +43,21 @@ const ResponseBodyView: FunctionComponent<Props> = ({ body }) => {
     entryRemove: NO_OP,
   };
 
-  switch (type) {
-    case 'empty':
-      return <EmptyBody />;
-    case 'unknown':
-      return <UnknownBody />;
-    case 'protobuf':
-      return <MessageValueView value={value as MessageValue} handlers={handlers} />;
-    case 'json':
-    case 'html':
-      return <StringBody s={value as string} />;
-    default:
-      return null;
-  }
+  return (
+    <div>
+      {warning.length > 0 && <Alert type="warning" style={{ whiteSpace: 'pre' }} message={warning}></Alert>}
+      <div style={{ height: 8 }} />
+      {type === 'empty' ? (
+        <EmptyBody />
+      ) : type === 'unknown' ? (
+        <UnknownBody />
+      ) : type === 'protobuf' ? (
+        <MessageValueView value={value as MessageValue} handlers={handlers} />
+      ) : type === 'json' || type === 'html' ? (
+        <StringBody s={value as string} />
+      ) : null}
+    </div>
+  );
 };
 
 export default ResponseBodyView;

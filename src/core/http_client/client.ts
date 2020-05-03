@@ -34,8 +34,9 @@ async function translateResponse(
 
   const { expectedProtobufMsg } = request;
 
-  let responseBodyType: ResponseBodyType;
-  let responseBodyValue: ResponseBodyValue;
+  let responseBodyType: ResponseBodyType = 'unknown';
+  let responseBodyValue: ResponseBodyValue = undefined;
+  let warning: string | undefined = undefined;
 
   const buf = new Uint8Array(await response.arrayBuffer());
 
@@ -49,11 +50,23 @@ async function translateResponse(
     responseBodyType = 'html';
     responseBodyValue = toStr(buf);
   } else if (expectedProtobufMsg) {
-    responseBodyType = 'protobuf';
-    responseBodyValue = await deserializeProtobuf(buf, expectedProtobufMsg, protoCtx);
-  } else {
-    responseBodyType = 'unknown';
-    responseBodyValue = undefined;
+    const res = await deserializeProtobuf(buf, expectedProtobufMsg, protoCtx);
+    switch (res.tag) {
+      case 'invalid':
+        if (res.value) {
+          responseBodyType = 'json';
+          responseBodyValue = res.value;
+        } else {
+          responseBodyType = 'unknown';
+          responseBodyValue = undefined;
+        }
+        warning = res.error;
+        break;
+      case 'valid':
+        responseBodyType = 'protobuf';
+        responseBodyValue = res.value;
+        break;
+    }
   }
 
   return {
@@ -64,6 +77,7 @@ async function translateResponse(
       value: responseBodyValue,
       bodySize: buf.length,
     },
+    warning,
     time: dt,
   };
 }

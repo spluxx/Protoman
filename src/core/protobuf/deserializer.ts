@@ -14,16 +14,38 @@ import {
 import protobuf from 'protobufjs';
 import { createMessageType } from './protoParser';
 import { ProtoJson, JsonObject, JsonArray } from './protoJson';
+import { transformPBJSError } from './pbjsErrors';
+
+type DeserializeResult =
+  | {
+      tag: 'valid';
+      value: MessageValue;
+    }
+  | {
+      tag: 'invalid';
+      value: string | null;
+      error: string;
+    };
 
 export async function deserializeProtobuf(
   arrayBuffer: Uint8Array,
   expectedMsg: string,
   ctx: ProtoCtx,
-): Promise<MessageValue> {
-  const root = protobuf.Root.fromJSON(JSON.parse(ctx.descriptorJson));
-  const messageType = root.lookupType(expectedMsg);
-  const decoded = messageType.decode(arrayBuffer);
-  return handleMessage(createMessageType(messageType), decoded.toJSON(), ctx);
+): Promise<DeserializeResult> {
+  try {
+    const root = protobuf.Root.fromJSON(JSON.parse(ctx.descriptorJson));
+    const messageType = root.lookupType(expectedMsg);
+    const decoded = messageType.decode(arrayBuffer);
+    const obj = decoded.toJSON();
+
+    try {
+      return { tag: 'valid', value: handleMessage(createMessageType(messageType), obj, ctx) };
+    } catch (e) {
+      return { tag: 'invalid', value: JSON.stringify(obj, null, 2), error: e.toString() };
+    }
+  } catch (e) {
+    return { tag: 'invalid', value: null, error: transformPBJSError(e).message };
+  }
 }
 
 export function createMessageValue(messageProto: ProtobufType, messageJson: ProtoJson, ctx: ProtoCtx): ProtobufValue {
@@ -49,7 +71,7 @@ export function createMessageValue(messageProto: ProtobufType, messageJson: Prot
 function handleEnum(messageType: EnumType, jsonValue: number): EnumValue {
   const selected = Object.entries(messageType.optionValues).find(([, value]) => value === jsonValue)?.[0];
   if (!selected) {
-    throw deserializeError(`The given enum value ${jsonValue} isn't defined in ${messageType.name}`);
+    throw deserializeError(`The given enum value ${jsonValue} isn't defined in '${messageType.name}'`);
   } else {
     return {
       type: messageType,
@@ -80,7 +102,7 @@ function handleMessage(messageType: MessageType, messageJson: JsonObject, ctx: P
     .map(([largeFieldName, options]): [string, [string, ProtobufValue]] => {
       const selectedOption = options.find(([name]) => messageJson[name] != null);
       if (!selectedOption) {
-        throw deserializeError(`The given json couldn't find any field for the 'oneof' field ${largeFieldName}.`);
+        throw deserializeError(`The given json couldn't find any field for the 'oneof' field '${largeFieldName}'.`);
       } else {
         const [name, typeName] = selectedOption;
         const smallValue = messageJson[name];
@@ -122,6 +144,6 @@ function assertType(json: ProtoJson, expectedTypes: string[]): void {
   if (expectedTypes.includes(actual)) {
     return;
   } else {
-    throw deserializeError(`Expected ${expectedTypes}, but got ${actual}`);
+    throw deserializeError(`Expected '${expectedTypes}', but got '${actual}'`);
   }
 }

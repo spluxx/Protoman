@@ -201,5 +201,41 @@ test('serialize -> deserialize should give the same MessageValue', async () => {
 
   const deserialized = await deserializeProtobuf(serialized, messageTypeName, protoCtx);
 
-  expect(deserialized).toStrictEqual(messageValue);
+  expect(deserialized.tag).toEqual('valid');
+  expect(deserialized.value).toStrictEqual(messageValue);
+});
+
+test('deserializeProtobuf() should try to return the object when failing', async () => {
+  const filepaths = [resolvePath('test3.proto')];
+  const protoCtx = await buildContext(filepaths);
+
+  const smallUserType = protoCtx.types['.test3.SmallUser'] as MessageType;
+  const stringType = protoCtx.types['string'] as PrimitiveType;
+
+  const messageValue: MessageValue = {
+    type: smallUserType,
+    singleFields: [
+      [
+        'firstName',
+        {
+          type: stringType,
+          value: 'test_user',
+        },
+      ],
+    ],
+    repeatedFields: [],
+    oneOfFields: [],
+    mapFields: [],
+  };
+
+  const serialized = await serializeProtobuf(messageValue, protoCtx);
+
+  const res = await deserializeProtobuf(serialized, '.test3.User', protoCtx);
+
+  if (res.tag === 'invalid') {
+    expect(res.value).toBe(JSON.stringify({ firstName: 'test_user' }, null, 2));
+    expect(res.error).toBeDefined();
+  } else {
+    expect(res.tag).toBe('invalid');
+  }
 });
