@@ -14,6 +14,7 @@ import {
 import protobuf from 'protobufjs';
 import { createMessageType } from './protoParser';
 import { ProtoJson, JsonObject, JsonArray } from './protoJson';
+import { transformPBJSError } from './pbjsErrors';
 
 type DeserializeResult =
   | {
@@ -43,7 +44,7 @@ export async function deserializeProtobuf(
       return { tag: 'invalid', value: JSON.stringify(obj, null, 2), error: e.toString() };
     }
   } catch (e) {
-    return { tag: 'invalid', value: null, error: e.toString() };
+    return { tag: 'invalid', value: null, error: transformPBJSError(e).message };
   }
 }
 

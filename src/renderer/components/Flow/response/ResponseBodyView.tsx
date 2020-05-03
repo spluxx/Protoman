@@ -45,7 +45,7 @@ const ResponseBodyView: FunctionComponent<Props> = ({ body, warning }) => {
 
   return (
     <div>
-      {warning.length > 0 && <Alert type="warning" message={warning}></Alert>}
+      {warning.length > 0 && <Alert type="warning" style={{ whiteSpace: 'pre' }} message={warning}></Alert>}
       <div style={{ height: 8 }} />
       {type === 'empty' ? (
         <EmptyBody />
