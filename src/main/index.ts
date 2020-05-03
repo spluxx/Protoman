@@ -2,6 +2,7 @@ import { app, BrowserWindow, Menu, screen } from 'electron';
 import path from 'path';
 import makeMenu from './menu';
 import { initializeEvents } from './events';
+import { checkUpdateAndNotify } from './notification';
 
 let window: BrowserWindow;
 
@@ -21,6 +22,8 @@ async function createWindow(): Promise<void> {
   initializeEvents();
   Menu.setApplicationMenu(makeMenu());
   window.loadFile(path.join(__dirname, 'index.html'));
+
+  checkUpdateAndNotify(window);
 }
 
 console.log('MAIN PROCESS STARTED');

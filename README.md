@@ -41,15 +41,15 @@ A [Postman](https://www.postman.com/)-like API client for [protobuf](https://dev
 
 ### Mac
 
-[Protoman-0.3.3.dmg](https://github.com/spluxx/Protoman/releases/download/v0.3.3/Protoman-0.3.3.dmg)
+[Protoman-0.3.4.dmg](https://github.com/spluxx/Protoman/releases/download/v0.3.4/Protoman-0.3.4.dmg)
 
 ### Windows
 
-[Protoman Setup 0.3.3.exe](https://github.com/spluxx/Protoman/releases/download/v0.3.3/Protoman.Setup.0.3.3.exe) - Unlike mac, I don't currently own a license to sign the app. So it might give you some security warnings!
+[Protoman Setup 0.3.4.exe](https://github.com/spluxx/Protoman/releases/download/v0.3.4/Protoman.Setup.0.3.4.exe) - Unlike mac, I don't currently own a license to sign the app. So it might give you some security warnings!
 
 ### Linux
 
-[Protoman-0.3.3.AppImage](https://github.com/spluxx/Protoman/releases/download/v0.3.3/Protoman-0.3.3.AppImage)
+[Protoman-0.3.4.AppImage](https://github.com/spluxx/Protoman/releases/download/v0.3.4/Protoman-0.3.4.AppImage)
 
 As a fallback, you can clone the repo and run npm install && npm run build to build, and npm run start to launch the app. Or, you can actually find configurations on [electron builder](https://www.electron.build/) to get the right distribution version yourself!
 
