@@ -34,22 +34,25 @@ A [Postman](https://www.postman.com/)-like API client for [protobuf](https://dev
 4. **As of version 0.3.0, you can also import / export collections as JSON**
 
 - When importing a collection, all the proto definitions / path to .proto files are also imported. Hence, it's recommended to fix the paths to keep the proto definitions up-to-date.
+- Note that it's not compatible with Postman collections.
 
-5. **That's it for the current version. Enjoy and leave a star if you like it !**
+5. **As of version 0.4.0, you can also reorder requests / set different expected messages for success(2XX) and failures(others)**
+
+6. **That's it for the current version. Enjoy and leave a star if you like it !**
 
 ## Installation
 
 ### Mac
 
-[Protoman-0.3.4.dmg](https://github.com/spluxx/Protoman/releases/download/v0.3.4/Protoman-0.3.4.dmg)
+[Protoman-0.4.0.dmg](https://github.com/spluxx/Protoman/releases/download/v0.4.0/Protoman-0.4.0.dmg)
 
 ### Windows
 
-[Protoman Setup 0.3.4.exe](https://github.com/spluxx/Protoman/releases/download/v0.3.4/Protoman.Setup.0.3.4.exe) - Unlike mac, I don't currently own a license to sign the app. So it might give you some security warnings!
+[Protoman Setup 0.4.0.exe](https://github.com/spluxx/Protoman/releases/download/v0.4.0/Protoman.Setup.0.4.0.exe) - Unlike mac, I don't currently own a license to sign the app. So it might give you some security warnings!
 
 ### Linux
 
-[Protoman-0.3.4.AppImage](https://github.com/spluxx/Protoman/releases/download/v0.3.4/Protoman-0.3.4.AppImage)
+[Protoman-0.4.0.AppImage](https://github.com/spluxx/Protoman/releases/download/v0.4.0/Protoman-0.4.0.AppImage)
 
 As a fallback, you can clone the repo and run npm install && npm run build to build, and npm run start to launch the app. Or, you can actually find configurations on [electron builder](https://www.electron.build/) to get the right distribution version yourself!
 
