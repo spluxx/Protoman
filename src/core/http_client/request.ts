@@ -8,4 +8,5 @@ export interface RequestDescriptor {
   readonly headers: ReadonlyArray<[string, string]>;
   readonly body: Uint8Array | undefined;
   readonly expectedProtobufMsg: string | undefined;
+  readonly expectedProtobufMsgOnError: string | undefined;
 }

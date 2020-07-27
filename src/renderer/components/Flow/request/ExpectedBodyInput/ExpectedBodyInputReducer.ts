@@ -16,6 +16,17 @@ export default function ExpectedBodyInputReducer(s: AppState, action: AnyAction)
           const flow = getByKey(collection.flows, draft.currentFlow);
           if (!flow) return s;
           flow.requestBuilder.expectedProtobufMsg = a.name;
+          if (!flow.requestBuilder.expectedProtobufMsgOnError) {
+            flow.requestBuilder.expectedProtobufMsgOnError = a.name;
+          }
+        });
+      case 'SELECT_RESPONSE_MESSAGE_ON_ERROR_NAME':
+        return produce(s, draft => {
+          const collection = getByKey(draft.collections, draft.currentCollection);
+          if (!collection) return s;
+          const flow = getByKey(collection.flows, draft.currentFlow);
+          if (!flow) return s;
+          flow.requestBuilder.expectedProtobufMsgOnError = a.name;
         });
       default:
         return s;

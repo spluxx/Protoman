@@ -80,6 +80,14 @@ export default function CollectionReducer(s: AppState, action: AnyAction): AppSt
         return produce(s, draft => {
           draft.fmOpenCollection = undefined;
         });
+      case 'REORDER_FLOW':
+        return produce(s, draft => {
+          const flows = getByKey(draft.collections, a.collectionName)?.flows;
+          if (!flows) return draft;
+
+          const [rm] = flows.splice(a.src, 1);
+          flows.splice(a.dst, 0, rm);
+        });
       default:
         return s;
     }

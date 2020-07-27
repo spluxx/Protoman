@@ -37,7 +37,7 @@ type Props = {
 };
 
 const RequestBuilderView: React.FunctionComponent<Props> = ({ requestBuilder, protoCtx, messageNames, onSend }) => {
-  const { method, url, headers, bodyType, bodies, expectedProtobufMsg } = requestBuilder;
+  const { method, url, headers, bodyType, bodies, expectedProtobufMsg, expectedProtobufMsgOnError } = requestBuilder;
 
   return (
     <BuilderWrapper>
@@ -53,7 +53,11 @@ const RequestBuilderView: React.FunctionComponent<Props> = ({ requestBuilder, pr
           <BodyInput bodyType={bodyType} bodies={bodies} protoCtx={protoCtx} messageNames={messageNames} />
         </PaddedTabPane>
         <PaddedTabPane tab="Expected Message" key="expectedMessage">
-          <ExpectedBodyInput messageNames={messageNames} expectedProtobufMsg={expectedProtobufMsg} />
+          <ExpectedBodyInput
+            messageNames={messageNames}
+            expectedProtobufMsg={expectedProtobufMsg}
+            expectedProtobufMsgOnError={expectedProtobufMsgOnError}
+          />
         </PaddedTabPane>
       </Tabs>
     </BuilderWrapper>
