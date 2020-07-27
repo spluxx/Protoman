@@ -56,7 +56,7 @@ const FlowList: React.FunctionComponent<Props> = ({ collectionName }) => {
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <Droppable droppableId={collectionName}>
-        {(provided, snapshot): React.ReactElement => (
+        {(provided): React.ReactElement => (
           <div {...provided.droppableProps} ref={provided.innerRef}>
             <List
               dataSource={flowNames}
@@ -121,7 +121,7 @@ const FlowCell: React.FC<CellProps> = ({ flowName, emphasize, handleSelection, h
     >
       <ClickableItem onClick={(): void => handleSelection(flowName)} onContextMenu={prevent(showMenu)}>
         <Draggable draggableId={flowName} index={idx}>
-          {(provided, snapshot): React.ReactElement => {
+          {(provided): React.ReactElement => {
             const style: React.CSSProperties = {
               width: '100%',
               height: '100%',

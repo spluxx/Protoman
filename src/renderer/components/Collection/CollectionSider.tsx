@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Collapse, Modal, Button, Row } from 'antd';
+import { Layout, Collapse, Modal, Button } from 'antd';
 import styled from 'styled-components';
 import CollectionCell from './CollectionCell';
 import { useSelector, useDispatch } from 'react-redux';
