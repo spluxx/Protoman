@@ -5,16 +5,17 @@ import styled from 'styled-components';
 import { prevent, getByKey } from '../../utils/utils';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from '../../models/AppState';
-import { selectFlow, deleteFlow } from './CollectionActions';
+import { selectFlow, deleteFlow, reorderFlow } from './CollectionActions';
+import { DragDropContext, DropResult, Draggable, Droppable } from 'react-beautiful-dnd';
 
 const ClickableItem = styled(List.Item)`
   display: flex;
   justify-content: space-between;
-  padding: 8px;
   &:hover {
     cursor: pointer;
     background-color: #f7fcff;
   }
+  padding: 0;
 `;
 
 type Props = {
@@ -42,29 +43,51 @@ const FlowList: React.FunctionComponent<Props> = ({ collectionName }) => {
     }
   }
 
+  function handleDragEnd(result: DropResult): void {
+    console.log(result);
+    if (!result.destination || result.source.droppableId != result.destination.droppableId) return;
+
+    const src = result.source.index;
+    const dst = result.destination.index;
+
+    dispatch(reorderFlow(collectionName, src, dst));
+  }
+
   return (
-    <List
-      dataSource={flowNames}
-      renderItem={(flowName): React.ReactNode => (
-        <FlowCell
-          flowName={flowName}
-          emphasize={isCurrentCollection && currentFlow === flowName}
-          handleSelection={handleSelection}
-          handleDelete={handleDelete}
-        />
-      )}
-    />
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <Droppable droppableId={collectionName}>
+        {(provided, snapshot): React.ReactElement => (
+          <div {...provided.droppableProps} ref={provided.innerRef}>
+            <List
+              dataSource={flowNames}
+              rowKey={(name): string => name}
+              renderItem={(flowName, idx): React.ReactNode => (
+                <FlowCell
+                  idx={idx}
+                  flowName={flowName}
+                  emphasize={isCurrentCollection && currentFlow === flowName}
+                  handleSelection={handleSelection}
+                  handleDelete={handleDelete}
+                />
+              )}
+            />
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    </DragDropContext>
   );
 };
 
 type CellProps = {
   flowName: string;
   emphasize: boolean;
+  idx: number;
   handleSelection: (name: string) => void;
   handleDelete: (name: string) => void;
 };
 
-const FlowCell: React.FC<CellProps> = ({ flowName, emphasize, handleSelection, handleDelete }) => {
+const FlowCell: React.FC<CellProps> = ({ flowName, emphasize, handleSelection, handleDelete, idx }) => {
   const [menuVisible, setMenuVisible] = React.useState(false);
   function showMenu(): void {
     setMenuVisible(true);
@@ -97,12 +120,34 @@ const FlowCell: React.FC<CellProps> = ({ flowName, emphasize, handleSelection, h
       onVisibleChange={setMenuVisible}
     >
       <ClickableItem onClick={(): void => handleSelection(flowName)} onContextMenu={prevent(showMenu)}>
-        <Typography.Text
-          strong={emphasize}
-          style={{ userSelect: 'none', color: emphasize ? 'rgb(47, 93, 232)' : undefined }}
-        >
-          {flowName}
-        </Typography.Text>
+        <Draggable draggableId={flowName} index={idx}>
+          {(provided, snapshot): React.ReactElement => {
+            const style: React.CSSProperties = {
+              width: '100%',
+              height: '100%',
+              padding: 8,
+              boxSizing: 'border-box',
+            };
+
+            const { style: draggableStyle, ...draggableRest } = provided.draggableProps;
+
+            return (
+              <div
+                ref={provided.innerRef}
+                {...provided.dragHandleProps}
+                {...draggableRest}
+                style={{ ...style, ...draggableStyle }}
+              >
+                <Typography.Text
+                  strong={emphasize}
+                  style={{ userSelect: 'none', color: emphasize ? 'rgb(47, 93, 232)' : undefined }}
+                >
+                  {flowName}
+                </Typography.Text>
+              </div>
+            );
+          }}
+        </Draggable>
       </ClickableItem>
     </Popover>
   );

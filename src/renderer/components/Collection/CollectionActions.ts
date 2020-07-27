@@ -64,6 +64,15 @@ type CloseFM = {
 
 const CLOSE_FM = 'CLOSE_FM';
 
+type ReorderFlow = {
+  type: 'REORDER_FLOW';
+  collectionName: string;
+  src: number;
+  dst: number;
+};
+
+const REORDER_FLOW = 'REORDER_FLOW';
+
 export const CollectionActionTypes = [
   CREATE_COLLECTION,
   CHANGE_COLLECTION_NAME,
@@ -74,7 +83,9 @@ export const CollectionActionTypes = [
   DELETE_FLOW,
   OPEN_FM,
   CLOSE_FM,
+  REORDER_FLOW,
 ];
+
 export type CollectionAction =
   | CreateCollection
   | ChangeCollectionName
@@ -84,7 +95,8 @@ export type CollectionAction =
   | SelectFlow
   | DeleteFlow
   | OpenFM
-  | CloseFM;
+  | CloseFM
+  | ReorderFlow;
 
 export function createCollection(collectionName: string): CreateCollection {
   return {
@@ -149,5 +161,14 @@ export function openFM(collectionName: string): OpenFM {
 export function closeFM(): CloseFM {
   return {
     type: CLOSE_FM,
+  };
+}
+
+export function reorderFlow(collectionName: string, src: number, dst: number): ReorderFlow {
+  return {
+    type: REORDER_FLOW,
+    collectionName,
+    src,
+    dst,
   };
 }
