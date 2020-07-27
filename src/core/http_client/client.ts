@@ -32,7 +32,7 @@ async function translateResponse(
   const responseHeaders = unconvertHeaders(response.headers);
   const saidContentType = responseHeaders.find(([name]) => name === 'content-type')?.[1];
 
-  const { expectedProtobufMsg } = request;
+  const { expectedProtobufMsg, expectedProtobufMsgOnError } = request;
 
   let responseBodyType: ResponseBodyType = 'unknown';
   let responseBodyValue: ResponseBodyValue = undefined;
@@ -50,7 +50,12 @@ async function translateResponse(
     responseBodyType = 'html';
     responseBodyValue = toStr(buf);
   } else if (expectedProtobufMsg) {
-    const res = await deserializeProtobuf(buf, expectedProtobufMsg, protoCtx);
+    let msgToUse = expectedProtobufMsg;
+    if (!response.ok && expectedProtobufMsgOnError) {
+      msgToUse = expectedProtobufMsgOnError;
+    }
+
+    const res = await deserializeProtobuf(buf, msgToUse, protoCtx);
     switch (res.tag) {
       case 'invalid':
         if (res.value) {

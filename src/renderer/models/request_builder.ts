@@ -14,7 +14,8 @@ export interface RequestBuilder {
   readonly headers: ReadonlyArray<[string, string]>;
   readonly bodyType: BodyType;
   readonly bodies: RequestBody;
-  readonly expectedProtobufMsg: string | undefined;
+  readonly expectedProtobufMsg?: string;
+  readonly expectedProtobufMsgOnError?: string;
 }
 
 export interface RequestBody {
@@ -27,7 +28,7 @@ export async function toRequestDescriptor(
   env: Env,
   ctx: ProtoCtx,
 ): Promise<RequestDescriptor> {
-  const { url, method, headers, bodyType, bodies, expectedProtobufMsg } = builder;
+  const { url, method, headers, bodyType, bodies, expectedProtobufMsg, expectedProtobufMsgOnError } = builder;
   const varMap = toVarMap(env);
 
   let body;
@@ -44,5 +45,6 @@ export async function toRequestDescriptor(
     headers: headers.map(([k, v]) => [k, applyEnvs(v, varMap)]),
     body,
     expectedProtobufMsg,
+    expectedProtobufMsgOnError,
   };
 }
