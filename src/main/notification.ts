@@ -6,6 +6,8 @@ const ICON_URL = 'https://raw.githubusercontent.com/spluxx/Protoman/master/asset
 
 // couldn't get https://github.com/pd4d10/electron-update-notification to work... :/
 export async function checkUpdateAndNotify(window: BrowserWindow): Promise<void> {
+  if (process.env.NODE_ENV === 'development') return;
+
   try {
     const res = await fetch(RELEASE_URL);
     const json = await res.json();
