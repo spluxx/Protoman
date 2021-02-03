@@ -1,12 +1,13 @@
 import { HttpMethod, RequestDescriptor } from '../../core/http_client/request';
 import { MessageValue, ProtoCtx } from '../../core/protobuf/protobuf';
 import { serializeProtobuf } from '../../core/protobuf/serializer';
+import { createMessageValue } from '../../core/protobuf/deserializer';
 import { Env, toVarMap } from './Env';
 import { applyEnvs } from '../../core/env';
 import { applyToProtoMessage } from '../../core/protobuf/ap';
 
-export type BodyType = 'none' | 'protobuf';
-export const BODY_TYPES: string[] = ['none', 'protobuf'];
+export type BodyType = 'none' | 'protobuf' | 'json';
+export const BODY_TYPES: string[] = ['none', 'protobuf', 'json'];
 
 export interface RequestBuilder {
   readonly method: HttpMethod;

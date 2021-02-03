@@ -30,6 +30,14 @@ module.exports = {
         test: /\.js$/,
         loader: 'source-map-loader',
       },
+      {
+        test: /ace-builds.*\/worker-.*$/,
+        loader: 'file-loader',
+        options: {
+          esModule: false,
+          name: '[name].[hash:8].[ext]',
+        },
+      },
     ],
   },
   watchOptions: {

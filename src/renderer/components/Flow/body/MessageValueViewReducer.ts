@@ -44,6 +44,13 @@ export default function MessageValueViewReducer(s: AppState, action: AnyAction):
           const body = extractBody(draft);
           body && removeEntry(body, a.path.split('/'));
         });
+      case 'ALL_CHANGED':
+        return produce(s, draft => {
+          const flow = getByKey(getByKey(draft.collections, draft.currentCollection)?.flows, draft.currentFlow);
+          if (flow && flow.requestBuilder && flow.requestBuilder.bodies) {
+            flow.requestBuilder.bodies.protobuf = a.value as Draft<MessageValue>;
+          }
+        });
       default:
         return s;
     }

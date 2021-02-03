@@ -27,10 +27,11 @@ export function initializeApp(store: Store): void {
       ipcRenderer.send(ipcChannels.SAVE, [dumpStore(store)]);
     }, DEBOUNCE_MS);
   });
+  //console.log('Read cache');
+  //ipcRenderer.send(ipcChannels.READ_CACHE, 'staging');
 }
 
 setupListeners(ipcRenderer);
 
 ipcRenderer.send(ipcChannels.LOAD_MOST_RECENT);
-
 console.log('RENDERER PROCESS STARTED');

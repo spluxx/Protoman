@@ -1,4 +1,4 @@
-import { ProtoCtx } from '../../core/protobuf/protobuf';
+import { ProtobufValue, ProtoCtx } from '../../core/protobuf/protobuf';
 import { Flow } from './flow';
 
 export interface Collection {

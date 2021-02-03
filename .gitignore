@@ -3,3 +3,11 @@ dist
 out
 build
 .DS_Store
+/.idea/.gitignore
+/.idea/codeStyles/codeStyleConfig.xml
+/.idea/codeStyles/Project.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/Protoman.iml
+/.idea/vcs.xml

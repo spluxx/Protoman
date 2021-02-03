@@ -8,6 +8,19 @@ export type Field<T> = [FieldName, T];
 export type Fields<T> = ReadonlyArray<Field<T>>;
 export type Entry<T> = [string, T];
 export type Entries<T> = ReadonlyArray<Entry<T>>;
+export type CachesResult = {
+  [key: string]: CacheResult;
+};
+export type CacheResult = {
+  name: string;
+  protoFilePaths: string[];
+  data: Uint8Array;
+};
+
+export type CacheData = {
+  ctx: ProtoCtx;
+  data: MessageValue;
+};
 
 export interface ProtoCtx {
   readonly types: { [key: string]: ProtobufType };

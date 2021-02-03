@@ -1,12 +1,14 @@
-import React, { FunctionComponent } from 'react';
+import React, { ChangeEvent, FunctionComponent } from 'react';
 import { Radio, Select } from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio';
+import { createMessageRecurse } from '../../../../../core/protobuf/serializer';
 import MessageValueView, { dispatchingHandler } from '../../body/MessageValueView';
+import JSONEditor, { dispatchingJsonHandler } from '../../body/JSONEditor';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { selectRequestMessageName, selectBodyType } from './BodyInputActions';
 import { BodyType, RequestBody } from '../../../../models/request_builder';
-import { ProtoCtx } from '../../../../../core/protobuf/protobuf';
+import { ProtobufValue, ProtoCtx } from '../../../../../core/protobuf/protobuf';
 
 type Props = {
   bodyType: BodyType;
@@ -20,9 +22,14 @@ const BodyWrapper = styled('div')`
   margin-top: 8px;
 `;
 
+const Spliter = styled('div')`
+  display: float;
+  border: 1px solid;
+`;
+
 export const MESSAGE_NAME_WIDTH = 500;
 
-const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies, protoCtx, messageNames }) => {
+const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies: { protobuf }, protoCtx, messageNames }) => {
   const dispatch = useDispatch();
 
   function onRadioChange(e: RadioChangeEvent): void {
@@ -33,8 +40,14 @@ const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies, protoCtx, messa
     dispatch(selectRequestMessageName(msgName));
   }
 
+  function handleJSONChange(e: ChangeEvent<HTMLTextAreaElement>): void {
+    dispatch(selectRequestMessageName(e.target.value));
+  }
+  function getJSON() {
+    return JSON.stringify(createMessageRecurse(protobuf as ProtobufValue));
+  }
   const handlers = dispatchingHandler(dispatch, protoCtx);
-
+  const jsonHandlers = dispatchingJsonHandler(dispatch, protoCtx);
   function renderBody(): React.ReactNode {
     return bodyType === 'none' ? (
       <div />
@@ -43,7 +56,7 @@ const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies, protoCtx, messa
         <div style={{ marginBottom: 8 }}>
           <span>Request Message: </span>
           <Select
-            value={bodies.protobuf && bodies.protobuf.type.name}
+            value={protobuf && protobuf.type.name}
             onChange={onSelectRequestMsg}
             size="small"
             style={{ width: MESSAGE_NAME_WIDTH }}
@@ -59,8 +72,15 @@ const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies, protoCtx, messa
             ))}
           </Select>
         </div>
-        {bodies.protobuf ? <MessageValueView value={bodies.protobuf} handlers={handlers} editable /> : null}
+        {protobuf ? (
+          <Spliter>
+            <MessageValueView value={protobuf} handlers={handlers} editable />
+            <JSONEditor value={protobuf} handlers={jsonHandlers} editable />
+          </Spliter>
+        ) : null}
       </>
+    ) : bodyType === 'json' ? (
+      <div>{protobuf ? <JSONEditor value={protobuf} handlers={jsonHandlers} editable /> : null}</div>
     ) : null;
   }
 

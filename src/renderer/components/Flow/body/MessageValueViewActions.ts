@@ -1,4 +1,4 @@
-import { ProtoCtx } from '../../../../core/protobuf/protobuf';
+import { ProtobufValue, ProtoCtx } from '../../../../core/protobuf/protobuf';
 
 type ValueChangeAction = {
   type: 'VALUE_CHANGE';
@@ -26,8 +26,19 @@ type EntryRemoveAction = {
   path: string;
 };
 
-export const MessageValueViewActionTypes = ['VALUE_CHANGE', 'FIELD_CHANGE', 'ENTRY_ADD', 'ENTRY_REMOVE'];
-export type MessageValueViewAction = ValueChangeAction | FieldChangeAction | EntryAddAction | EntryRemoveAction;
+type AllChangedAction = {
+  type: 'ALL_CHANGED';
+  ctx: ProtoCtx;
+  value: ProtobufValue;
+};
+
+export const MessageValueViewActionTypes = ['VALUE_CHANGE', 'FIELD_CHANGE', 'ENTRY_ADD', 'ENTRY_REMOVE', 'ALL_CHANGED'];
+export type MessageValueViewAction =
+  | ValueChangeAction
+  | FieldChangeAction
+  | EntryAddAction
+  | EntryRemoveAction
+  | AllChangedAction;
 
 export function valueChange(path: string, value: string, ctx: ProtoCtx): ValueChangeAction {
   return {
@@ -60,5 +71,12 @@ export function entryRemove(path: string, ctx: ProtoCtx): EntryRemoveAction {
     type: 'ENTRY_REMOVE',
     ctx,
     path,
+  };
+}
+export function allChanged(value: ProtobufValue, ctx: ProtoCtx): AllChangedAction {
+  return {
+    type: 'ALL_CHANGED',
+    ctx,
+    value,
   };
 }
