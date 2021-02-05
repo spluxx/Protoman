@@ -1,8 +1,9 @@
-import produce from 'immer';
+import produce, { Draft } from 'immer';
 import { AnyAction } from 'redux';
 import { AppState } from '../../models/AppState';
 import { CacheActionTypes, CacheAction } from './CacheAction';
-import { CacheData } from '../../../core/protobuf/protobuf';
+import { CacheData, ProtoCtx } from '../../../core/protobuf/protobuf';
+import { createDefaultCacheData } from '../../redux/store';
 
 export default function CacheReducer(s: AppState, action: AnyAction): AppState {
   if (CacheActionTypes.includes(action.type)) {
@@ -11,7 +12,7 @@ export default function CacheReducer(s: AppState, action: AnyAction): AppState {
     switch (a.type) {
       case 'LOAD_CACHE':
         return produce(s, draft => {
-          draft.cache = a.value as CacheData[];
+          draft.cache = a.value as Draft<CacheData>;
         });
       default:
         return s;

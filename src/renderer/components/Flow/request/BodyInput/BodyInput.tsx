@@ -9,6 +9,8 @@ import { useDispatch } from 'react-redux';
 import { selectRequestMessageName, selectBodyType } from './BodyInputActions';
 import { BodyType, RequestBody } from '../../../../models/request_builder';
 import { ProtobufValue, ProtoCtx } from '../../../../../core/protobuf/protobuf';
+import { converter } from 'protobufjs';
+import toObject = converter.toObject;
 
 type Props = {
   bodyType: BodyType;
@@ -43,11 +45,10 @@ const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies: { protobuf }, p
   function handleJSONChange(e: ChangeEvent<HTMLTextAreaElement>): void {
     dispatch(selectRequestMessageName(e.target.value));
   }
-  function getJSON() {
-    return JSON.stringify(createMessageRecurse(protobuf as ProtobufValue));
-  }
+
   const handlers = dispatchingHandler(dispatch, protoCtx);
   const jsonHandlers = dispatchingJsonHandler(dispatch, protoCtx);
+  const json = JSON.parse(JSON.stringify(createMessageRecurse(protobuf as ProtobufValue)));
   function renderBody(): React.ReactNode {
     return bodyType === 'none' ? (
       <div />
@@ -75,12 +76,12 @@ const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies: { protobuf }, p
         {protobuf ? (
           <Spliter>
             <MessageValueView value={protobuf} handlers={handlers} editable />
-            <JSONEditor value={protobuf} handlers={jsonHandlers} editable />
+            <JSONEditor value={json} type={protobuf.type} handlers={jsonHandlers} editable />
           </Spliter>
         ) : null}
       </>
     ) : bodyType === 'json' ? (
-      <div>{protobuf ? <JSONEditor value={protobuf} handlers={jsonHandlers} editable /> : null}</div>
+      <div>{protobuf ? <JSONEditor value={json} type={protobuf.type} handlers={jsonHandlers} editable /> : null}</div>
     ) : null;
   }
 

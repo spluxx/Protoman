@@ -8,6 +8,7 @@ import EndpointInputReducer from '../components/Flow/request/EndpointInput/Endpo
 import FlowNameViewReducer from '../components/toolbar/FlowName/FlowNameViewReducer';
 import BodyInputReducer from '../components/Flow/request/BodyInput/BodyInputReducer';
 import ProtofileManagerReducer from '../components/Collection/protofile/ProtofileManagerReducer';
+import CacheReducer from '../components/cache/CacheReducer';
 import FlowViewReducers from '../components/Flow/FlowView/FlowViewReducer';
 import ExpectedBodyInputReducer from '../components/Flow/request/ExpectedBodyInput/ExpectedBodyInputReducer';
 import BulkReducer from '../bulk/BulkReducer';
@@ -37,6 +38,7 @@ const AppReducer = applyAll([
   FlowViewReducers,
   ExpectedBodyInputReducer,
   BulkReducer,
+  CacheReducer,
   // Logger,
 ]);
 

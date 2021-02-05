@@ -4,8 +4,14 @@ import ResponseView from '../response/ResponseView';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { sendRequest } from './FlowViewActions';
-import { selectCurrentColWithName, selectCurrentFlowWithName, selectCurrentEnv } from '../../../redux/store';
+import {
+  selectCurrentColWithName,
+  selectCurrentFlowWithName,
+  selectCurrentEnv,
+  selectCurrentCache,
+} from '../../../redux/store';
 import { Alert, Spin } from 'antd';
+import { CacheResult } from '../../../../core/protobuf/protobuf';
 
 const Wrapper = styled('div')`
   padding: 0px;
@@ -21,7 +27,7 @@ const FlowView: React.FunctionComponent<{}> = ({}) => {
   const col = useSelector(selectCurrentColWithName);
   const flo = useSelector(selectCurrentFlowWithName);
   const env = useSelector(selectCurrentEnv);
-
+  const cache = useSelector(selectCurrentCache);
   if (!col || !flo || !env) return null;
 
   const [collectionName, collection] = col;
@@ -39,9 +45,12 @@ const FlowView: React.FunctionComponent<{}> = ({}) => {
     <Wrapper>
       {requestStatus === 'failure' ? (
         <Alert message={requestError?.message || ' '} type="error" closeText="Close" />
-      ) : <Spacing />}
+      ) : (
+        <Spacing />
+      )}
       <RequestBuilder
         requestBuilder={requestBuilder}
+        cache={cache}
         protoCtx={protoCtx}
         messageNames={collection.messageNames}
         onSend={send}

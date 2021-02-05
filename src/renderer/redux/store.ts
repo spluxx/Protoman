@@ -7,12 +7,12 @@ import { Env } from '../models/Env';
 import thunk from 'redux-thunk';
 import { getByKey, getEntryByKey } from '../utils/utils';
 import { Flow } from '../models/flow';
-import { ProtoCtx } from '../../core/protobuf/protobuf';
+import { ProtoCtx, CacheResult, CacheData, ProtobufType } from '../../core/protobuf/protobuf';
+import { util } from 'protobufjs';
 
 const DEFAULT_FLOW_NAME = 'Request1';
 const DEFAULT_COLLECTION_NAME = 'Collection1';
 const DEFAULT_ENV_NAME = 'Env1';
-
 export function createDefaultFlow(): Draft<Flow> {
   return {
     requestBuilder: {
@@ -49,7 +49,13 @@ export function createDefaultCollection(): Draft<Collection> {
     flows: [[DEFAULT_FLOW_NAME, createDefaultFlow()]],
   };
 }
-
+export function createDefaultCacheData(): Draft<CacheData> {
+  return {
+    messageType: undefined,
+    protoCtx: createDefaultProtoCtx(),
+    data: {},
+  };
+}
 function createDefaultEnv(): Draft<Env> {
   return {
     vars: [],
@@ -60,6 +66,7 @@ function createDefaultAppState(): Draft<AppState> {
   return {
     envList: [[DEFAULT_ENV_NAME, createDefaultEnv()]],
     currentEnv: DEFAULT_ENV_NAME,
+    cache: createDefaultCacheData(),
     collections: [[DEFAULT_COLLECTION_NAME, createDefaultCollection()]],
     currentCollection: DEFAULT_COLLECTION_NAME,
     currentFlow: DEFAULT_FLOW_NAME,
@@ -81,7 +88,9 @@ export function selectCurrentFlow(s: AppState): Flow | undefined {
 export function selectCurrentEnv(s: AppState): Env | undefined {
   return getByKey(s.envList, s.currentEnv);
 }
-
+export function selectCurrentCache(s: AppState): CacheData | undefined {
+  return s.cache;
+}
 export function selectCurrentColWithName(s: AppState): [string, Collection] | undefined {
   return getEntryByKey(s.collections, s.currentCollection);
 }

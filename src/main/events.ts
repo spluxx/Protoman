@@ -1,14 +1,16 @@
 import { ipcMain, app, dialog } from 'electron';
 import fs from 'fs';
 import ipcChannel from '../ipc_channels';
+import { explorerCache } from './utils';
 import { save, DATA_FOLDER_NAME, createDataFolder, cleanup, getMostRecent, saveBackup, open } from './persistence';
 import { S3Service } from '../s3';
 import path from 'path';
 import { sendToWindow } from './index';
 import { RequestDescriptor } from '../core/http_client/request';
 import { makeRequest } from '../core/http_client/client';
-import { ProtoCtx, CacheResult, CachesResult } from '../core/protobuf/protobuf';
+import { ProtoCtx, CacheResult, ProtobufType, typeNameToType } from '../core/protobuf/protobuf';
 import protobuf, { Type } from 'protobufjs';
+import { buildContext } from '../core/protobuf/protoParser';
 
 function s3BucketLocation(env: string) {
   return `ramp-optimization-${env}-us-east-1/entities_data`;
@@ -96,28 +98,45 @@ export async function initializeEvents(): Promise<void> {
       console.log('LOAD CACHE');
       console.log(env);
       try {
+        const caches: CacheResult[] = [];
+        const name = 'Common';
+        console.log(`LOAD CACHE ${name}` + caches);
+        const s3Object = await s3.getObject(s3BucketLocation(env), `${name}.proto`);
+        const tmpFileName = path.join(dataDir, protoTmpFileLocation(name));
         const root = new protobuf.Root();
-        const caches: CachesResult = await ['Supply', 'Common', 'Demand'].reduce(
-          async (prev: Promise<CachesResult>, name: string) => {
-            const caches: CachesResult = await prev;
-            console.log(`LOAD CACHE ${name}` + caches);
-            const s3Object = await s3.getObject(s3BucketLocation(env), `${name}.proto`);
-            const tmpFileName = path.join(dataDir, protoTmpFileLocation(name));
-            fs.writeFileSync(tmpFileName, s3Object.Body, {});
-            //await root.load(tmpFileName);
-            const data = await s3.getObject(s3BucketLocation(env), `${name}`);
-            caches[name] = {
-              name,
-              protoFilePaths: [tmpFileName],
-              data: data.Body as Uint8Array,
-            };
-            return Promise.resolve(caches);
-            // const message = root.lookupType(`${name}`);
-            // const decoded = message.decode(protobuf.Reader.create(data.Body as Uint8Array));
-            // return Promise.resolve(decoded);
-          },
-          Promise.resolve({}),
-        );
+        await root.load(tmpFileName);
+        const ctx = await buildContext([tmpFileName]);
+        const messageType = typeNameToType('Coomon', ctx);
+        fs.writeFileSync(tmpFileName, s3Object.Body, {});
+        const data = await s3.getObject(s3BucketLocation(env), `${name}`);
+        const result = explorerCache({ data, search: { adUnitId: 27 }, messageType });
+        caches.push({
+          protoFilePaths: [tmpFileName],
+          expectedMessage: name,
+          data: data.Body as Uint8Array,
+        });
+
+        // const caches: [[string, CacheResult]] = await ['Supply', 'Common', 'Demand'].reduce(
+        //   async (prev: Promise<[[string, CacheResult]]>, name: string) => {
+        //     const caches: [[string, CacheResult]] = await prev;
+        //     console.log(`LOAD CACHE ${name}` + caches);
+        //     const s3Object = await s3.getObject(s3BucketLocation(env), `${name}.proto`);
+        //     const tmpFileName = path.join(dataDir, protoTmpFileLocation(name));
+        //     fs.writeFileSync(tmpFileName, s3Object.Body, {});
+        //     //await root.load(tmpFileName);
+        //     const data = await s3.getObject(s3BucketLocation(env), `${name}`);
+        //     caches[name] = {
+        //       name,
+        //       protoFilePaths: [tmpFileName],
+        //       data: data.Body as Uint8Array,
+        //     };
+        //     return Promise.resolve(caches);
+        //     // const message = root.lookupType(`${name}`);
+        //     // const decoded = message.decode(protobuf.Reader.create(data.Body as Uint8Array));
+        //     // return Promise.resolve(decoded);
+        //   },
+        //   Promise.resolve(['0', {na}]),
+        // );
         // const [supplyDef, commonDef, demandDef] = await Promise.all([
         //   s3.getObject(`ramp-optimization-${env}-us-east-1/entities_data`, 'Supply.proto'),
         //   s3.getObject(`ramp-optimization-${env}-us-east-1/entities_data`, 'Common.proto'),

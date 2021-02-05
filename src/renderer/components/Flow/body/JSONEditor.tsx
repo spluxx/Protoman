@@ -1,11 +1,11 @@
 import React, { ChangeEvent, FunctionComponent, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { BodyType, RequestBody } from '../../../models/request_builder';
-import { MessageValue, ProtobufType, ProtobufValue, ProtoCtx } from '../../../../core/protobuf/protobuf';
+import { Type } from 'protobufjs';
+import { MessageType, ProtobufType, ProtoCtx } from '../../../../core/protobuf/protobuf';
 import { AnyAction, Dispatch } from 'redux';
 import { allChanged } from './MessageValueViewActions';
 import AceEditor from 'react-ace';
-import { createMessageRecurse } from '../../../../core/protobuf/serializer';
 import { createMessageValue } from '../../../../core/protobuf/deserializer';
 import brace from 'brace';
 import 'brace/mode/json';
@@ -44,30 +44,30 @@ export function dispatchingJsonHandler(dispatch: Dispatch, ctx: ProtoCtx): Event
 }
 type AllChangedHandler = (type: ProtobufType, v: string) => void;
 
-type EventHandlers = {
+export type EventHandlers = {
   allChanged: AllChangedHandler;
 };
 export const MESSAGE_NAME_WIDTH = 500;
 type JSEProps = {
   editable?: boolean;
   minWidth?: number;
-  value: MessageValue;
+  value: { [key: string]: any } | undefined;
+  type: MessageType | undefined;
   handlers: EventHandlers;
 };
 
-const JSONEditor: FunctionComponent<JSEProps> = ({ editable, value, handlers }) => {
-  const { type } = value;
-  const json = JSON.stringify(createMessageRecurse(value as ProtobufValue), null, '\t');
+const JSONEditor: FunctionComponent<JSEProps> = ({ editable, value, type, handlers }) => {
   const handleChange = (value: string, event: ChangeEvent<HTMLTextAreaElement>) => {
     //  return useInterval(() => {
-    handlers.allChanged(type, value);
+    type ? handlers.allChanged(type, value) : null;
     //   }, 3000);
   };
   const handleBlur = (event: ChangeEvent<HTMLTextAreaElement>) => {
     //   return useInterval(() => {
-    handlers.allChanged(type, event.target.value);
+    type ? handlers.allChanged(type, event.target.value) : null;
     //   }, 3000);
   };
+  const json = JSON.stringify(value, null, '\t');
   return (
     <AceEditor
       wrapEnabled

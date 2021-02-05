@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
+import { Type } from 'protobufjs';
 export type ProtobufType = PrimitiveType | MessageType | EnumType;
 export type ProtobufValue = PrimitiveValue | MessageValue | EnumValue;
 export type FieldName = string;
@@ -8,20 +9,19 @@ export type Field<T> = [FieldName, T];
 export type Fields<T> = ReadonlyArray<Field<T>>;
 export type Entry<T> = [string, T];
 export type Entries<T> = ReadonlyArray<Entry<T>>;
-export type CachesResult = {
-  [key: string]: CacheResult;
-};
+// export type CachesResult = {
+//   [key: string]: CacheResult;
+// };
 export type CacheResult = {
-  name: string;
   protoFilePaths: string[];
+  expectedMessage: string;
   data: Uint8Array;
 };
-
 export type CacheData = {
-  ctx: ProtoCtx;
-  data: MessageValue;
+  readonly protoCtx: ProtoCtx;
+  readonly messageType: ProtobufType | undefined;
+  readonly data: { [key: string]: any };
 };
-
 export interface ProtoCtx {
   readonly types: { [key: string]: ProtobufType };
   readonly descriptorJson: string;

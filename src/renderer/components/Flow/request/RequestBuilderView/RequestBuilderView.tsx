@@ -6,7 +6,10 @@ import BodyInput from '../BodyInput/BodyInput';
 import styled from 'styled-components';
 import ExpectedBodyInput from '../ExpectedBodyInput/ExpectedBodyInput';
 import { RequestBuilder } from '../../../../models/request_builder';
-import { ProtoCtx } from '../../../../../core/protobuf/protobuf';
+import { ProtoCtx, CacheResult, ProtobufValue, CacheData } from '../../../../../core/protobuf/protobuf';
+import JSONEditor, { dispatchingJsonHandler, EventHandlers } from '../../body/JSONEditor';
+import { AnyAction, Dispatch } from 'redux';
+import { useDispatch } from 'react-redux';
 
 const { TabPane } = Tabs;
 
@@ -29,16 +32,33 @@ const PaddedTabPane = styled(TabPane)`
   padding: 4px;
 `;
 
+export function dispatchingCacheHandlers(dispatch: Dispatch, ctx: ProtoCtx): EventHandlers {
+  return {
+    allChanged: (type, v): void => {
+      return;
+    },
+  };
+}
+
 type Props = {
   requestBuilder: RequestBuilder;
   protoCtx: ProtoCtx;
+  cache: CacheData | undefined;
   messageNames: ReadonlyArray<string>;
   onSend: () => void;
 };
 
-const RequestBuilderView: React.FunctionComponent<Props> = ({ requestBuilder, protoCtx, messageNames, onSend }) => {
+const RequestBuilderView: React.FunctionComponent<Props> = ({
+  cache,
+  requestBuilder,
+  protoCtx,
+  messageNames,
+  onSend,
+}) => {
   const { method, url, headers, bodyType, bodies, expectedProtobufMsg, expectedProtobufMsgOnError } = requestBuilder;
 
+  const dispatch = useDispatch();
+  const cacheHandlers = dispatchingCacheHandlers(dispatch, protoCtx);
   return (
     <BuilderWrapper>
       <TopBarWrapper>
@@ -58,6 +78,9 @@ const RequestBuilderView: React.FunctionComponent<Props> = ({ requestBuilder, pr
             expectedProtobufMsg={expectedProtobufMsg}
             expectedProtobufMsgOnError={expectedProtobufMsgOnError}
           />
+        </PaddedTabPane>
+        <PaddedTabPane tab="Cache" key="cache">
+          <JSONEditor value={cache?.data} type={cache?.messageType} handlers={cacheHandlers} />
         </PaddedTabPane>
       </Tabs>
     </BuilderWrapper>

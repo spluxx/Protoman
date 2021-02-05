@@ -28,7 +28,7 @@ export function initializeApp(store: Store): void {
     }, DEBOUNCE_MS);
   });
   //console.log('Read cache');
-  //ipcRenderer.send(ipcChannels.READ_CACHE, 'staging');
+  ipcRenderer.send(ipcChannels.READ_CACHE, 'staging');
 }
 
 setupListeners(ipcRenderer);

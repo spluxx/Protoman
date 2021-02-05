@@ -4,15 +4,15 @@ import { makeStore } from './redux/store';
 import ipcChannels from '../ipc_channels';
 import { ResponseDescriptor } from '../core/http_client/response';
 import { RequestDescriptor } from '../core/http_client/request';
-import { ProtoCtx, CacheResult, CacheData, MessageValue } from '../core/protobuf/protobuf';
+import { CacheData, CacheResult, MessageType, ProtoCtx, typeNameToType } from '../core/protobuf/protobuf';
 import { IpcRenderer } from 'electron';
 import { message } from 'antd';
 import { validateCollection } from './bulk/utils';
 import { importCollection } from './bulk/BulkActions';
 import { loadCacheAction } from './components/cache/CacheAction';
 import { Store } from 'redux';
-import { deserializeProtobuf } from '../core/protobuf/deserializer';
 import { buildContext } from '../core/protobuf/protoParser';
+import protobuf from 'protobufjs';
 
 function setupListenersWithStore(ipcRenderer: IpcRenderer, store: Store): void {
   ipcRenderer.on(ipcChannels.IMPORT_SUCCESS, (event, [data]) => {
@@ -25,16 +25,28 @@ function setupListenersWithStore(ipcRenderer: IpcRenderer, store: Store): void {
       message.error('Import Error: Invalid collection format');
     }
   });
-  ipcRenderer.on(ipcChannels.READ_CACHE_SUCCESS, async (event, caches) => {
+  ipcRenderer.on(ipcChannels.READ_CACHE_SUCCESS, async (event, caches: CacheResult[]) => {
     const messages: CacheData[] = await Promise.all(
       _.map(caches, async (cache: CacheResult) => {
-        const ctx = await buildContext(cache.protoFilePaths);
-        const res = await deserializeProtobuf(cache.data, cache.name, ctx);
-        return { ctx, data: res.value as MessageValue };
+        const protoCtx = await buildContext(cache.protoFilePaths);
+        try {
+          const root = protobuf.Root.fromJSON(JSON.parse(protoCtx.descriptorJson));
+          const message = root.lookupType(cache.expectedMessage);
+          const decoded = message.decode(cache.data);
+          const data = decoded.toJSON();
+          return Promise.resolve({
+            protoCtx,
+            data,
+            messageType: typeNameToType(cache.expectedMessage, protoCtx) as MessageType,
+          });
+        } catch (err) {
+          return Promise.reject({ protoCtx, data: {}, messageType: undefined });
+        }
+        // const data = JSON.parse(JSON.stringify(createMessageRecurse(result.value as ProtobufValue)));
       }),
     );
     message.success('CACHE IMPORTED');
-    store.dispatch(loadCacheAction(messages));
+    store.dispatch(loadCacheAction(messages[0]));
   });
 }
 export function setupListeners(ipcRenderer: IpcRenderer): void {
