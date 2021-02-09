@@ -11,7 +11,6 @@ import {
   selectCurrentCache,
 } from '../../../redux/store';
 import { Alert, Spin } from 'antd';
-import { CacheResult } from '../../../../core/protobuf/protobuf';
 
 const Wrapper = styled('div')`
   padding: 0px;
@@ -27,7 +26,7 @@ const FlowView: React.FunctionComponent<{}> = ({}) => {
   const col = useSelector(selectCurrentColWithName);
   const flo = useSelector(selectCurrentFlowWithName);
   const env = useSelector(selectCurrentEnv);
-  const cache = useSelector(selectCurrentCache);
+
   if (!col || !flo || !env) return null;
 
   const [collectionName, collection] = col;
@@ -50,7 +49,6 @@ const FlowView: React.FunctionComponent<{}> = ({}) => {
       )}
       <RequestBuilder
         requestBuilder={requestBuilder}
-        cache={cache}
         protoCtx={protoCtx}
         messageNames={collection.messageNames}
         onSend={send}

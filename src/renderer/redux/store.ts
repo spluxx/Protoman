@@ -7,12 +7,12 @@ import { Env } from '../models/Env';
 import thunk from 'redux-thunk';
 import { getByKey, getEntryByKey } from '../utils/utils';
 import { Flow } from '../models/flow';
-import { ProtoCtx, CacheResult, CacheData, ProtobufType } from '../../core/protobuf/protobuf';
-import { util } from 'protobufjs';
-
+import { ProtoCtx } from '../../core/protobuf/protobuf';
+import { Cache, CacheRequestBuilder } from '../../core/cache';
 const DEFAULT_FLOW_NAME = 'Request1';
 const DEFAULT_COLLECTION_NAME = 'Collection1';
 const DEFAULT_ENV_NAME = 'Env1';
+const DEFAULT_CACHE_NAME = 'Common';
 export function createDefaultFlow(): Draft<Flow> {
   return {
     requestBuilder: {
@@ -49,11 +49,19 @@ export function createDefaultCollection(): Draft<Collection> {
     flows: [[DEFAULT_FLOW_NAME, createDefaultFlow()]],
   };
 }
-export function createDefaultCacheData(): Draft<CacheData> {
+
+export function createDefaultCache(): Draft<Cache> {
   return {
-    messageType: undefined,
-    protoCtx: createDefaultProtoCtx(),
-    data: {},
+    currentCacheName: 'Common',
+    requestBuilder: {
+      search: {},
+      limit: 100,
+      expectedMessage: '',
+    },
+    protoCtxs: [],
+    requestStatus: 'default',
+    requestError: undefined,
+    response: undefined,
   };
 }
 function createDefaultEnv(): Draft<Env> {
@@ -66,7 +74,7 @@ function createDefaultAppState(): Draft<AppState> {
   return {
     envList: [[DEFAULT_ENV_NAME, createDefaultEnv()]],
     currentEnv: DEFAULT_ENV_NAME,
-    cache: createDefaultCacheData(),
+    cache: createDefaultCache(),
     collections: [[DEFAULT_COLLECTION_NAME, createDefaultCollection()]],
     currentCollection: DEFAULT_COLLECTION_NAME,
     currentFlow: DEFAULT_FLOW_NAME,
@@ -88,8 +96,11 @@ export function selectCurrentFlow(s: AppState): Flow | undefined {
 export function selectCurrentEnv(s: AppState): Env | undefined {
   return getByKey(s.envList, s.currentEnv);
 }
-export function selectCurrentCache(s: AppState): CacheData | undefined {
+export function selectCurrentCache(s: AppState): Cache | undefined {
   return s.cache;
+}
+export function selectCurrentCacheCtx(s: AppState): ProtoCtx | undefined {
+  return getByKey(s.cache.protoCtxs, s.cache.currentCacheName);
 }
 export function selectCurrentColWithName(s: AppState): [string, Collection] | undefined {
   return getEntryByKey(s.collections, s.currentCollection);
@@ -126,10 +137,21 @@ export function procCol(collection: Draft<Collection>): Draft<Collection> {
   return collection;
 }
 
+export function procCache(cache: Draft<Cache>): Draft<Cache> {
+  cache.response = undefined;
+  cache.requestStatus = 'default';
+  cache.requestBuilder = {
+    search: {},
+    limit: 100,
+    expectedMessage: '',
+  };
+  return cache;
+}
 function preprocess(appState: AppState): AppState {
   return produce(appState, draft => {
     draft.collections = draft.collections.map(([cn, c]) => [cn, procCol(c)]);
     draft.fmOpenCollection = undefined;
+    draft.cache = procCache(draft.cache);
     return draft;
   });
 }

@@ -18,7 +18,6 @@ const Sider = styled(Layout.Sider)`
   box-shadow: 1px 0 3px -0px #aaa;
   display: flex;
   flex-direction: column;
-  height: 100vh;
 `;
 
 const Wrapper = styled('div')`
@@ -30,7 +29,6 @@ const Header = styled('div')`
   text-align: center;
   width: 100%;
   flex: 0 0 auto;
-  padding: 16px 8px 8px 8px;
 `;
 
 const Title = styled('h1')`
@@ -74,7 +72,6 @@ const CollectionSider: React.FunctionComponent<{}> = ({}) => {
     <Sider width={COLLECTION_SIDER_WIDTH} theme="light">
       <Wrapper>
         <Header>
-          <Title>Collections</Title>
           <LinkButton type="link" onClick={handleImport}>
             Import
           </LinkButton>

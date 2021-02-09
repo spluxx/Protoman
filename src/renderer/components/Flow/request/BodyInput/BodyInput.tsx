@@ -24,11 +24,6 @@ const BodyWrapper = styled('div')`
   margin-top: 8px;
 `;
 
-const Spliter = styled('div')`
-  display: float;
-  border: 1px solid;
-`;
-
 export const MESSAGE_NAME_WIDTH = 500;
 
 const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies: { protobuf }, protoCtx, messageNames }) => {
@@ -48,7 +43,7 @@ const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies: { protobuf }, p
 
   const handlers = dispatchingHandler(dispatch, protoCtx);
   const jsonHandlers = dispatchingJsonHandler(dispatch, protoCtx);
-  const json = JSON.parse(JSON.stringify(createMessageRecurse(protobuf as ProtobufValue)));
+  const json = protobuf ? JSON.parse(JSON.stringify(createMessageRecurse(protobuf as ProtobufValue))) : {};
   function renderBody(): React.ReactNode {
     return bodyType === 'none' ? (
       <div />
@@ -73,15 +68,8 @@ const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies: { protobuf }, p
             ))}
           </Select>
         </div>
-        {protobuf ? (
-          <Spliter>
-            <MessageValueView value={protobuf} handlers={handlers} editable />
-            <JSONEditor value={json} type={protobuf.type} handlers={jsonHandlers} editable />
-          </Spliter>
-        ) : null}
+        {protobuf ? <JSONEditor value={json} type={protobuf.type} handlers={jsonHandlers} editable /> : null}
       </>
-    ) : bodyType === 'json' ? (
-      <div>{protobuf ? <JSONEditor value={json} type={protobuf.type} handlers={jsonHandlers} editable /> : null}</div>
     ) : null;
   }
 

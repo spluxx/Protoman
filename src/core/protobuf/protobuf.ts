@@ -12,16 +12,7 @@ export type Entries<T> = ReadonlyArray<Entry<T>>;
 // export type CachesResult = {
 //   [key: string]: CacheResult;
 // };
-export type CacheResult = {
-  protoFilePaths: string[];
-  expectedMessage: string;
-  data: Uint8Array;
-};
-export type CacheData = {
-  readonly protoCtx: ProtoCtx;
-  readonly messageType: ProtobufType | undefined;
-  readonly data: { [key: string]: any };
-};
+
 export interface ProtoCtx {
   readonly types: { [key: string]: ProtobufType };
   readonly descriptorJson: string;

@@ -1,7 +1,5 @@
-'use strict';
 import _ from 'lodash';
 import { Type } from 'protobufjs';
-import { ProtobufType } from '../core/protobuf/protobuf';
 const allowedFunctions = ['eq', 'gt', 'gte', 'lt', 'lte', 'size', 'startWith', 'endWith', 'includes', 'some', 'every'];
 
 class BadRequest extends Error {
@@ -32,17 +30,18 @@ function sample(obj: { [key: string]: any }, limit: number, useSample: boolean):
   );
 }
 
-function validateProp(message: ProtobufType, prop: string) {
-  const def = _.get(message, `fields.${prop}`);
+function validateProp(messageType: Type, prop: string): Type {
+  const def = _.get(messageType, `fields.${prop}`);
   if (_.isUndefined(def)) {
     throw new BadRequest(
-      `${prop} is not a property in ${message.name} entity, only: ${_.keys(_.get(message, 'fields'))}`,
+      `${prop} is not a property in ${messageType.name}:\n
+       ${JSON.stringify(messageType.toJSON(), null, '\\t')}`,
     );
   }
   return def.resolvedType || def.type;
 }
 
-function match(item: any, search: { [key: string]: any }, messageType: ProtobufType): boolean {
+function match(item: any, search: { [key: string]: any }, messageType: Type): boolean {
   return _.every(search, (val, attr) => {
     if (_.startsWith(attr, '$')) {
       const funcStr: string = _.trimStart(attr, '$');
@@ -64,7 +63,7 @@ type ExploreRequest = {
   data: { [key: string]: any };
   search: { [key: string]: any };
   limit?: number;
-  messageType: ProtobufType;
+  messageType: Type;
 };
 
 export function explorerCache(request: ExploreRequest) {

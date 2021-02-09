@@ -2,12 +2,12 @@
 
 import { Env } from './Env';
 import { Collection } from './Collection';
-import { CacheData } from '../../core/protobuf/protobuf';
+import { Cache } from '../../core/cache';
 
 export interface AppState {
   readonly envList: ReadonlyArray<[string, Env]>;
   readonly currentEnv: string;
-  readonly cache: CacheData;
+  readonly cache: Cache;
   readonly collections: ReadonlyArray<[string, Collection]>;
 
   readonly openCollections: ReadonlyArray<string>;

@@ -1,21 +1,14 @@
-import React, { ChangeEvent, FunctionComponent, useRef, useEffect } from 'react';
+import React, { ChangeEvent, FunctionComponent } from 'react';
 import styled from 'styled-components';
 import { BodyType, RequestBody } from '../../../models/request_builder';
-import { Type } from 'protobufjs';
 import { MessageType, ProtobufType, ProtoCtx } from '../../../../core/protobuf/protobuf';
 import { AnyAction, Dispatch } from 'redux';
 import { allChanged } from './MessageValueViewActions';
-import AceEditor from 'react-ace';
+import AceEditor from 'react-ace-builds';
+import 'ace-builds/webpack-resolver';
+import 'ace-builds/src-noconflict/ext-language_tools';
 import { createMessageValue } from '../../../../core/protobuf/deserializer';
-import brace from 'brace';
-import 'brace/mode/json';
-import 'brace/theme/github';
-import 'brace/mode/javascript';
-import 'brace/theme/github';
-import 'brace/theme/monokai';
-import 'brace/theme/solarized_light';
 
-import 'brace/ext/language_tools';
 type Props = {
   bodyType: BodyType;
   bodies: RequestBody;
@@ -71,7 +64,6 @@ const JSONEditor: FunctionComponent<JSEProps> = ({ editable, value, type, handle
   return (
     <AceEditor
       wrapEnabled
-      debounceChangePeriod={500}
       showGutter={true}
       mode="json"
       height="500px"
@@ -80,13 +72,13 @@ const JSONEditor: FunctionComponent<JSEProps> = ({ editable, value, type, handle
       onChange={handleChange}
       onBlur={handleBlur}
       setOptions={{
-        wrapEnabled: true,
         enableBasicAutocompletion: true,
         enableLiveAutocompletion: true,
-        enableSnippets: true,
+        highlightActiveLine: false,
+        minLines: 100,
         showPrintMargin: false,
         showLineNumbers: true,
-        maxLines: 200,
+        debounceChangePeriod: 500,
         tabSize: 2,
       }}
     />

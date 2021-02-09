@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.less';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch } from 'react-redux';
 import { Store } from 'redux';
 import App from './components/App';
 import ipcChannels from '../ipc_channels';
@@ -28,7 +28,6 @@ export function initializeApp(store: Store): void {
     }, DEBOUNCE_MS);
   });
   //console.log('Read cache');
-  ipcRenderer.send(ipcChannels.READ_CACHE, 'staging');
 }
 
 setupListeners(ipcRenderer);
