@@ -11,8 +11,12 @@ import { ProtoCtx } from '../../core/protobuf/protobuf';
 import { Cache, CacheRequestBuilder } from '../../core/cache';
 const DEFAULT_FLOW_NAME = 'Request1';
 const DEFAULT_COLLECTION_NAME = 'Collection1';
-const DEFAULT_ENV_NAME = 'Env1';
-const DEFAULT_CACHE_NAME = 'Common';
+const DEFAULT_ENV_NAME = 'EnvVars1';
+const STAGING = 'staging';
+const INTEGRATION = 'integration';
+const PRODUCTION = 'production';
+const DEFAULT_NODE_ENV_NAME = STAGING;
+
 export function createDefaultFlow(): Draft<Flow> {
   return {
     requestBuilder: {
@@ -74,6 +78,8 @@ function createDefaultAppState(): Draft<AppState> {
   return {
     envList: [[DEFAULT_ENV_NAME, createDefaultEnv()]],
     currentEnv: DEFAULT_ENV_NAME,
+    nodeEnvList: [STAGING, INTEGRATION, PRODUCTION],
+    currentNodeEnv: DEFAULT_NODE_ENV_NAME,
     cache: createDefaultCache(),
     collections: [[DEFAULT_COLLECTION_NAME, createDefaultCollection()]],
     currentCollection: DEFAULT_COLLECTION_NAME,

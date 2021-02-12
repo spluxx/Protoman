@@ -3,6 +3,7 @@ import { Button, Collapse, Layout } from 'antd';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../models/AppState';
+import { selectCacheName } from './CacheAction';
 
 const { Panel } = Collapse;
 
@@ -39,22 +40,24 @@ const LinkButton = styled(Button)`
 `;
 
 export const COLLECTION_SIDER_WIDTH = 210;
-
-const CacheSider: React.FunctionComponent<{}> = ({}) => {
+const cacheNames: string[] = ['Demand', 'Supply', 'Common'];
+type SiderProps = {
+  onClickOnTab: Function;
+};
+const CacheSider: React.FunctionComponent<SiderProps> = ({ onClickOnTab }) => {
   const dispatch = useDispatch();
-
-  const cache = useSelector((s: AppState) => s.cache);
-
-  function handleCacheSelect(e: any): void {
-    //dispatch(toggleCollections(openCollections));
+  const nodeEnv = useSelector((s: AppState) => s.currentNodeEnv);
+  function handleCacheSelect(cacheName: string): void {
+    onClickOnTab();
+    dispatch(selectCacheName(nodeEnv, cacheName));
   }
   return (
     <Sider width={COLLECTION_SIDER_WIDTH} theme="light">
       <Wrapper>
-        {cache.protoCtxs.map(([name]) => {
+        {cacheNames.map(name => {
           return (
             <Header key={name}>
-              <LinkButton type="link" onClick={handleCacheSelect}>
+              <LinkButton type="link" onClick={() => handleCacheSelect(name)}>
                 {name}
               </LinkButton>
             </Header>

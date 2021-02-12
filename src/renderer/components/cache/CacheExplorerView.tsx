@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
-import { FieldBase, Type } from 'protobufjs';
 import { Alert, Button, Select, Spin, Tabs } from 'antd';
 import { MESSAGE_NAME_WIDTH } from '../Flow/request/BodyInput/BodyInput';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,6 +14,7 @@ import { CacheRequestBuilder } from '../../../core/cache';
 import { MessageType, ProtobufType, ProtoCtx, typeNameToType } from '../../../core/protobuf/protobuf';
 import ReactAce from 'react-ace';
 import { Ace } from 'ace-builds';
+import { AppState } from '../../models/AppState';
 import EditSession = Ace.EditSession;
 import Editor = Ace.Editor;
 import Point = Ace.Point;
@@ -43,16 +43,24 @@ const LeftMarginButton = styled(Button)`
   margin-left: 8px;
 `;
 
-const PaddedTabPane = styled(TabPane)`
-  padding: 4px;
-`;
 const Spacing = styled('div')`
   height: 16px;
 `;
-type Props = {
-  // messageNames: ReadonlyArray<string>;
-  // expectedProtobufMsg: string | undefined;
-};
+
+const queryFunctions = [
+  ['$eq', 'comparison between two values'],
+  ['$gt', 'value is greater than other'],
+  ['$gt', 'value is greater than or equal to other'],
+  ['$lt', 'value is less than other'],
+  ['$lte', 'value is less than or equal to other'],
+  ['$size', 'gets the size of collection'],
+  ['$startWith', 'value starts with the given string'],
+  ['$endWith', 'value ends with the given string'],
+  ['$includes', 'value is in given collection'],
+  ['$some', 'checks if predicate returns truthy for any element of collection'],
+  ['$every', 'checks if predicate returns truthy for all elements of collection'],
+];
+type Props = {};
 
 function nextOpeningBracket(str: string, pos: number): number {
   const opening = str.lastIndexOf('{', pos);
@@ -92,6 +100,9 @@ function getSiblings(str: string, pos: number, prefix = '') {
 }
 
 function getSuggestions(ctx: ProtoCtx, type: ProtobufType, childs: string[], ignore: string[] = []): any {
+  // const defaultSuggestions = _.map(queryFunctions, ([caption, meta]) => {
+  //   return { caption, value: `"${caption}":`, meta };
+  // });
   if (_.has(type, 'repeatedFields')) {
     const fields = _.union((type as MessageType).singleFields, (type as MessageType).repeatedFields);
     if (!_.isEmpty(childs)) {
@@ -102,13 +113,17 @@ function getSuggestions(ctx: ProtoCtx, type: ProtobufType, childs: string[], ign
         return getSuggestions(ctx, childType, childs, ignore);
       }
     }
-    return _.reject(fields, ([name]) => _.includes(ignore, name));
+    return _.union(
+      queryFunctions,
+      _.reject(fields, ([name]) => _.includes(ignore, name)),
+    );
   }
-  return [];
+  return queryFunctions;
 }
 const CacheExplorerView: React.FunctionComponent<Props> = ({}) => {
   const dispatch = useDispatch();
   const cache = useSelector(selectCurrentCache);
+  const currentNodeEnv = useSelector((s: AppState) => s.currentNodeEnv);
   const { currentCacheName, requestBuilder, requestError, response, requestStatus } = cache || {};
 
   function onSelectResponseMsg(msgName: string): void {
@@ -126,7 +141,6 @@ const CacheExplorerView: React.FunctionComponent<Props> = ({}) => {
     if (queryEditor.current) {
       if (currentCtx && requestBuilder?.expectedMessage) {
         const currentType: MessageType = typeNameToType(requestBuilder?.expectedMessage, currentCtx) as MessageType;
-        const fields = _.union(currentType.singleFields, currentType.repeatedFields);
         const typeComplete: Completer = {
           getCompletions: function(
             editor: Editor,
@@ -144,7 +158,6 @@ const CacheExplorerView: React.FunctionComponent<Props> = ({}) => {
               null,
               suggestions.map(function(field: any = []) {
                 const [name, typeName] = field;
-                const isObject = _.startsWith(typeName, '.');
                 return {
                   caption: name,
                   //value: !isObject ? `"${name}":` : `"${name}": {`,
@@ -187,10 +200,9 @@ const CacheExplorerView: React.FunctionComponent<Props> = ({}) => {
         search: query,
         limit: 100,
       };
-      dispatch(queryCacheAction(currentCacheName, request));
+      dispatch(queryCacheAction(currentNodeEnv, currentCacheName, request));
     }
   }
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   return (
     <Wrapper>
       {requestStatus === 'failure' ? (
@@ -223,11 +235,13 @@ const CacheExplorerView: React.FunctionComponent<Props> = ({}) => {
         <AceEditor
           ref={queryEditor}
           showGutter={true}
+          theme={'solarized-light'}
           value={search}
           mode="json"
           height="500px"
           width="700px"
           setOptions={{
+            theme: 'solarized-light',
             enableBasicAutocompletion: true,
             enableLiveAutocompletion: true,
             debounceChangePeriod: 500,
@@ -257,6 +271,7 @@ const CacheExplorerView: React.FunctionComponent<Props> = ({}) => {
               readOnly: true,
               theme: 'solarized-light',
               showPrintMargin: true,
+              highlightActiveLine: false,
               printMargin: true,
               printMarginColumn,
               showLineNumbers: true,

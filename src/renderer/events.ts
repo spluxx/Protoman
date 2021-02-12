@@ -137,18 +137,25 @@ export function makeRequest(request: RequestDescriptor, ctx: ProtoCtx): Promise<
     ipcRenderer.send(ipcChannels.SEND_REQUEST, [nonce, request, ctx]);
   });
 }
-export function registerCache(cacheName: string): Promise<ProtoCtx> {
+export function registerCache(
+  nodeEnv: string,
+  cacheName: 'Common' | 'Demand' | 'Supply' | undefined,
+): Promise<ProtoCtx> {
   return new Promise((resolve, reject) => {
     const nonce = Math.floor(Math.random() * 1e7);
     setupCacheRegisterListeners(nonce, resolve, reject);
-    ipcRenderer.send(ipcChannels.REGISTER_CACHE, [nonce, 'staging', cacheName]);
+    ipcRenderer.send(ipcChannels.REGISTER_CACHE, [nonce, nodeEnv, cacheName]);
   });
 }
 
-export function queryCache(cacheName: string, request: CacheRequestBuilder): Promise<CacheQueryResponse> {
+export function queryCache(
+  nodeEnv: string,
+  cacheName: string,
+  request: CacheRequestBuilder,
+): Promise<CacheQueryResponse> {
   return new Promise((resolve, reject) => {
     const nonce = Math.floor(Math.random() * 1e7);
     setupQueryCacheListeners(nonce, resolve, reject);
-    ipcRenderer.send(ipcChannels.SEND_CACHE_REQUEST, [nonce, 'staging', cacheName, request]);
+    ipcRenderer.send(ipcChannels.SEND_CACHE_REQUEST, [nonce, nodeEnv, cacheName, request]);
   });
 }

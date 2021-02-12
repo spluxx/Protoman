@@ -1,5 +1,6 @@
 import React, { ChangeEvent, FunctionComponent } from 'react';
 import styled from 'styled-components';
+import _ from 'lodash';
 import { BodyType, RequestBody } from '../../../models/request_builder';
 import { MessageType, ProtobufType, ProtoCtx } from '../../../../core/protobuf/protobuf';
 import { AnyAction, Dispatch } from 'redux';
@@ -8,6 +9,7 @@ import AceEditor from 'react-ace-builds';
 import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import { createMessageValue } from '../../../../core/protobuf/deserializer';
+import { JsonObject } from '../../../../core/protobuf/protoJson';
 
 type Props = {
   bodyType: BodyType;
@@ -21,6 +23,17 @@ const BodyWrapper = styled('div')`
   margin-top: 8px;
 `;
 
+function convertKeys(obj: any) {
+  if (!_.isObject(obj) || _.isEmpty(obj)) return obj;
+  return _.reduce(
+    obj,
+    (result: JsonObject, val, key) => {
+      result[_.camelCase(key)] = convertKeys(val);
+      return result;
+    },
+    _.isArray(obj) ? [] : {},
+  );
+}
 export function dispatchingJsonHandler(dispatch: Dispatch, ctx: ProtoCtx): EventHandlers {
   function fireAndForget<T extends AnyAction>(action: T): void {
     console.log('change');
@@ -29,9 +42,11 @@ export function dispatchingJsonHandler(dispatch: Dispatch, ctx: ProtoCtx): Event
   return {
     allChanged: (type, v): void => {
       try {
-        const value = createMessageValue(type, JSON.parse(v), ctx);
-        fireAndForget(allChanged(value, ctx));
-      } catch (err) {}
+        const value = convertKeys(JSON.parse(v));
+        fireAndForget(allChanged(createMessageValue(type, value, ctx), ctx));
+      } catch (err) {
+        console.error(err);
+      }
     },
   };
 }
@@ -72,10 +87,9 @@ const JSONEditor: FunctionComponent<JSEProps> = ({ editable, value, type, handle
       onChange={handleChange}
       onBlur={handleBlur}
       setOptions={{
-        enableBasicAutocompletion: true,
-        enableLiveAutocompletion: true,
         highlightActiveLine: false,
         minLines: 100,
+        enableSnippets: true,
         showPrintMargin: false,
         showLineNumbers: true,
         debounceChangePeriod: 500,

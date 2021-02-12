@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import CollectionSider from './Collection/CollectionSider';
 import { Layout, Tabs } from 'antd';
-const { TabPane } = Tabs;
 import FlowView from './Flow/FlowView/FlowView';
 import ToolBar from './toolbar/ToolBar';
 import CacheToolBar from './cache/ToolBar';
@@ -11,9 +10,11 @@ import { AppState } from '../models/AppState';
 import { buildProtofiles } from './Collection/protofile/ProtofileManagerActions';
 import { openFM } from './Collection/CollectionActions';
 import CacheExplorerView from './cache/CacheExplorerView';
-import { registerCacheAction } from './cache/CacheAction';
 import CacheSider from './cache/CacheSider';
 import { TabsProps } from 'antd/lib/tabs';
+import NodeEnvPicker from './toolbar/NODE_ENV/NodeEnvPicker';
+
+const { TabPane } = Tabs;
 
 const TopLayout = styled(Layout)`
   width: 100%;
@@ -41,6 +42,7 @@ const tabHeader = {
 };
 
 const App: React.FunctionComponent<{}> = ({}) => {
+  const [activeTab, setActiveTab] = useState('request');
   const dispatch = useDispatch();
   const collections = useSelector(
     (s: AppState) => s.collections,
@@ -50,12 +52,12 @@ const App: React.FunctionComponent<{}> = ({}) => {
   React.useEffect(() => {
     collections.forEach(([name, col]) => {
       dispatch(buildProtofiles(name, col.protoFilepaths as string[], col.protoRootPath, () => dispatch(openFM(name))));
-      dispatch(registerCacheAction('Common'));
-      dispatch(registerCacheAction('Supply'));
-      dispatch(registerCacheAction('Demand'));
     });
   }, []);
 
+  function selectTab(selected: string) {
+    setActiveTab(selected);
+  }
   const renderTabBar = (props: TabsProps, TabBar: React.ComponentClass<any>) => (
     <TabBar {...props}>
       {(node: JSX.Element) =>
@@ -71,7 +73,7 @@ const App: React.FunctionComponent<{}> = ({}) => {
             {React.cloneElement(node, {
               style: node.props.style ? { ...node.props.style, ...tabHeader } : tabHeader,
             })}
-            <CacheSider />
+            <CacheSider onClickOnTab={() => selectTab('cache')} />
           </div>
         ) : null
       }
@@ -79,7 +81,7 @@ const App: React.FunctionComponent<{}> = ({}) => {
   );
   return (
     <TopLayout>
-      <Tabs defaultActiveKey="request" tabPosition={'left'} renderTabBar={renderTabBar}>
+      <Tabs defaultActiveKey="request" tabPosition={'left'} renderTabBar={renderTabBar} activeKey={activeTab}>
         <TabPane tab="Requests" key="request">
           <ContentLayout>
             <ToolBar />

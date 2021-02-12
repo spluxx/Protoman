@@ -26,7 +26,7 @@ const EnvPicker: React.FunctionComponent<{}> = ({}) => {
   }
 
   function createNewEnv(): void {
-    const tmpName = 'Env';
+    const tmpName = 'EnvVar';
     let tmpNameIdx = 1;
     while (!checkName(`${tmpName}${tmpNameIdx}`)) tmpNameIdx++;
     dispatch(createEnv(`${tmpName}${tmpNameIdx}`));

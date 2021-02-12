@@ -45,7 +45,10 @@ export default function CacheReducer(s: AppState, action: AnyAction): AppState {
           draft.cache.requestStatus = 'failure';
           draft.cache.requestError = a.err;
         });
-
+      case 'SET_CACHE_NAME':
+        return produce(s, draft => {
+          draft.cache.currentCacheName = a.cacheName;
+        });
       default:
         return s;
     }
