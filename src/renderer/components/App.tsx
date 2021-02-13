@@ -4,46 +4,49 @@ import CollectionSider from './Collection/CollectionSider';
 import { Layout, Tabs } from 'antd';
 import FlowView from './Flow/FlowView/FlowView';
 import ToolBar from './toolbar/ToolBar';
-import CacheToolBar from './cache/ToolBar';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../models/AppState';
 import { buildProtofiles } from './Collection/protofile/ProtofileManagerActions';
 import { openFM } from './Collection/CollectionActions';
-import CacheExplorerView from './cache/CacheExplorerView';
 import CacheSider from './cache/CacheSider';
 import { TabsProps } from 'antd/lib/tabs';
-import NodeEnvPicker from './toolbar/NODE_ENV/NodeEnvPicker';
+import CacheToolBar from './cache/ToolBar';
+import CacheView from './cache/CacheView';
 
 const { TabPane } = Tabs;
-
+const Sider = styled(Layout.Sider)`
+  background: #fff;
+  box-shadow: 1px 0 3px -0px #aaa;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+`;
 const TopLayout = styled(Layout)`
   width: 100%;
   height: 100%;
 `;
-
-const ContentLayout = styled(Layout)`
-  height: 100%;
-  padding: 16px;
-  width: 80vw;
-`;
-
 const tabHeader = {
   backgroundColor: '#fff',
   color: 'rgba(0, 0, 0, 0.85)',
   fontWeight: 500,
   fontSize: 14,
-  userSelect: 'none',
   margin: 0,
   boxShadow: '1px 0 3px -0px #aaa',
-  textAlign: 'center',
   width: '100%',
   flex: '0 0 auto',
   padding: '16px 8px 8px 8px',
 };
-
+const ContentLayout = styled(Layout)`
+  height: 100%;
+  padding: 16px;
+`;
+const tabListStyle = {
+  height: '100vh',
+  backgroundColor: '#fff',
+};
 const App: React.FunctionComponent<{}> = ({}) => {
-  const [activeTab, setActiveTab] = useState('request');
   const dispatch = useDispatch();
+  const [activeTab, setActiveTab] = useState('request');
   const collections = useSelector(
     (s: AppState) => s.collections,
     () => true, // it's only used for initial rebuild
@@ -54,7 +57,6 @@ const App: React.FunctionComponent<{}> = ({}) => {
       dispatch(buildProtofiles(name, col.protoFilepaths as string[], col.protoRootPath, () => dispatch(openFM(name))));
     });
   }, []);
-
   function selectTab(selected: string) {
     setActiveTab(selected);
   }
@@ -62,26 +64,22 @@ const App: React.FunctionComponent<{}> = ({}) => {
     <TabBar {...props}>
       {(node: JSX.Element) =>
         node.key === 'request' ? (
-          <div key={node.key}>
-            {React.cloneElement(node, {
-              style: node.props.style ? { ...node.props.style, ...tabHeader } : tabHeader,
-            })}
-            <CollectionSider />
-          </div>
+          <CollectionSider key={node.key} style={tabHeader} onClickOnTab={() => selectTab('request')} />
         ) : node.key === 'cache' ? (
-          <div key={node.key}>
-            {React.cloneElement(node, {
-              style: node.props.style ? { ...node.props.style, ...tabHeader } : tabHeader,
-            })}
-            <CacheSider onClickOnTab={() => selectTab('cache')} />
-          </div>
+          <CacheSider key={node.key} style={tabHeader} onClickOnTab={() => selectTab('cache')} />
         ) : null
       }
     </TabBar>
   );
   return (
     <TopLayout>
-      <Tabs defaultActiveKey="request" tabPosition={'left'} renderTabBar={renderTabBar} activeKey={activeTab}>
+      <Tabs
+        defaultActiveKey="request"
+        tabPosition={'left'}
+        renderTabBar={renderTabBar}
+        activeKey={activeTab}
+        style={tabListStyle}
+      >
         <TabPane tab="Requests" key="request">
           <ContentLayout>
             <ToolBar />
@@ -91,7 +89,7 @@ const App: React.FunctionComponent<{}> = ({}) => {
         <TabPane tab="Caches" key="cache">
           <ContentLayout>
             <CacheToolBar />
-            <CacheExplorerView />
+            <CacheView />
           </ContentLayout>
         </TabPane>
       </Tabs>

@@ -10,6 +10,7 @@ import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import { createMessageValue } from '../../../../core/protobuf/deserializer';
 import { JsonObject } from '../../../../core/protobuf/protoJson';
+import { message } from 'antd';
 
 type Props = {
   bodyType: BodyType;
@@ -41,11 +42,15 @@ export function dispatchingJsonHandler(dispatch: Dispatch, ctx: ProtoCtx): Event
   }
   return {
     allChanged: (type, v): void => {
+      let val = {};
       try {
-        const value = convertKeys(JSON.parse(v));
-        fireAndForget(allChanged(createMessageValue(type, value, ctx), ctx));
+        val = convertKeys(JSON.parse(v));
+      } catch (err) {}
+
+      try {
+        fireAndForget(allChanged(createMessageValue(type, val, ctx), ctx));
       } catch (err) {
-        console.error(err);
+        message.error(err);
       }
     },
   };

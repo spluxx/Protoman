@@ -20,9 +20,10 @@ const ClickableItem = styled(List.Item)`
 
 type Props = {
   collectionName: string;
+  onSelectFlow: Function;
 };
 
-const FlowList: React.FunctionComponent<Props> = ({ collectionName }) => {
+const FlowList: React.FunctionComponent<Props> = ({ collectionName, onSelectFlow }) => {
   const dispatch = useDispatch();
 
   const collections = useSelector((s: AppState) => s.collections);
@@ -31,6 +32,7 @@ const FlowList: React.FunctionComponent<Props> = ({ collectionName }) => {
   const currentFlow = useSelector((s: AppState) => s.currentFlow);
 
   function handleSelection(flowName: string): void {
+    onSelectFlow();
     dispatch(selectFlow(collectionName, flowName));
   }
 

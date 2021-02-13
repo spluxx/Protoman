@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button, Collapse, Layout } from 'antd';
+import React, { CSSProperties } from 'react';
+import { Button, Collapse, Layout, Typography } from 'antd';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../models/AppState';
@@ -38,33 +38,39 @@ const LinkButton = styled(Button)`
   margin-left: 8px l    
   user-select: none;
 `;
+type CacheName = 'Supply' | 'Common' | 'Demand';
 
 export const COLLECTION_SIDER_WIDTH = 210;
-const cacheNames: string[] = ['Demand', 'Supply', 'Common'];
+const cacheNames: CacheName[] = ['Demand', 'Supply', 'Common'];
 type SiderProps = {
   onClickOnTab: Function;
+  style?: CSSProperties;
 };
-const CacheSider: React.FunctionComponent<SiderProps> = ({ onClickOnTab }) => {
+const CacheSider: React.FunctionComponent<SiderProps> = ({ onClickOnTab, style }) => {
   const dispatch = useDispatch();
   const nodeEnv = useSelector((s: AppState) => s.currentNodeEnv);
-  function handleCacheSelect(cacheName: string): void {
+  const currentCacheName = useSelector((s: AppState) => s.cache.currentCacheName);
+  function handleCacheSelect(cacheName: 'Supply' | 'Common' | 'Demand'): void {
     onClickOnTab();
     dispatch(selectCacheName(nodeEnv, cacheName));
   }
   return (
-    <Sider width={COLLECTION_SIDER_WIDTH} theme="light">
-      <Wrapper>
-        {cacheNames.map(name => {
-          return (
-            <Header key={name}>
-              <LinkButton type="link" onClick={() => handleCacheSelect(name)}>
+    <Wrapper>
+      {cacheNames.map((name: CacheName) => {
+        return (
+          <Header key={name}>
+            <Title style={style} onClick={() => handleCacheSelect(name)}>
+              <Typography.Text
+                strong={currentCacheName === name}
+                style={{ userSelect: 'none', color: currentCacheName === name ? 'rgb(47, 93, 232)' : undefined }}
+              >
                 {name}
-              </LinkButton>
-            </Header>
-          );
-        })}
-      </Wrapper>
-    </Sider>
+              </Typography.Text>
+            </Title>
+          </Header>
+        );
+      })}
+    </Wrapper>
   );
 };
 

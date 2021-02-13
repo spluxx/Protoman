@@ -2,7 +2,7 @@ import { ThunkAction } from 'redux-thunk';
 import { AppState } from '../../models/AppState';
 import { AnyAction } from 'redux';
 import { queryCache, registerCache } from '../../events';
-import { CacheQueryResponse, CacheRequestBuilder } from '../../../core/cache';
+import { CacheQueryResponse, CacheRequestBuilder, CacheResponseDescriptor } from '../../../core/cache';
 import { ProtoCtx } from '../../../core/protobuf/protobuf';
 import { getByKey } from '../../utils/utils';
 const SEND_QUERY_CACHE_REQUEST = 'SEND_QUERY_CACHE_REQUEST';
@@ -35,7 +35,7 @@ type SetCacheResponse = {
   type: 'SET_QUERY_CACHE_RESPONSE';
   nodeEnv: string;
   cacheName: string;
-  response: CacheQueryResponse;
+  responseDescriptor: CacheResponseDescriptor;
 };
 
 type SetCacheRequestError = {
@@ -88,14 +88,17 @@ export type CacheAction =
 
 export function queryCacheAction(
   nodeEnv: string,
-  cacheName: string,
+  cacheName: 'Supply' | 'Demand' | 'Common' | undefined,
   request: CacheRequestBuilder,
 ): ThunkAction<Promise<void>, AppState, {}, AnyAction> {
   return async (dispatch): Promise<void> => {
     dispatch({ type: SEND_QUERY_CACHE_REQUEST, nodeEnv, cacheName, request });
     try {
+      const sTime = Date.now();
       const response = await queryCache(nodeEnv, cacheName, request);
-      dispatch({ type: SET_QUERY_CACHE_RESPONSE, nodeEnv, cacheName, response });
+      const time = Date.now() - sTime;
+      const responseDescriptor = { response, time };
+      dispatch({ type: SET_QUERY_CACHE_RESPONSE, nodeEnv, cacheName, responseDescriptor });
     } catch (err) {
       dispatch({ type: SET_CACHE_REQUEST_ERROR, cacheName, err });
     }

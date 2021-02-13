@@ -8,7 +8,7 @@ import thunk from 'redux-thunk';
 import { getByKey, getEntryByKey } from '../utils/utils';
 import { Flow } from '../models/flow';
 import { ProtoCtx } from '../../core/protobuf/protobuf';
-import { Cache, CacheRequestBuilder } from '../../core/cache';
+import { Cache, CacheRequestBuilder, CacheResponseDescriptor } from '../../core/cache';
 const DEFAULT_FLOW_NAME = 'Request1';
 const DEFAULT_COLLECTION_NAME = 'Collection1';
 const DEFAULT_ENV_NAME = 'EnvVars1';
@@ -65,7 +65,7 @@ export function createDefaultCache(): Draft<Cache> {
     protoCtxs: [],
     requestStatus: 'default',
     requestError: undefined,
-    response: undefined,
+    responseDescriptor: undefined,
   };
 }
 function createDefaultEnv(): Draft<Env> {
@@ -78,7 +78,7 @@ function createDefaultAppState(): Draft<AppState> {
   return {
     envList: [[DEFAULT_ENV_NAME, createDefaultEnv()]],
     currentEnv: DEFAULT_ENV_NAME,
-    nodeEnvList: [STAGING, INTEGRATION, PRODUCTION],
+    nodeEnvList: [INTEGRATION, STAGING, PRODUCTION],
     currentNodeEnv: DEFAULT_NODE_ENV_NAME,
     cache: createDefaultCache(),
     collections: [[DEFAULT_COLLECTION_NAME, createDefaultCollection()]],
@@ -144,7 +144,7 @@ export function procCol(collection: Draft<Collection>): Draft<Collection> {
 }
 
 export function procCache(cache: Draft<Cache>): Draft<Cache> {
-  cache.response = undefined;
+  cache.responseDescriptor = undefined;
   cache.requestStatus = 'default';
   cache.requestBuilder = {
     search: {},

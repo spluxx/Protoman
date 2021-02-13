@@ -3,8 +3,11 @@ import MessageValueView from '../body/MessageValueView';
 import styled from 'styled-components';
 import TextArea from 'antd/lib/input/TextArea';
 import { ResponseBody } from '../../../../core/http_client/response';
-import { MessageValue } from '../../../../core/protobuf/protobuf';
+import { MessageValue, ProtobufValue } from '../../../../core/protobuf/protobuf';
 import { Alert } from 'antd';
+import JSONEditor from '../body/JSONEditor';
+import { createMessageRecurse } from '../../../../core/protobuf/serializer';
+import AceEditor from 'react-ace-builds';
 
 const TextView = styled(TextArea)`
   width: 100%;
@@ -42,7 +45,8 @@ const ResponseBodyView: FunctionComponent<Props> = ({ body, warning }) => {
     entryAdd: NO_OP,
     entryRemove: NO_OP,
   };
-
+  const json =
+    value && type === 'protobuf' ? JSON.stringify(createMessageRecurse(value as ProtobufValue), null, '\t') : '{}';
   return (
     <div>
       {warning.length > 0 && <Alert type="warning" style={{ whiteSpace: 'pre' }} message={warning}></Alert>}
@@ -52,7 +56,24 @@ const ResponseBodyView: FunctionComponent<Props> = ({ body, warning }) => {
       ) : type === 'unknown' ? (
         <UnknownBody />
       ) : type === 'protobuf' ? (
-        <MessageValueView value={value as MessageValue} handlers={handlers} />
+        <AceEditor
+          theme={'solarized-light'}
+          showGutter={true}
+          mode="json"
+          height="500px"
+          width="700px"
+          value={json}
+          setOptions={{
+            readOnly: true,
+            theme: 'solarized-light',
+            showPrintMargin: true,
+            highlightActiveLine: false,
+            printMargin: true,
+            showLineNumbers: true,
+            minLines: 200,
+            tabSize: 2,
+          }}
+        />
       ) : type === 'json' || type === 'html' ? (
         <StringBody s={value as string} />
       ) : null}

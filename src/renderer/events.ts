@@ -150,7 +150,7 @@ export function registerCache(
 
 export function queryCache(
   nodeEnv: string,
-  cacheName: string,
+  cacheName: 'Common' | 'Demand' | 'Supply' | undefined,
   request: CacheRequestBuilder,
 ): Promise<CacheQueryResponse> {
   return new Promise((resolve, reject) => {

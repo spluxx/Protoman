@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import { Layout, Collapse, Modal, Button } from 'antd';
 import styled from 'styled-components';
 import CollectionCell from './CollectionCell';
@@ -18,6 +18,7 @@ const Sider = styled(Layout.Sider)`
   box-shadow: 1px 0 3px -0px #aaa;
   display: flex;
   flex-direction: column;
+  height: 100vh;
 `;
 
 const Wrapper = styled('div')`
@@ -29,6 +30,7 @@ const Header = styled('div')`
   text-align: center;
   width: 100%;
   flex: 0 0 auto;
+  padding: 16px 8px 8px 8px;
 `;
 
 const Title = styled('h1')`
@@ -48,8 +50,12 @@ const LinkButton = styled(Button)`
 `;
 
 export const COLLECTION_SIDER_WIDTH = 210;
+type Props = {
+  onClickOnTab: Function;
+  style?: CSSProperties;
+};
 
-const CollectionSider: React.FunctionComponent<{}> = ({}) => {
+const CollectionSider: React.FunctionComponent<Props> = ({ onClickOnTab, style }) => {
   const dispatch = useDispatch();
 
   const collections = useSelector((s: AppState) => s.collections);
@@ -69,16 +75,17 @@ const CollectionSider: React.FunctionComponent<{}> = ({}) => {
   }
 
   return (
-    <Sider width={COLLECTION_SIDER_WIDTH} theme="light">
+    <div style={style}>
       <Wrapper>
         <Header>
+          <Title>Collections</Title>
           <LinkButton type="link" onClick={handleImport}>
             Import
           </LinkButton>
         </Header>
         <LeanCollapse
           activeKey={[...openCollections]}
-          expandIcon={(): React.ReactNode => <span />}
+          expandIconPosition={'right'}
           onChange={(k): void => {
             if (typeof k === 'string') {
               handleToggleOpen([k]);
@@ -92,7 +99,7 @@ const CollectionSider: React.FunctionComponent<{}> = ({}) => {
             const header = <CollectionCell collectionName={name} />;
             return (
               <Panel key={name} header={header}>
-                <FlowList collectionName={name} />
+                <FlowList onSelectFlow={onClickOnTab} collectionName={name} />
               </Panel>
             );
           })}
@@ -104,7 +111,7 @@ const CollectionSider: React.FunctionComponent<{}> = ({}) => {
       <Modal visible={!!fmOpenCollection} footer={null} closable={false} destroyOnClose>
         {fmOpenCollection ? <ProtofileManager collectionName={fmOpenCollection} /> : null}
       </Modal>
-    </Sider>
+    </div>
   );
 };
 

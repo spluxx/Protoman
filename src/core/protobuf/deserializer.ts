@@ -53,17 +53,17 @@ export function createMessageValue(messageProto: ProtobufType, messageJson: Prot
     case 'message':
       const messageType = messageProto as MessageType;
       const obj = messageJson ?? {};
-      assertType(obj, ['object']);
+      assertType(obj, ['object'], messageType);
       return handleMessage(messageType, obj as JsonObject, ctx);
     case 'primitive':
       const primitiveType = messageProto as PrimitiveType;
       const prim = messageJson ?? primitiveType.defaultValue;
-      assertType(prim, ['string', 'number', 'boolean']);
+      assertType(prim, ['string', 'number', 'boolean'], primitiveType);
       return handlePrimitive(primitiveType, prim as string | number | boolean);
     case 'enum':
       const enumType = messageProto as EnumType;
       const e = messageJson ?? 0;
-      assertType(e, ['number']);
+      assertType(e, ['number'], messageProto);
       return handleEnum(enumType, e as number);
   }
 }
@@ -94,7 +94,7 @@ function handleMessage(messageType: MessageType, messageJson: JsonObject, ctx: P
 
   const repeatedFields = messageType.repeatedFields.map(([fieldName, typeName]): [string, ProtobufValue[]] => {
     const arr = messageJson[fieldName] ?? [];
-    assertType(arr, ['array']);
+    assertType(arr, ['array'], fieldName);
     return [fieldName, (arr as JsonArray).map(value => createMessageValue(typeNameToType(typeName, ctx), value, ctx))];
   });
 
@@ -117,7 +117,7 @@ function handleMessage(messageType: MessageType, messageJson: JsonObject, ctx: P
 
   const mapFields = messageType.mapFields.map(([fieldName, [valueTypeName]]): [string, [string, ProtobufValue][]] => {
     const obj = messageJson[fieldName] ?? {};
-    assertType(obj, ['object']);
+    assertType(obj, ['object'], valueTypeName);
     const entries: [string, ProtoJson][] = Object.entries(obj);
     const temp: [string, ProtobufValue][] = entries.map(([key, value]) => {
       const valueType: ProtobufType = typeNameToType(valueTypeName, ctx);
@@ -139,11 +139,11 @@ function deserializeError(msg: string): Error {
   return new Error('Error while parsing the JSON representation of the protobuf message:\n' + msg);
 }
 
-function assertType(json: ProtoJson, expectedTypes: string[]): void {
+function assertType(json: ProtoJson, expectedTypes: string[], prop: string | ProtobufType): void {
   const actual = Array.isArray(json) ? 'array' : typeof json;
   if (expectedTypes.includes(actual)) {
     return;
   } else {
-    throw deserializeError(`Expected '${expectedTypes}', but got '${actual}'`);
+    throw deserializeError(`${prop} Expected '${expectedTypes}', but got '${actual}'`);
   }
 }
