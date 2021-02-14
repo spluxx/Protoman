@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
-import { selectCurrentCache } from '../../redux/store';
+import { selectCurrentCacheWithName } from '../../redux/store';
 import { Alert, Spin } from 'antd';
 import CacheRequestBuilderView from './CacheRequestBuilderView';
 import CacheResponseView from './CacheResponseView';
@@ -13,11 +13,11 @@ const Wrapper = styled('div')`
 const Spacing = styled('div')`
   height: 16px;
 `;
-
 const CacheView: React.FunctionComponent<{}> = ({}) => {
-  const cache = useSelector(selectCurrentCache);
-  const { requestError, responseDescriptor, requestStatus } = cache || {};
-
+  const cacheEntry = useSelector(selectCurrentCacheWithName);
+  if (!cacheEntry) return null;
+  const [cacheName, cache] = cacheEntry;
+  const { requestStatus, requestError, responseDescriptor } = cache;
   return (
     <Wrapper>
       {requestStatus === 'failure' ? (

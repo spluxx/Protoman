@@ -137,10 +137,7 @@ export function makeRequest(request: RequestDescriptor, ctx: ProtoCtx): Promise<
     ipcRenderer.send(ipcChannels.SEND_REQUEST, [nonce, request, ctx]);
   });
 }
-export function registerCache(
-  nodeEnv: string,
-  cacheName: 'Common' | 'Demand' | 'Supply' | undefined,
-): Promise<ProtoCtx> {
+export function registerCache(nodeEnv: string, cacheName: string): Promise<ProtoCtx> {
   return new Promise((resolve, reject) => {
     const nonce = Math.floor(Math.random() * 1e7);
     setupCacheRegisterListeners(nonce, resolve, reject);
@@ -150,7 +147,7 @@ export function registerCache(
 
 export function queryCache(
   nodeEnv: string,
-  cacheName: 'Common' | 'Demand' | 'Supply' | undefined,
+  cacheName: string,
   request: CacheRequestBuilder,
 ): Promise<CacheQueryResponse> {
   return new Promise((resolve, reject) => {

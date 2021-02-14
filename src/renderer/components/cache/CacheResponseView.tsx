@@ -117,11 +117,11 @@ const CacheResponseView: React.FunctionComponent<Props> = ({ responseDescriptor 
             showGutter={true}
             mode="json"
             height="60vh"
-            width="80vh"
+            width="180vh"
             value={data}
             setOptions={{
               readOnly: true,
-              showPrintMargin: true,
+              showPrintMargin: false,
               highlightActiveLine: false,
               showLineNumbers: true,
               minLines: 200,

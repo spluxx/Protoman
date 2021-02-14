@@ -4,12 +4,7 @@ import ResponseView from '../response/ResponseView';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { sendRequest } from './FlowViewActions';
-import {
-  selectCurrentColWithName,
-  selectCurrentFlowWithName,
-  selectCurrentEnv,
-  selectCurrentCache,
-} from '../../../redux/store';
+import { selectCurrentColWithName, selectCurrentFlowWithName, selectCurrentEnv } from '../../../redux/store';
 import { Alert, Spin } from 'antd';
 
 const Wrapper = styled('div')`

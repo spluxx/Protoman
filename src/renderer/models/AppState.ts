@@ -2,14 +2,15 @@
 
 import { Env } from './Env';
 import { Collection } from './Collection';
-import { Cache } from '../../core/cache';
+import { Cache } from '../models/Cache';
 
 export interface AppState {
   readonly envList: ReadonlyArray<[string, Env]>;
   readonly currentEnv: string;
   readonly nodeEnvList: ReadonlyArray<string>;
   readonly currentNodeEnv: string;
-  readonly cache: Cache;
+  readonly currentCacheName: string;
+  readonly caches: ReadonlyArray<[string, Cache]>;
   readonly collections: ReadonlyArray<[string, Collection]>;
 
   readonly openCollections: ReadonlyArray<string>;

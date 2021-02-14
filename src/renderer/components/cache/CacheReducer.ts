@@ -1,53 +1,78 @@
 import produce, { Draft } from 'immer';
 import { AnyAction } from 'redux';
 import { AppState } from '../../models/AppState';
-import { CacheActionTypes, CacheAction } from './CacheAction';
-import { CacheQueryResponse, CacheRequestBuilder, CacheResponseDescriptor } from '../../../core/cache';
+import { CacheAction, CacheActionTypes } from './CacheAction';
+import { CacheRequestBuilder, CacheResponseDescriptor } from '../../models/Cache';
 import { ProtoCtx } from '../../../core/protobuf/protobuf';
-import { getEntryByKey } from '../../utils/utils';
+import { getByKey } from '../../utils/utils';
+import { createDefaultCache } from '../../redux/store';
 
 export default function CacheReducer(s: AppState, action: AnyAction): AppState {
   if (CacheActionTypes.includes(action.type)) {
     const a = action as CacheAction;
 
     switch (a.type) {
-      case 'REGISTER_CACHE_RESPONSE':
+      case 'REGISTER_CACHE':
         return produce(s, draft => {
-          const protoCtxEntry = getEntryByKey(draft.cache.protoCtxs, a.cacheName);
-          if (protoCtxEntry) {
-            protoCtxEntry[1] = a.protoCtx as Draft<ProtoCtx>;
+          const cache = getByKey(draft.caches, a.cacheName);
+          if (cache) {
+            cache.requestError = undefined;
+            cache.requestStatus = 'default';
+            cache.protoCtx = undefined;
+            cache.messageNames = [];
           } else {
-            draft.cache.protoCtxs.push([a.cacheName, a.protoCtx as Draft<ProtoCtx>]);
+            draft.caches.push([a.cacheName, createDefaultCache()]);
           }
         });
-        break;
+      case 'REGISTER_CACHE_RESPONSE':
+        return produce(s, draft => {
+          const cache = getByKey(draft.caches, a.cacheName);
+          if (cache) {
+            cache.requestStatus = 'success';
+            cache.requestError = undefined;
+            cache.messageNames = a.messageNames;
+            cache.requestBuilder.expectedMessage = a.messageNames[0];
+            cache.protoCtx = a.protoCtx as Draft<ProtoCtx>;
+          }
+        });
       case 'SELECT_QUERY_MESSAGE_NAME':
         return produce(s, draft => {
-          draft.cache.requestBuilder.expectedMessage = action.name;
-          draft.cache.requestBuilder.search = {};
+          const requestBuilder = getByKey(draft.caches, draft.currentCacheName)?.requestBuilder;
+          if (requestBuilder) {
+            requestBuilder.expectedMessage = action.name;
+            requestBuilder.search = {};
+          }
         });
-        break;
       case 'SEND_QUERY_CACHE_REQUEST':
         return produce(s, draft => {
-          draft.cache.requestStatus = 'sending';
-          draft.cache.requestError = undefined;
-          draft.cache.requestBuilder = a.request as Draft<CacheRequestBuilder>;
-          draft.cache.responseDescriptor = undefined;
+          const cache = getByKey(draft.caches, draft.currentCacheName);
+          if (cache) {
+            cache.requestStatus = 'sending';
+            cache.requestError = undefined;
+            cache.requestBuilder = a.request as Draft<CacheRequestBuilder>;
+            cache.responseDescriptor = undefined;
+          }
         });
       case 'SET_QUERY_CACHE_RESPONSE':
         return produce(s, draft => {
-          draft.cache.responseDescriptor = a.responseDescriptor as Draft<CacheResponseDescriptor>;
-          draft.cache.requestStatus = 'success';
-          draft.cache.requestError = undefined;
+          const cache = getByKey(draft.caches, draft.currentCacheName);
+          if (cache) {
+            cache.responseDescriptor = a.responseDescriptor as Draft<CacheResponseDescriptor>;
+            cache.requestStatus = 'success';
+            cache.requestError = undefined;
+          }
         });
       case 'SET_CACHE_REQUEST_ERROR':
         return produce(s, draft => {
-          draft.cache.requestStatus = 'failure';
-          draft.cache.requestError = a.err;
+          const cache = getByKey(draft.caches, draft.currentCacheName);
+          if (cache) {
+            cache.requestStatus = 'failure';
+            cache.requestError = a.err;
+          }
         });
       case 'SET_CACHE_NAME':
         return produce(s, draft => {
-          draft.cache.currentCacheName = a.cacheName;
+          draft.currentCacheName = a.cacheName;
         });
       default:
         return s;

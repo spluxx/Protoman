@@ -3,8 +3,8 @@ import { Row, Col, Select } from 'antd';
 import EnvPicker from '../toolbar/Env/EnvPicker';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectCurrentCache } from '../../redux/store';
 import NodeEnvPicker from '../toolbar/NodeEnv/NodeEnvPicker';
+import { AppState } from '../../models/AppState';
 
 const PaddedRow = styled(Row)`
   padding: 8px 0px;
@@ -15,8 +15,7 @@ const Title = styled('span')`
   margin: 0;
 `;
 const CacheToolBar: React.FunctionComponent<{}> = ({}) => {
-  const cache = useSelector(selectCurrentCache);
-  const { currentCacheName } = cache || {};
+  const currentCacheName = useSelector((s: AppState) => s.currentCacheName);
   return (
     <PaddedRow>
       <Col span={8} style={{ display: 'flex' }}>

@@ -3,12 +3,12 @@ import AppReducer from './AppReducer';
 import { AppState } from '../models/AppState';
 import produce, { Draft } from 'immer';
 import { Collection } from '../models/Collection';
+import { Cache } from '../models/Cache';
 import { Env } from '../models/Env';
 import thunk from 'redux-thunk';
 import { getByKey, getEntryByKey } from '../utils/utils';
 import { Flow } from '../models/flow';
 import { ProtoCtx } from '../../core/protobuf/protobuf';
-import { Cache, CacheRequestBuilder, CacheResponseDescriptor } from '../../core/cache';
 const DEFAULT_FLOW_NAME = 'Request1';
 const DEFAULT_COLLECTION_NAME = 'Collection1';
 const DEFAULT_ENV_NAME = 'EnvVars1';
@@ -16,6 +16,7 @@ const STAGING = 'staging';
 const INTEGRATION = 'integration';
 const PRODUCTION = 'production';
 const DEFAULT_NODE_ENV_NAME = STAGING;
+const DEFAULT_CACHE_NAME = 'Demand';
 
 export function createDefaultFlow(): Draft<Flow> {
   return {
@@ -56,13 +57,13 @@ export function createDefaultCollection(): Draft<Collection> {
 
 export function createDefaultCache(): Draft<Cache> {
   return {
-    currentCacheName: 'Common',
     requestBuilder: {
       search: {},
       limit: 100,
       expectedMessage: '',
     },
-    protoCtxs: [],
+    messageNames: [],
+    protoCtx: undefined,
     requestStatus: 'default',
     requestError: undefined,
     responseDescriptor: undefined,
@@ -80,9 +81,10 @@ function createDefaultAppState(): Draft<AppState> {
     currentEnv: DEFAULT_ENV_NAME,
     nodeEnvList: [INTEGRATION, STAGING, PRODUCTION],
     currentNodeEnv: DEFAULT_NODE_ENV_NAME,
-    cache: createDefaultCache(),
+    caches: [[DEFAULT_CACHE_NAME, createDefaultCache()]],
     collections: [[DEFAULT_COLLECTION_NAME, createDefaultCollection()]],
     currentCollection: DEFAULT_COLLECTION_NAME,
+    currentCacheName: DEFAULT_CACHE_NAME,
     currentFlow: DEFAULT_FLOW_NAME,
     openCollections: [DEFAULT_COLLECTION_NAME],
     fmOpenCollection: undefined,
@@ -102,14 +104,13 @@ export function selectCurrentFlow(s: AppState): Flow | undefined {
 export function selectCurrentEnv(s: AppState): Env | undefined {
   return getByKey(s.envList, s.currentEnv);
 }
-export function selectCurrentCache(s: AppState): Cache | undefined {
-  return s.cache;
-}
-export function selectCurrentCacheCtx(s: AppState): ProtoCtx | undefined {
-  return getByKey(s.cache.protoCtxs, s.cache.currentCacheName);
-}
+
 export function selectCurrentColWithName(s: AppState): [string, Collection] | undefined {
   return getEntryByKey(s.collections, s.currentCollection);
+}
+
+export function selectCurrentCacheWithName(s: AppState): [string, Cache] | undefined {
+  return getEntryByKey(s.caches, s.currentCacheName);
 }
 
 export function selectCurrentFlowWithName(s: AppState): [string, Flow] | undefined {
@@ -157,7 +158,7 @@ function preprocess(appState: AppState): AppState {
   return produce(appState, draft => {
     draft.collections = draft.collections.map(([cn, c]) => [cn, procCol(c)]);
     draft.fmOpenCollection = undefined;
-    draft.cache = procCache(draft.cache);
+    draft.caches = draft.caches.map(([cn, c]) => [cn, procCache(c)]);
     return draft;
   });
 }

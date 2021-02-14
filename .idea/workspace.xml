@@ -33,20 +33,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1cb75c5a-6340-4c59-86de-f35a409f30e5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/renderer/components/toolbar/NODE_ENV/NodeEnvPicker.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/renderer/components/toolbar/NODE_ENV/NodeEnvPickerActions.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/renderer/components/toolbar/NODE_ENV/NodeEnvPickerReducer.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/renderer/models/Cache.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/protobuf/deserializer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/protobuf/deserializer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/cache.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/cache.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/events.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/events.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/renderer/components/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/components/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/components/Flow/body/JSONEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/components/Flow/body/JSONEditor.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/components/Flow/response/ResponseBodyView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/components/Flow/response/ResponseBodyView.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/renderer/components/Flow/FlowView/FlowView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/components/Flow/FlowView/FlowView.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/renderer/components/cache/CacheAction.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/components/cache/CacheAction.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/components/cache/CacheExplorerView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/components/cache/CacheExplorerView.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/renderer/components/cache/CacheReducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/components/cache/CacheReducer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/renderer/components/cache/CacheRequestBuilderView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/components/cache/CacheRequestBuilderView.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/renderer/components/cache/CacheResponseView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/components/cache/CacheResponseView.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/renderer/components/cache/CacheSider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/components/cache/CacheSider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/renderer/components/cache/CacheView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/components/cache/CacheView.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/renderer/components/cache/ToolBar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/components/cache/ToolBar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/components/toolbar/Env/EnvPicker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/components/toolbar/Env/EnvPicker.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/renderer/events.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/events.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/renderer/models/AppState.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/models/AppState.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/renderer/redux/store.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/redux/store.ts" afterDir="false" />
@@ -55,6 +54,13 @@
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -210,19 +216,25 @@
     </state>
     <state x="2101" y="54" width="1169" height="623" maximized="true" key="dock-window-3/1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1613063611275" />
     <state x="500" y="25" width="1169" height="623" maximized="true" key="dock-window-3/1920.0.1536.832/0.0.1920.1040@1920.0.1536.832" timestamp="1613060398905" />
-    <state x="2333" y="104" width="709" height="616" key="find.popup" timestamp="1613074671984">
+    <state x="1990" y="-14" width="1441" height="777" maximized="true" key="dock-window-7" timestamp="1613256780269">
       <screen x="1920" y="0" width="1536" height="832" />
     </state>
-    <state x="2333" y="104" width="709" height="616" key="find.popup/1920.0.1536.832/0.0.1920.1040@1920.0.1536.832" timestamp="1613074671984" />
+    <state x="180" y="94" width="1441" height="777" maximized="true" key="dock-window-7/1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1613254768827" />
+    <state x="1990" y="-14" width="1441" height="777" maximized="true" key="dock-window-7/1920.0.1536.832/0.0.1920.1040@1920.0.1536.832" timestamp="1613256780269" />
+    <state x="516" y="130" width="887" height="860" key="find.popup" timestamp="1613247138075">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="516" y="130" width="887" height="860" key="find.popup/1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1613247138075" />
+    <state x="2333" y="104" width="709" height="688" key="find.popup/1920.0.1536.832/0.0.1920.1040@1920.0.1536.832" timestamp="1613232789821" />
     <state x="2261" y="183" key="run.anything.popup" timestamp="1612462406705">
       <screen x="1920" y="0" width="1536" height="832" />
     </state>
     <state x="2261" y="183" key="run.anything.popup/1920.0.1536.832/0.0.1920.1040@1920.0.1536.832" timestamp="1612462406705" />
-    <state x="2267" y="0" width="840" height="1034" key="search.everywhere.popup" timestamp="1613079574229">
+    <state x="2267" y="0" width="840" height="1034" key="search.everywhere.popup" timestamp="1613233927778">
       <screen x="1920" y="0" width="1536" height="832" />
     </state>
     <state x="434" y="0" width="1050" height="1293" key="search.everywhere.popup/1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1613068463121" />
-    <state x="2267" y="0" width="840" height="1034" key="search.everywhere.popup/1920.0.1536.832/0.0.1920.1040@1920.0.1536.832" timestamp="1613079574229" />
+    <state x="2267" y="0" width="840" height="1034" key="search.everywhere.popup/1920.0.1536.832/0.0.1920.1040@1920.0.1536.832" timestamp="1613233927778" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -233,7 +245,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/renderer/components/cache/CacheAction.ts</url>
-          <line>4</line>
+          <line>5</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
@@ -244,13 +256,11 @@
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/main/events.ts</url>
           <line>150</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="44" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/main/events.ts</url>
           <line>124</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="45" />
         </line-breakpoint>
       </breakpoints>

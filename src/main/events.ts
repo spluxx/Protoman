@@ -149,7 +149,6 @@ export async function initializeEvents(): Promise<void> {
           data = _.get(cache, propertyName);
         }
         const filtered = explorerCache({ data, search, messageType });
-        console.log(`Query data ${filtered}`);
         const result: CacheQueryResponse = {
           protoCtx: ctx,
           data: filtered,

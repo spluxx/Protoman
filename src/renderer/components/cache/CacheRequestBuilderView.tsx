@@ -8,7 +8,7 @@ import { selectQueryMessageName } from '../cache/CacheAction';
 import AceEditor from 'react-ace-builds';
 import 'ace-builds/src-noconflict/theme-solarized_light';
 import 'ace-builds/webpack-resolver';
-import { selectCurrentCache, selectCurrentCacheCtx } from '../../redux/store';
+import { selectCurrentCacheWithName } from '../../redux/store';
 import { queryCacheAction } from './CacheAction';
 import { CacheRequestBuilder } from '../../../core/cache';
 import { MessageType, ProtobufType, ProtoCtx, typeNameToType } from '../../../core/protobuf/protobuf';
@@ -133,11 +133,13 @@ function getSuggestions(ctx: ProtoCtx, type: ProtobufType, childs: string[], ign
 type Props = {};
 const CacheRequestBuilderView: React.FunctionComponent<Props> = ({}) => {
   const dispatch = useDispatch();
-  const cache = useSelector(selectCurrentCache);
+  const cacheEntry = useSelector(selectCurrentCacheWithName);
   const currentNodeEnv = useSelector((s: AppState) => s.currentNodeEnv);
-  const currentCtx = useSelector(selectCurrentCacheCtx);
-  const messageNames = currentCtx ? _.map(currentCtx.types, 'name') : [];
-  const { currentCacheName, requestBuilder, requestError, responseDescriptor, requestStatus } = cache || {};
+  if (!cacheEntry || !currentNodeEnv) return null;
+  const [cacheName, cache] = cacheEntry;
+  const currentCtx = cache.protoCtx;
+  const messageNames = cache.messageNames;
+  const { requestBuilder } = cache;
   const search = requestBuilder?.search ? JSON.stringify(requestBuilder?.search, null, '\t') : '';
   const queryEditor: React.RefObject<AceEditor> = useRef<AceEditor>(null);
 
@@ -145,14 +147,14 @@ const CacheRequestBuilderView: React.FunctionComponent<Props> = ({}) => {
     const reactAceEditor: ReactAce = queryEditor.current as ReactAce;
     const value = reactAceEditor ? reactAceEditor.editor.getValue() : '{}';
     const expectedMessage = requestBuilder?.expectedMessage;
-    if (expectedMessage && currentCacheName) {
+    if (expectedMessage && cacheName) {
       const query = JSON.parse(value);
       const request: CacheRequestBuilder = {
         expectedMessage,
         search: query,
         limit: 100,
       };
-      dispatch(queryCacheAction(currentNodeEnv, currentCacheName, request));
+      dispatch(queryCacheAction(currentNodeEnv, cacheName, request));
     }
   }
   function onSelectResponseMsg(msgName: string): void {

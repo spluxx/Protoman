@@ -9,7 +9,6 @@ import { AppState } from '../models/AppState';
 import { buildProtofiles } from './Collection/protofile/ProtofileManagerActions';
 import { openFM } from './Collection/CollectionActions';
 import CacheSider from './cache/CacheSider';
-import { TabsProps } from 'antd/lib/tabs';
 import CacheToolBar from './cache/ToolBar';
 import CacheView from './cache/CacheView';
 
@@ -60,39 +59,21 @@ const App: React.FunctionComponent<{}> = ({}) => {
   function selectTab(selected: string) {
     setActiveTab(selected);
   }
-  const renderTabBar = (props: TabsProps, TabBar: React.ComponentClass<any>) => (
-    <TabBar {...props}>
-      {(node: JSX.Element) =>
-        node.key === 'request' ? (
-          <CollectionSider key={node.key} style={tabHeader} onClickOnTab={() => selectTab('request')} />
-        ) : node.key === 'cache' ? (
-          <CacheSider key={node.key} style={tabHeader} onClickOnTab={() => selectTab('cache')} />
-        ) : null
-      }
-    </TabBar>
-  );
+
   return (
     <TopLayout>
-      <Tabs
-        defaultActiveKey="request"
-        tabPosition={'left'}
-        renderTabBar={renderTabBar}
-        activeKey={activeTab}
-        style={tabListStyle}
-      >
-        <TabPane tab="Requests" key="request">
-          <ContentLayout>
-            <ToolBar />
-            <FlowView />
-          </ContentLayout>
-        </TabPane>
-        <TabPane tab="Caches" key="cache">
-          <ContentLayout>
-            <CacheToolBar />
-            <CacheView />
-          </ContentLayout>
-        </TabPane>
-      </Tabs>
+      <Sider>
+        <CollectionSider style={tabHeader} onClickOnTab={() => selectTab('request')} />
+        <CacheSider style={tabHeader} onClickOnTab={() => selectTab('cache')} />
+      </Sider>
+      <ContentLayout style={{ display: activeTab !== 'cache' ? 'block' : 'none' }}>
+        <ToolBar />
+        <FlowView />
+      </ContentLayout>
+      <ContentLayout style={{ display: activeTab !== 'cache' ? 'none' : 'block' }}>
+        <CacheToolBar />
+        <CacheView />
+      </ContentLayout>
     </TopLayout>
   );
 };

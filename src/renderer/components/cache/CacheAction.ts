@@ -1,8 +1,9 @@
+import _ from 'lodash';
 import { ThunkAction } from 'redux-thunk';
 import { AppState } from '../../models/AppState';
 import { AnyAction } from 'redux';
 import { queryCache, registerCache } from '../../events';
-import { CacheQueryResponse, CacheRequestBuilder, CacheResponseDescriptor } from '../../../core/cache';
+import { CacheRequestBuilder, CacheResponseDescriptor } from '../../models/Cache';
 import { ProtoCtx } from '../../../core/protobuf/protobuf';
 import { getByKey } from '../../utils/utils';
 const SEND_QUERY_CACHE_REQUEST = 'SEND_QUERY_CACHE_REQUEST';
@@ -50,20 +51,20 @@ type SelectQueryMessageName = {
 
 type SetCacheName = {
   type: 'SET_CACHE_NAME';
-  cacheName: 'Common' | 'Demand' | 'Supply' | undefined;
+  cacheName: string;
 };
 
 type RegisterCache = {
   type: 'REGISTER_CACHE';
   nodeEnv: string;
   cacheName: string;
-  protoCtx: ProtoCtx;
 };
 
 type RegisterCacheResponse = {
   type: 'REGISTER_CACHE_RESPONSE';
   nodeEnv: string;
   cacheName: string;
+  messageNames: string[];
   protoCtx: ProtoCtx;
 };
 
@@ -88,7 +89,7 @@ export type CacheAction =
 
 export function queryCacheAction(
   nodeEnv: string,
-  cacheName: 'Supply' | 'Demand' | 'Common' | undefined,
+  cacheName: string,
   request: CacheRequestBuilder,
 ): ThunkAction<Promise<void>, AppState, {}, AnyAction> {
   return async (dispatch): Promise<void> => {
@@ -114,13 +115,14 @@ export function selectQueryMessageName(name: string): SelectQueryMessageName {
 
 export function registerCacheAction(
   nodeEnv: string,
-  cacheName: 'Common' | 'Demand' | 'Supply' | undefined,
+  cacheName: string,
 ): ThunkAction<Promise<void>, AppState, {}, AnyAction> {
   return async (dispatch): Promise<void> => {
     dispatch({ type: REGISTER_CACHE, cacheName });
     try {
       const protoCtx = await registerCache(nodeEnv, cacheName);
-      dispatch({ type: REGISTER_CACHE_RESPONSE, nodeEnv, cacheName, protoCtx });
+      const messageNames = _.map(protoCtx.types, 'name');
+      dispatch({ type: REGISTER_CACHE_RESPONSE, nodeEnv, cacheName, protoCtx, messageNames });
     } catch (err) {
       dispatch({ type: SET_CACHE_REQUEST_ERROR, nodeEnv, cacheName, err });
     }
@@ -129,13 +131,14 @@ export function registerCacheAction(
 
 export function selectCacheName(
   nodeEnv: string,
-  cacheName: 'Common' | 'Demand' | 'Supply' | undefined,
+  cacheName: string,
 ): ThunkAction<Promise<void>, AppState, {}, AnyAction> {
   return async (dispatch, getState): Promise<void> => {
     const s = getState();
-    if (!getByKey(s.cache.protoCtxs, cacheName)) {
+    dispatch({ type: SET_CACHE_NAME, cacheName });
+    const cache = getByKey(s.caches, cacheName);
+    if (!cache || cache.requestStatus !== 'success') {
       await dispatch(registerCacheAction(nodeEnv, cacheName));
     }
-    dispatch({ type: SET_CACHE_NAME, cacheName });
   };
 }
