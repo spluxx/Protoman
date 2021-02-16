@@ -2,7 +2,7 @@
 
 import { Env } from './Env';
 import { Collection } from './Collection';
-import { Cache } from '../models/Cache';
+import { Cache } from '../../core/Cache';
 
 export interface AppState {
   readonly envList: ReadonlyArray<[string, Env]>;

@@ -3,13 +3,15 @@ import { Button, Col, Row, Layout, Typography } from 'antd';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../models/AppState';
-import { selectCacheName } from './CacheAction';
-import { selectCurrentCacheWithName } from '../../redux/store';
+import { selectCacheName, refreshCacheAction } from './CacheAction';
+import moment from 'moment';
+import { getEntryByKey } from '../../utils/utils';
 const Sider = styled(Layout.Sider)`
   background: #fff;
   box-shadow: 1px 0 3px -0px #aaa;
   display: flex;
   flex-direction: column;
+  height: 95vh;
 `;
 
 const Wrapper = styled('div')`
@@ -39,7 +41,7 @@ const RightyCol = styled(Col)`
 `;
 
 const StatusBar = styled(Col)`
-  text-align: right;
+  text-align: left;
   font-size: 7pt;
   color: #777;
 `;
@@ -64,51 +66,55 @@ type SiderProps = {
   onClickOnTab: Function;
   style?: CSSProperties;
 };
-const LeftMarginSpan = styled('span')`
-  margin-left: 8px;
+const RightMarginSpan = styled('span')`
+  margin-right: 8px;
 `;
-const TimeText: React.FunctionComponent<{ time: number }> = ({ time }) => {
-  let t = time;
-  let unit = 'ms';
-
-  if (t >= 1000) {
-    t = t / 1000;
-    unit = 's';
-  }
-  return (
-    <LeftMarginSpan>
-      Age: {t} {unit}
-    </LeftMarginSpan>
-  );
+const TimeText: React.FunctionComponent<{ time: Date | undefined }> = ({ time }) => {
+  const ago = moment(time).fromNow();
+  return <RightMarginSpan>{time ? `${ago}` : ''}</RightMarginSpan>;
 };
-const StatusText: React.FunctionComponent<{ text: string }> = ({ text }) => {
-  return <LeftMarginSpan>{text}</LeftMarginSpan>;
+function statusCodeToColor(time: Date | undefined): string {
+  const minutes = time ? moment.duration(moment().diff(time)).asMinutes() : -1;
+  if (minutes < 0) return 'darkgray';
+  else if (minutes < 10) return 'green';
+  else return 'orange';
+}
+const StatusText: React.FunctionComponent<{ text: string; time: Date | undefined }> = ({ text, time }) => {
+  const color = statusCodeToColor(time);
+  return <RightMarginSpan style={{ color }}>{text}</RightMarginSpan>;
 };
 
 const CacheSider: React.FunctionComponent<SiderProps> = ({ onClickOnTab, style }) => {
   const dispatch = useDispatch();
-  const nodeEnv = useSelector((s: AppState) => s.currentNodeEnv);
   const currentCacheName = useSelector((s: AppState) => s.currentCacheName);
-  const cacheEntry = useSelector(selectCurrentCacheWithName);
-  const cacheState = 'Not ready';
-  const lastRefresh = 18000;
+  const nodeEnv = useSelector((s: AppState) => s.currentNodeEnv);
   function handleCacheSelect(cacheName: string): void {
     onClickOnTab();
     dispatch(selectCacheName(nodeEnv, cacheName));
   }
   function handleRefresh(cacheName: string) {
-    dispatch(selectCacheName(nodeEnv, cacheName));
+    dispatch(refreshCacheAction(nodeEnv, cacheName));
   }
   return (
-    <Wrapper style={style}>
+    <Sider style={style}>
       <Header>
         <Title>Caches</Title>
       </Header>
       {cacheNames.map((name: CacheName) => {
+        const cacheEntry = useSelector((s: AppState) => getEntryByKey(s.caches, name));
+        let cacheState = 'Not ready';
+        let lastRefresh: Date | undefined = undefined;
+        if (cacheEntry) {
+          const [cacheName, cache] = cacheEntry;
+          if (cache && cache.cacheRecency) {
+            cacheState = 'Ready';
+            lastRefresh = cache.cacheRecency;
+          }
+        }
         return (
           <Panel key={name} onClick={() => handleCacheSelect(name)}>
             <StatusBar span={24}>
-              <StatusText text={cacheState} />
+              <StatusText text={cacheState} time={lastRefresh} />
               <TimeText time={lastRefresh} />
             </StatusBar>
             <TitleWrapper>
@@ -129,7 +135,7 @@ const CacheSider: React.FunctionComponent<SiderProps> = ({ onClickOnTab, style }
           </Panel>
         );
       })}
-    </Wrapper>
+    </Sider>
   );
 };
 

@@ -3,7 +3,7 @@ import AppReducer from './AppReducer';
 import { AppState } from '../models/AppState';
 import produce, { Draft } from 'immer';
 import { Collection } from '../models/Collection';
-import { Cache } from '../models/Cache';
+import { Cache } from '../../core/Cache';
 import { Env } from '../models/Env';
 import thunk from 'redux-thunk';
 import { getByKey, getEntryByKey } from '../utils/utils';
@@ -64,6 +64,7 @@ export function createDefaultCache(): Draft<Cache> {
     },
     messageNames: [],
     protoCtx: undefined,
+    cacheRecency: undefined,
     requestStatus: 'default',
     requestError: undefined,
     responseDescriptor: undefined,
@@ -147,6 +148,7 @@ export function procCol(collection: Draft<Collection>): Draft<Collection> {
 export function procCache(cache: Draft<Cache>): Draft<Cache> {
   cache.responseDescriptor = undefined;
   cache.requestStatus = 'default';
+  cache.cacheRecency = undefined;
   cache.requestBuilder = {
     search: {},
     limit: 100,

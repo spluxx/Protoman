@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FunctionComponent } from 'react';
+import React, { ChangeEvent, FunctionComponent, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import _ from 'lodash';
 import { BodyType, RequestBody } from '../../../models/request_builder';
@@ -35,6 +35,14 @@ function convertKeys(obj: any) {
     _.isArray(obj) ? [] : {},
   );
 }
+
+function onPaste(value: string) {
+  try {
+    const val = JSON.stringify(value, null, '\t');
+  } catch (err) {
+    console.log(err);
+  }
+}
 export function dispatchingJsonHandler(dispatch: Dispatch, ctx: ProtoCtx): EventHandlers {
   function fireAndForget<T extends AnyAction>(action: T): void {
     console.log('change');
@@ -45,12 +53,13 @@ export function dispatchingJsonHandler(dispatch: Dispatch, ctx: ProtoCtx): Event
       let val = {};
       try {
         val = convertKeys(JSON.parse(v));
-      } catch (err) {}
-
+      } catch (e) {
+        return;
+      }
       try {
         fireAndForget(allChanged(createMessageValue(type, val, ctx), ctx));
       } catch (err) {
-        message.error(err);
+        message.error(err instanceof Error ? err.message : err, 5);
       }
     },
   };

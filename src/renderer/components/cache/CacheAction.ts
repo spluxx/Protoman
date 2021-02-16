@@ -2,12 +2,15 @@ import _ from 'lodash';
 import { ThunkAction } from 'redux-thunk';
 import { AppState } from '../../models/AppState';
 import { AnyAction } from 'redux';
-import { queryCache, registerCache } from '../../events';
-import { CacheRequestBuilder, CacheResponseDescriptor } from '../../models/Cache';
+import { queryCache, registerCache, refreshCache } from '../../events';
+import { CacheRequestBuilder, CacheResponseDescriptor } from '../../../core/Cache';
 import { ProtoCtx } from '../../../core/protobuf/protobuf';
 import { getByKey } from '../../utils/utils';
 const SEND_QUERY_CACHE_REQUEST = 'SEND_QUERY_CACHE_REQUEST';
 const REGISTER_CACHE = 'REGISTER_CACHE';
+const REFRESH_CACHE = 'REFRESH_CACHE';
+const REFRESH_CACHE_ERROR = 'REFRESH_CACHE_ERROR';
+const REFRESH_CACHE_RESPONSE = 'REFRESH_CACHE_RESPONSE';
 const REGISTER_CACHE_RESPONSE = 'REGISTER_CACHE_RESPONSE';
 const REGISTER_CACHE_ERROR = 'REGISTER_CACHE_ERROR';
 const SET_QUERY_CACHE_RESPONSE = 'SET_QUERY_CACHE_RESPONSE';
@@ -20,6 +23,9 @@ type LoadCacheAction = {
     | 'REGISTER_CACHE'
     | 'QUERY_CACHE'
     | 'SET_CACHE_NAME'
+    | 'REFRESH_CACHE'
+    | 'REFRESH_CACHE_ERROR'
+    | 'REFRESH_CACHE_RESPONSE'
     | 'SEND_QUERY_CACHE_REQUEST'
     | 'SET_QUERY_CACHE_RESPONSE'
     | 'SET_CACHE_REQUEST_ERROR';
@@ -54,6 +60,18 @@ type SetCacheName = {
   cacheName: string;
 };
 
+type RefreshCacheResponse = {
+  type: 'REFRESH_CACHE_RESPONSE';
+  nodeEnv: string;
+  cacheName: string;
+  time: Date;
+};
+
+type RefreshCache = {
+  type: 'REFRESH_CACHE';
+  nodeEnv: string;
+  cacheName: string;
+};
 type RegisterCache = {
   type: 'REGISTER_CACHE';
   nodeEnv: string;
@@ -72,6 +90,9 @@ export const CacheActionTypes = [
   REGISTER_CACHE,
   REGISTER_CACHE_RESPONSE,
   REGISTER_CACHE_ERROR,
+  REFRESH_CACHE,
+  REFRESH_CACHE_RESPONSE,
+  REFRESH_CACHE_RESPONSE,
   SELECT_QUERY_MESSAGE_NAME,
   SET_CACHE_NAME,
   SEND_QUERY_CACHE_REQUEST,
@@ -81,6 +102,8 @@ export const CacheActionTypes = [
 export type CacheAction =
   | RegisterCache
   | RegisterCacheResponse
+  | RefreshCache
+  | RefreshCacheResponse
   | SendQueryCacheRequest
   | SetCacheResponse
   | SetCacheName
@@ -125,6 +148,21 @@ export function registerCacheAction(
       dispatch({ type: REGISTER_CACHE_RESPONSE, nodeEnv, cacheName, protoCtx, messageNames });
     } catch (err) {
       dispatch({ type: SET_CACHE_REQUEST_ERROR, nodeEnv, cacheName, err });
+    }
+  };
+}
+
+export function refreshCacheAction(
+  nodeEnv: string,
+  cacheName: string,
+): ThunkAction<Promise<void>, AppState, {}, AnyAction> {
+  return async (dispatch): Promise<void> => {
+    dispatch({ type: REFRESH_CACHE, cacheName, nodeEnv });
+    try {
+      const time: Date = await refreshCache(nodeEnv, cacheName);
+      dispatch({ type: REFRESH_CACHE_RESPONSE, nodeEnv, cacheName, time });
+    } catch (err) {
+      dispatch({ type: REFRESH_CACHE_ERROR, nodeEnv, cacheName, err });
     }
   };
 }

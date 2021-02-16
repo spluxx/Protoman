@@ -10,11 +10,16 @@ import { sendToWindow } from './index';
 import { RequestDescriptor } from '../core/http_client/request';
 import { makeRequest } from '../core/http_client/client';
 import { ProtoCtx } from '../core/protobuf/protobuf';
-import { CacheQueryResponse, CacheRequestBuilder } from '../core/cache';
+import { CacheQueryResponse, CacheRequestBuilder } from '../core/Cache';
 import protobuf from 'protobufjs';
 import { buildContext } from '../core/protobuf/protoParser';
 
-const caches: { [key: string]: any } = {};
+type CacheUpdate = {
+  cache: { [key: string]: any };
+  date: Date;
+};
+
+const caches: { [key: string]: CacheUpdate } = {};
 
 function s3BucketLocation(env: string) {
   return `ramp-optimization-${env}-us-east-1/entities_data`;
@@ -26,22 +31,24 @@ function protoTmpFileLocation(name: string) {
 
 async function loadCache(dataDir: string, cacheName: string, env: string) {
   const s3: S3Service = new S3Service();
-  try {
-    const tmpFileName = path.join(dataDir, protoTmpFileLocation(cacheName));
-    const root = new protobuf.Root();
-    await root.load(tmpFileName);
-    const ctx = await buildContext([tmpFileName]);
-    console.log(`Loading Cache ${cacheName}`);
-    const s3Object = await s3.getObject(s3BucketLocation(env), `${cacheName}`);
-    const rootMessage = root.lookupType(cacheName);
-    const cache = rootMessage.decode(s3Object.Body as Uint8Array).toJSON();
-    _.set(caches, `${env}.${cacheName}`, cache);
-    return cache;
-  } catch (e) {}
+  const protFileObj = await s3.getObject(s3BucketLocation(env), `${cacheName}.proto`);
+  const tmpFileName = path.join(dataDir, protoTmpFileLocation(cacheName));
+  fs.writeFileSync(tmpFileName, protFileObj.Body, {});
+  const root = new protobuf.Root();
+  await root.load(tmpFileName);
+  console.log(`Loading Cache ${cacheName}`);
+  const s3Object = await s3.getObject(s3BucketLocation(env), `${cacheName}`);
+  const rootMessage = root.lookupType(cacheName);
+  const cache = rootMessage.decode(s3Object.Body as Uint8Array).toJSON();
+  const cacheUpdate: CacheUpdate = { cache, date: new Date() };
+  _.set(caches, `${env}.${cacheName}`, cacheUpdate);
+  return cacheUpdate;
 }
 function scheduleRefreshCache(dataDir: string, cacheName: string, env: string) {
   setInterval(async () => {
-    await loadCache(dataDir, cacheName, env);
+    try {
+      await loadCache(dataDir, cacheName, env);
+    } catch {}
   }, 600000);
 }
 export async function initializeEvents(): Promise<void> {
@@ -138,20 +145,24 @@ export async function initializeEvents(): Promise<void> {
         // const s3Object = await s3.getObject(s3BucketLocation(env), `${cacheName}`);
         // console.log(`Query data`);
         // const cache = rootMessage.decode(s3Object.Body as Uint8Array).toJSON();
-        const cache = _.get(caches, `${env}.${cacheName}`);
-        if (!cache) {
-          await loadCache(dataDir, cacheName, env);
+        const cacheUpdate = _.get(caches, `${env}.${cacheName}`);
+        if (!cacheUpdate) {
+          await loadCache(dataDir, cacheName, env).catch(e => {
+            console.log('LOAD CACHE ERR' + e);
+          });
         }
-        let data = _.get(caches, `${env}.${cacheName}`);
+        const { cache, date } = _.get(caches, `${env}.${cacheName}`);
+        let data = cache;
         if (expectedMessage !== cacheName) {
           const expectedMessageType = _.find(rootMessage.fields, { type: expectedMessage });
           const propertyName: string = _.get(expectedMessageType, 'name', '');
-          data = _.get(cache, propertyName);
+          data = _.get(cache, propertyName, {});
         }
         const filtered = explorerCache({ data, search, messageType });
         const result: CacheQueryResponse = {
           protoCtx: ctx,
           data: filtered,
+          cacheRecency: date,
         };
         console.log(`LOAD CACHE Loaded` + cacheName);
         event.reply(ipcChannel.QUERY_CACHE_SUCCESS, [nonce, result]);
@@ -179,6 +190,21 @@ export async function initializeEvents(): Promise<void> {
       } catch (e) {
         console.log('REGISTER_CACHE' + e);
         event.reply(ipcChannel.REGISTER_CACHE_ERROR, [nonce, e]);
+      }
+    });
+
+    ipcMain.on(ipcChannel.REFRESH_CACHE, async (event, args) => {
+      console.log('REFRESH_CACHE');
+      const nonce: number = args[0];
+      const env: string = args[1];
+      const cacheName: string = args[2];
+      try {
+        const cacheUpdate: CacheUpdate = await loadCache(dataDir, cacheName, env);
+        console.log(`REFRESH_CACHE lODED ${cacheName}`);
+        event.reply(ipcChannel.REFRESH_CACHE_SUCCESS, [nonce, cacheUpdate.date]);
+      } catch (e) {
+        console.log('REGISTER_CACHE' + e);
+        event.reply(ipcChannel.REFRESH_CACHE_ERROR, [nonce, e]);
       }
     });
   } catch (err) {

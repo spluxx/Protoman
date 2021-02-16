@@ -73,7 +73,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'Protoman',
+      title: 'UT-Proto',
       template: './templates/index.html',
     }),
     new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /ja|it/),

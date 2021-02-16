@@ -13,12 +13,8 @@ import CacheToolBar from './cache/ToolBar';
 import CacheView from './cache/CacheView';
 
 const { TabPane } = Tabs;
-const Sider = styled(Layout.Sider)`
-  background: #fff;
-  box-shadow: 1px 0 3px -0px #aaa;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+const StyledTabs = styled(Tabs)`
+  padding-left: 16px;
 `;
 const TopLayout = styled(Layout)`
   width: 100%;
@@ -40,7 +36,7 @@ const ContentLayout = styled(Layout)`
   padding: 16px;
 `;
 const tabListStyle = {
-  height: '100vh',
+  height: '96vh',
   backgroundColor: '#fff',
 };
 const App: React.FunctionComponent<{}> = ({}) => {
@@ -61,20 +57,26 @@ const App: React.FunctionComponent<{}> = ({}) => {
   }
 
   return (
-    <TopLayout>
-      <Sider>
-        <CollectionSider style={tabHeader} onClickOnTab={() => selectTab('request')} />
-        <CacheSider style={tabHeader} onClickOnTab={() => selectTab('cache')} />
-      </Sider>
-      <ContentLayout style={{ display: activeTab !== 'cache' ? 'block' : 'none' }}>
-        <ToolBar />
-        <FlowView />
-      </ContentLayout>
-      <ContentLayout style={{ display: activeTab !== 'cache' ? 'none' : 'block' }}>
-        <CacheToolBar />
-        <CacheView />
-      </ContentLayout>
-    </TopLayout>
+    <Tabs defaultActiveKey="request" animated={false} type="card">
+      <TabPane tab="Requests" key="request">
+        <TopLayout>
+          <CollectionSider style={tabHeader} onClickOnTab={() => selectTab('request')} />
+          <ContentLayout>
+            <ToolBar />
+            <FlowView />
+          </ContentLayout>
+        </TopLayout>
+      </TabPane>
+      <TabPane tab="Caches" key="cahce">
+        <TopLayout>
+          <CacheSider style={tabHeader} onClickOnTab={() => selectTab('cache')} />
+          <ContentLayout>
+            <CacheToolBar />
+            <CacheView />
+          </ContentLayout>
+        </TopLayout>
+      </TabPane>
+    </Tabs>
   );
 };
 

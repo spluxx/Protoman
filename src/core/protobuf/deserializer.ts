@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+import _ from 'lodash';
 import {
   MessageValue,
   ProtobufValue,
@@ -15,6 +16,7 @@ import protobuf from 'protobufjs';
 import { createMessageType } from './protoParser';
 import { ProtoJson, JsonObject, JsonArray } from './protoJson';
 import { transformPBJSError } from './pbjsErrors';
+import { string } from './primitiveTypes';
 
 type DeserializeResult =
   | {
@@ -53,23 +55,28 @@ export function createMessageValue(messageProto: ProtobufType, messageJson: Prot
     case 'message':
       const messageType = messageProto as MessageType;
       const obj = messageJson ?? {};
-      assertType(obj, ['object'], messageType);
+      assertType(obj, ['object'], messageType.name);
       return handleMessage(messageType, obj as JsonObject, ctx);
     case 'primitive':
       const primitiveType = messageProto as PrimitiveType;
       const prim = messageJson ?? primitiveType.defaultValue;
-      assertType(prim, ['string', 'number', 'boolean'], primitiveType);
+      assertType(prim, ['string', 'number', 'boolean'], messageProto.name);
       return handlePrimitive(primitiveType, prim as string | number | boolean);
     case 'enum':
       const enumType = messageProto as EnumType;
       const e = messageJson ?? 0;
-      assertType(e, ['number'], messageProto);
+      assertType(e, ['number', 'string'], messageProto.name);
       return handleEnum(enumType, e as number);
   }
 }
 
-function handleEnum(messageType: EnumType, jsonValue: number): EnumValue {
-  const selected = Object.entries(messageType.optionValues).find(([, value]) => value === jsonValue)?.[0];
+function handleEnum(messageType: EnumType, jsonValue: number | string): EnumValue {
+  let selected;
+  if (_.isString(jsonValue)) {
+    selected = Object.entries(messageType.optionValues).find(([name]) => name === jsonValue)?.[0];
+  } else {
+    selected = Object.entries(messageType.optionValues).find(([, value]) => value === jsonValue)?.[0];
+  }
   if (!selected) {
     throw deserializeError(`The given enum value ${jsonValue} isn't defined in '${messageType.name}'`);
   } else {
@@ -116,8 +123,12 @@ function handleMessage(messageType: MessageType, messageJson: JsonObject, ctx: P
     .filter(a => !!a);
 
   const mapFields = messageType.mapFields.map(([fieldName, [valueTypeName]]): [string, [string, ProtobufValue][]] => {
-    const obj = messageJson[fieldName] ?? {};
-    assertType(obj, ['object'], valueTypeName);
+    let tmpObj = messageJson[fieldName] ?? {};
+    if (_.isArray(tmpObj)) {
+      tmpObj = _.zipObject(_.map(tmpObj, 'key'), _.map(tmpObj, 'value'));
+    }
+    const obj = tmpObj;
+    assertType(obj, ['object'], fieldName);
     const entries: [string, ProtoJson][] = Object.entries(obj);
     const temp: [string, ProtobufValue][] = entries.map(([key, value]) => {
       const valueType: ProtobufType = typeNameToType(valueTypeName, ctx);

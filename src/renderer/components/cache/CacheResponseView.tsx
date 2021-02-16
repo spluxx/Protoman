@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs, Row, Col } from 'antd';
 import styled from 'styled-components';
-import { CacheResponseDescriptor } from '../../../core/cache';
+import { CacheResponseDescriptor } from '../../../core/Cache';
 import AceEditor from 'react-ace-builds';
 
 const { TabPane } = Tabs;

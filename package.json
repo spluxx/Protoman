@@ -1,8 +1,8 @@
 {
-  "name": "Protoman",
-  "version": "0.4.0",
+  "name": "UT-Proto",
+  "version": "0.1.0",
   "description": "Basic Postman clone with protobuf functionalities",
-  "author": "Inchan Hwang, Louis Lee",
+  "author": "Amit Rotbard",
   "license": "MIT",
   "main": "dist/main.js",
   "scripts": {
@@ -24,7 +24,7 @@
     "dist:linux": "electron-builder --linux"
   },
   "build": {
-    "appId": "co.protoman.protoman",
+    "appId": "undertone.ut-porto.ut-proto",
     "files": [
       "dist/**/*",
       "package.json"
@@ -70,6 +70,7 @@
     "file-loader": "^6.2.0",
     "immer": "^5.3.6",
     "lodash": "^4.17.20",
+    "moment": "^2.29.1",
     "node-fetch": "^2.6.0",
     "npm": "^7.5.2",
     "protobufjs": "^6.8.8",
@@ -82,7 +83,8 @@
     "react-tooltip": "^4.1.0",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "styled-components": "^5.0.1"
+    "styled-components": "^5.0.1",
+    "update-electron-app": "^2.0.1"
   },
   "devDependencies": {
     "@types/google-protobuf": "^3.7.2",

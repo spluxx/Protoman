@@ -18,7 +18,7 @@ const Sider = styled(Layout.Sider)`
   box-shadow: 1px 0 3px -0px #aaa;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 96vh;
 `;
 
 const Wrapper = styled('div')`
@@ -75,7 +75,7 @@ const CollectionSider: React.FunctionComponent<Props> = ({ onClickOnTab, style }
   }
 
   return (
-    <div style={style}>
+    <Sider style={style}>
       <Wrapper>
         <Header>
           <Title>Collections</Title>
@@ -111,7 +111,7 @@ const CollectionSider: React.FunctionComponent<Props> = ({ onClickOnTab, style }
       <Modal visible={!!fmOpenCollection} footer={null} closable={false} destroyOnClose>
         {fmOpenCollection ? <ProtofileManager collectionName={fmOpenCollection} /> : null}
       </Modal>
-    </div>
+    </Sider>
   );
 };
 

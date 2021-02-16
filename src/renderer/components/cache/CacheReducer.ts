@@ -2,7 +2,7 @@ import produce, { Draft } from 'immer';
 import { AnyAction } from 'redux';
 import { AppState } from '../../models/AppState';
 import { CacheAction, CacheActionTypes } from './CacheAction';
-import { CacheRequestBuilder, CacheResponseDescriptor } from '../../models/Cache';
+import { CacheRequestBuilder, CacheResponseDescriptor } from '../../../core/Cache';
 import { ProtoCtx } from '../../../core/protobuf/protobuf';
 import { getByKey } from '../../utils/utils';
 import { createDefaultCache } from '../../redux/store';
@@ -35,6 +35,13 @@ export default function CacheReducer(s: AppState, action: AnyAction): AppState {
             cache.protoCtx = a.protoCtx as Draft<ProtoCtx>;
           }
         });
+      case 'REFRESH_CACHE_RESPONSE':
+        return produce(s, draft => {
+          const cache = getByKey(draft.caches, a.cacheName);
+          if (cache) {
+            cache.cacheRecency = a.time;
+          }
+        });
       case 'SELECT_QUERY_MESSAGE_NAME':
         return produce(s, draft => {
           const requestBuilder = getByKey(draft.caches, draft.currentCacheName)?.requestBuilder;
@@ -58,6 +65,7 @@ export default function CacheReducer(s: AppState, action: AnyAction): AppState {
           const cache = getByKey(draft.caches, draft.currentCacheName);
           if (cache) {
             cache.responseDescriptor = a.responseDescriptor as Draft<CacheResponseDescriptor>;
+            cache.cacheRecency = a.responseDescriptor.response.cacheRecency;
             cache.requestStatus = 'success';
             cache.requestError = undefined;
           }
