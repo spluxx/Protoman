@@ -139,7 +139,7 @@ const ColoringInput: React.FunctionComponent<InputProps> = props => {
     <Wrapper style={{ width }}>
       {addonBefore ? <AddonBeforeWrapper>{addonBefore}</AddonBeforeWrapper> : null}
       <InputWrapper>
-        <FakeInputWrapper style={{ ...offsets, width: clientWidth }}>
+        <FakeInputWrapper style={{ ...offsets, width: '100%' }}>
           <FakeInput ref={fakeInputRef}>{value ? coloredInputStr : ph}</FakeInput>
         </FakeInputWrapper>
         <ModInput ref={inputRef} {...newProps} />
