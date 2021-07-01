@@ -32,6 +32,16 @@ export default function BodyInputReducer(s: AppState, action: AnyAction): AppSta
             flow.requestBuilder.bodyType = a.bodyType as BodyType;
           }
         });
+      case 'JSON_BODY_CHANGED_TYPE':
+        return produce(s, draft => {
+          const collection = getByKey(draft.collections, draft.currentCollection);
+          if (!collection) return s;
+          const flow = getByKey(collection.flows, draft.currentFlow);
+          if (!flow) return s;
+          if (flow.requestBuilder.bodyType == 'json') {
+            flow.requestBuilder.bodies.json = a.bodyValue;
+          }
+        });
       default:
         return s;
     }

@@ -23,6 +23,7 @@ export function createDefaultFlow(): Draft<Flow> {
       bodies: {
         none: undefined,
         protobuf: undefined,
+        json: undefined,
       },
       expectedProtobufMsg: undefined,
     },
