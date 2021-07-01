@@ -1,12 +1,13 @@
 import { HttpMethod, RequestDescriptor } from '../../core/http_client/request';
 import { MessageValue, ProtoCtx } from '../../core/protobuf/protobuf';
 import { serializeProtobuf } from '../../core/protobuf/serializer';
+import { serializeJSON } from '../../core/json/serializer';
 import { Env, toVarMap } from './Env';
 import { applyEnvs } from '../../core/env';
 import { applyToProtoMessage } from '../../core/protobuf/ap';
 
-export type BodyType = 'none' | 'protobuf';
-export const BODY_TYPES: string[] = ['none', 'protobuf'];
+export type BodyType = 'none' | 'protobuf' | 'json';
+export const BODY_TYPES: string[] = ['none', 'protobuf', 'json'];
 
 export interface RequestBuilder {
   readonly method: HttpMethod;
@@ -21,6 +22,7 @@ export interface RequestBuilder {
 export interface RequestBody {
   none: undefined;
   protobuf: MessageValue | undefined;
+  json: string | undefined;
 }
 
 export async function toRequestDescriptor(
@@ -32,17 +34,33 @@ export async function toRequestDescriptor(
   const varMap = toVarMap(env);
 
   let body;
+  let contentType;
+
   if (bodyType === 'protobuf' && bodies.protobuf) {
     const withEnv = applyToProtoMessage(bodies.protobuf, (s: string): string => applyEnvs(s, varMap));
     body = await serializeProtobuf(withEnv, ctx);
+    contentType = 'application/x-protobuf';
+  } else if (bodyType === 'json') {
+    const withEnv = bodies.json || null;
+    if (withEnv != null) {
+      body = await serializeJSON(withEnv);
+      contentType = 'application/json';
+    } else {
+      body = undefined;
+    }
   } else {
     body = undefined;
+  }
+
+  let newHeaders = headers.map<[string, string]>(([k, v]) => [k, applyEnvs(v, varMap)]);
+  if (contentType) {
+    newHeaders.push(['Content-Type', contentType]);
   }
 
   return {
     url: applyEnvs(url, varMap),
     method,
-    headers: headers.map(([k, v]) => [k, applyEnvs(v, varMap)]),
+    headers: newHeaders,
     body,
     expectedProtobufMsg,
     expectedProtobufMsgOnError,
