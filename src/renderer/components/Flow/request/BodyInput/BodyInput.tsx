@@ -1,11 +1,11 @@
 import React, { FunctionComponent, ChangeEvent } from 'react';
 import { Radio, Select } from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio';
-import TextArea from "antd/lib/input/TextArea"
+import TextArea from 'antd/lib/input/TextArea';
 import MessageValueView, { dispatchingHandler } from '../../body/MessageValueView';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
-import { selectRequestMessageName, selectBodyType, bodyChangedType } from './BodyInputActions';
+import { selectRequestMessageName, selectBodyType, JSONbodyChangedType } from './BodyInputActions';
 import { BodyType, RequestBody } from '../../../../models/request_builder';
 import { ProtoCtx } from '../../../../../core/protobuf/protobuf';
 
@@ -22,7 +22,9 @@ const BodyWrapper = styled('div')`
 `;
 
 export const MESSAGE_NAME_WIDTH = 500;
-export const MESSAGE_NAME_HEIGHT = 100;
+
+export const JSON_BODY_AREA_WIDTH = 500;
+export const JSON_BODY_AREA_HEIGHT = 100;
 
 const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies, protoCtx, messageNames }) => {
   const dispatch = useDispatch();
@@ -31,10 +33,8 @@ const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies, protoCtx, messa
     dispatch(selectBodyType(e.target.value));
   }
 
-  function onBodyChange(e: ChangeEvent<HTMLTextAreaElement>): void {
-    let a = bodyChangedType(e.target.value);
-    console.log(a);
-    dispatch(a);
+  function onJSONBodyChange(e: ChangeEvent<HTMLTextAreaElement>): void {
+    dispatch(JSONbodyChangedType(e.target.value));
   }
 
   function onSelectRequestMsg(msgName: string): void {
@@ -75,11 +75,10 @@ const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies, protoCtx, messa
           <span>Request Body: </span>
           <br />
           <TextArea
-            value={(bodies.json)}
-            style={{ width: MESSAGE_NAME_WIDTH, height: MESSAGE_NAME_HEIGHT, resize: 'none' }}
-            onChange={(e) => onBodyChange(e)}
-          >
-          </TextArea>
+            value={bodies.json}
+            style={{ width: JSON_BODY_AREA_WIDTH, height: JSON_BODY_AREA_HEIGHT, resize: 'none' }}
+            onChange={e => onJSONBodyChange(e)}
+          ></TextArea>
         </div>
       </>
     ) : null;

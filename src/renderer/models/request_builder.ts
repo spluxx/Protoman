@@ -52,15 +52,19 @@ export async function toRequestDescriptor(
     body = undefined;
   }
 
-  let newHeaders = headers.map<[string, string]>(([k, v]) => [k, applyEnvs(v, varMap)]);
-  if (contentType) {
-    newHeaders.push(['Content-Type', contentType]);
+  const headersWithContentType = headers.map<[string, string]>(([k, v]) => [k, applyEnvs(v, varMap)]);
+  const hasContentType = headers.find(k => {
+    k[0].toLowerCase() === 'content-type';
+  });
+
+  if (contentType && !hasContentType) {
+    headersWithContentType.push(['Content-Type', contentType]);
   }
 
   return {
     url: applyEnvs(url, varMap),
     method,
-    headers: newHeaders,
+    headers: headersWithContentType,
     body,
     expectedProtobufMsg,
     expectedProtobufMsgOnError,
