@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from '../../models/AppState';
 import { selectFlow, deleteFlow, reorderFlow, cloneFlow } from './CollectionActions';
 import { DragDropContext, DropResult, Draggable, Droppable } from 'react-beautiful-dnd';
-import { Separator } from './CollectionCell';
+import { Separator, validateFlowName } from './CollectionCell';
 
 const ClickableItem = styled(List.Item)`
   display: flex;
@@ -35,10 +35,6 @@ const FlowList: React.FunctionComponent<Props> = ({ collectionName }) => {
     dispatch(selectFlow(collectionName, flowName));
   }
 
-  function validateFlowName(flowName: string): boolean {
-    return !collection?.flows?.map(([n]) => n)?.includes(flowName);
-  }
-
   function handleDelete(flowName: string): void {
     const flowCount = collection?.flows?.length || 0;
     if (flowCount > 1) {
@@ -52,7 +48,7 @@ const FlowList: React.FunctionComponent<Props> = ({ collectionName }) => {
     //check if this clone already exists
     let tmpName = originalFlowName.concat("_clone");
     let tmpNameIdx = 1;
-    while (!validateFlowName(`${tmpName}${tmpNameIdx}`)) tmpNameIdx++;
+    while (!validateFlowName(collection, `${tmpName}${tmpNameIdx}`)) tmpNameIdx++;
     dispatch(cloneFlow(collectionName, originalFlowName, `${tmpName}${tmpNameIdx}`));
   }
 

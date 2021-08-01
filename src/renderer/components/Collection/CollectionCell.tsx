@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { validateCollectionName } from '../../models/Collection';
+import { validateCollectionName, Collection } from '../../models/Collection';
 import { Input, Form, Button, message, Popover, Divider } from 'antd';
 import { FilePptOutlined, EditOutlined, DeleteOutlined, PlusOutlined, ExportOutlined } from '@ant-design/icons';
 import { prevent, getByKey } from '../../utils/utils';
@@ -17,6 +17,10 @@ export const TableData = styled('div')`
 export const Separator = styled(Divider)`
   margin: 4px 0;
 `;
+
+export function validateFlowName(collection: Collection | undefined, flowName: string): boolean {
+  return !collection?.flows?.map(([n]) => n)?.includes(flowName);
+}
 
 const Title = styled('span')`
   margin-top: 4px;
@@ -106,14 +110,10 @@ const CollectionCell: React.FunctionComponent<Props> = ({ collectionName }) => {
     hideMenu();
   }
 
-  function validateFlowName(flowName: string): boolean {
-    return !collection?.flows?.map(([n]) => n)?.includes(flowName);
-  }
-
   function handleCreate(): void {
     const tmpName = 'Request';
     let tmpNameIdx = 1;
-    while (!validateFlowName(`${tmpName}${tmpNameIdx}`)) tmpNameIdx++;
+    while (!validateFlowName(collection, `${tmpName}${tmpNameIdx}`)) tmpNameIdx++;
     dispatch(createFlow(collectionName, `${tmpName}${tmpNameIdx}`));
     hideMenu();
   }
