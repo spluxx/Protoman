@@ -72,6 +72,17 @@ export default function CollectionReducer(s: AppState, action: AnyAction): AppSt
             draft.currentFlow = flows[0][0];
           }
         });
+      case 'CLONE_FLOW':
+        return produce(s, draft => {
+          const collection = getByKey(draft.collections, a.collectionName);
+          const flows = collection?.flows;
+          if (!flows) return draft;
+          const idx = flows.findIndex(([n]) => n === a.originalFlowName);
+          let original_flow = flows[idx][1];
+          flows.push([a.flowName, original_flow]);
+          draft.currentCollection = a.collectionName;
+          draft.currentFlow = a.flowName;
+        });
       case 'OPEN_FM':
         return produce(s, draft => {
           draft.fmOpenCollection = a.collectionName;

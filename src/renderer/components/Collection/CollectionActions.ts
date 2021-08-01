@@ -51,6 +51,15 @@ type DeleteFlow = {
 
 const DELETE_FLOW = 'DELETE_FLOW';
 
+type CloneFlow = {
+  type: 'CLONE_FLOW';
+  collectionName: string;
+  originalFlowName: string,
+  flowName: string,
+}
+
+const CLONE_FLOW = 'CLONE_FLOW'
+
 type OpenFM = {
   type: 'OPEN_FM';
   collectionName: string;
@@ -81,6 +90,7 @@ export const CollectionActionTypes = [
   CREATE_FLOW,
   SELECT_FLOW,
   DELETE_FLOW,
+  CLONE_FLOW,
   OPEN_FM,
   CLOSE_FM,
   REORDER_FLOW,
@@ -94,6 +104,7 @@ export type CollectionAction =
   | CreateFlow
   | SelectFlow
   | DeleteFlow
+  | CloneFlow
   | OpenFM
   | CloseFM
   | ReorderFlow;
@@ -149,6 +160,15 @@ export function deleteFlow(collectionName: string, flowName: string): DeleteFlow
     collectionName,
     flowName,
   };
+}
+
+export function cloneFlow(collectionName: string, originalFlowName: string, flowName: string): CloneFlow {
+  return {
+    type: CLONE_FLOW,
+    collectionName,
+    originalFlowName,
+    flowName
+  }
 }
 
 export function openFM(collectionName: string): OpenFM {
