@@ -14,7 +14,7 @@ export const TableData = styled('div')`
   padding: 4px 8px;
 `;
 
-const Separator = styled(Divider)`
+export const Separator = styled(Divider)`
   margin: 4px 0;
 `;
 

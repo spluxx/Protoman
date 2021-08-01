@@ -1,12 +1,13 @@
 import React from 'react';
 import { List, Typography, Button, message, Popover } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, SubnodeOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { prevent, getByKey } from '../../utils/utils';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from '../../models/AppState';
-import { selectFlow, deleteFlow, reorderFlow } from './CollectionActions';
+import { selectFlow, deleteFlow, reorderFlow, cloneFlow } from './CollectionActions';
 import { DragDropContext, DropResult, Draggable, Droppable } from 'react-beautiful-dnd';
+import { Separator } from './CollectionCell';
 
 const ClickableItem = styled(List.Item)`
   display: flex;
@@ -25,8 +26,8 @@ type Props = {
 const FlowList: React.FunctionComponent<Props> = ({ collectionName }) => {
   const dispatch = useDispatch();
 
-  const collections = useSelector((s: AppState) => s.collections);
-  const flowNames = useSelector((s: AppState) => getByKey(s.collections, collectionName)?.flows?.map(([n]) => n));
+  const collection = useSelector((s: AppState) => getByKey(s.collections, collectionName));
+  const flowNames = useSelector((s: AppState) => collection?.flows?.map(([n]) => n));
   const isCurrentCollection = useSelector((s: AppState) => s.currentCollection === collectionName);
   const currentFlow = useSelector((s: AppState) => s.currentFlow);
 
@@ -34,13 +35,25 @@ const FlowList: React.FunctionComponent<Props> = ({ collectionName }) => {
     dispatch(selectFlow(collectionName, flowName));
   }
 
+  function validateFlowName(flowName: string): boolean {
+    return !collection?.flows?.map(([n]) => n)?.includes(flowName);
+  }
+
   function handleDelete(flowName: string): void {
-    const flowCount = getByKey(collections, collectionName)?.flows?.length || 0;
+    const flowCount = collection?.flows?.length || 0;
     if (flowCount > 1) {
       dispatch(deleteFlow(collectionName, flowName));
     } else {
       message.error("Can't delete the last request");
     }
+  }
+
+  function handleClone(originalFlowName: string): void {
+    //check if this clone already exists
+    let tmpName = originalFlowName.concat("_clone");
+    let tmpNameIdx = 1;
+    while (!validateFlowName(`${tmpName}${tmpNameIdx}`)) tmpNameIdx++;
+    dispatch(cloneFlow(collectionName, originalFlowName, `${tmpName}${tmpNameIdx}`));
   }
 
   function handleDragEnd(result: DropResult): void {
@@ -68,6 +81,7 @@ const FlowList: React.FunctionComponent<Props> = ({ collectionName }) => {
                   emphasize={isCurrentCollection && currentFlow === flowName}
                   handleSelection={handleSelection}
                   handleDelete={handleDelete}
+                  handleClone={handleClone}
                 />
               )}
             />
@@ -85,9 +99,10 @@ type CellProps = {
   idx: number;
   handleSelection: (name: string) => void;
   handleDelete: (name: string) => void;
+  handleClone: (name: string) => void;
 };
 
-const FlowCell: React.FC<CellProps> = ({ flowName, emphasize, handleSelection, handleDelete, idx }) => {
+const FlowCell: React.FC<CellProps> = ({ flowName, emphasize, handleSelection, handleDelete, handleClone, idx }) => {
   const [menuVisible, setMenuVisible] = React.useState(false);
   function showMenu(): void {
     setMenuVisible(true);
@@ -102,13 +117,23 @@ const FlowCell: React.FC<CellProps> = ({ flowName, emphasize, handleSelection, h
     hideMenu();
   }
 
+  function cloneFlow(): void {
+    handleClone(flowName);
+    hideMenu();
+  }
+
   const menu = (
-    <div>
+    <>
       <Button type="link" danger onClick={prevent(deleteFlow)}>
         <DeleteOutlined />
         Delete Request
       </Button>
-    </div>
+      <Separator />
+      <Button type="link" onClick={prevent(cloneFlow)}>
+        <SubnodeOutlined />
+        Clone Request
+      </Button>
+    </>
   );
 
   return (
