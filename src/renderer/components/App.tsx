@@ -19,7 +19,7 @@ const ContentLayout = styled(Layout)`
   padding: 16px;
 `;
 
-const App: React.FunctionComponent<{}> = ({}) => {
+const App: React.FunctionComponent<unknown> = ({}) => {
   const dispatch = useDispatch();
   const collections = useSelector(
     (s: AppState) => s.collections,

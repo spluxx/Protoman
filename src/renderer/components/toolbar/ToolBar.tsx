@@ -8,7 +8,7 @@ const PaddedRow = styled(Row)`
   padding: 8px 0px;
 `;
 
-const ToolBar: React.FunctionComponent<{}> = ({}) => {
+const ToolBar: React.FunctionComponent<unknown> = ({}) => {
   return (
     <PaddedRow>
       <Col span={8} style={{ display: 'flex' }}>

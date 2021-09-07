@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { MessageType, EnumType, ProtoCtx, PrimitiveValue, EnumValue, MessageValue } from '../protobuf';
 import { string as stringType, int32 as int32Type, bool as boolType } from '../primitiveTypes';
 

@@ -51,7 +51,7 @@ const LinkButton = styled(Button)`
 
 export const COLLECTION_SIDER_WIDTH = 210;
 
-const CollectionSider: React.FunctionComponent<{}> = ({}) => {
+const CollectionSider: React.FunctionComponent<unknown> = ({}) => {
   const dispatch = useDispatch();
 
   const collections = useSelector((s: AppState) => s.collections);

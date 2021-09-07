@@ -6,6 +6,7 @@ import { ProtoCtx } from '../../../../core/protobuf/protobuf';
 import { buildContext } from '../../../../core/protobuf/protoParser';
 import { message } from 'antd';
 import BuildFailureWarning from './BuildFailureWarning';
+/* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require('electron').remote.require('fs');
 
 type SetProtofiles = {
@@ -77,7 +78,7 @@ export function buildProtofiles(
   filepaths: string[],
   rootPath?: string,
   onFix?: () => void,
-): ThunkAction<Promise<void>, AppState, {}, AnyAction> {
+): ThunkAction<Promise<void>, AppState, unknown, AnyAction> {
   return async (dispatch): Promise<void> => {
     if (filepaths) {
       dispatch({ type: BUILD_PROTOFILES, collectionName, filepaths });

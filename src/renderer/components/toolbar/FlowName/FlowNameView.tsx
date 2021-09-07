@@ -22,7 +22,7 @@ const TitleWrapper = styled('div')`
   align-items: center;
 `;
 
-type Props = {};
+type Props = unknown;
 
 const FlowNameView: React.FunctionComponent<Props> = ({}) => {
   const dispatch = useDispatch();

@@ -54,11 +54,11 @@ const DELETE_FLOW = 'DELETE_FLOW';
 type CloneFlow = {
   type: 'CLONE_FLOW';
   collectionName: string;
-  originalFlowName: string,
-  flowName: string,
-}
+  originalFlowName: string;
+  flowName: string;
+};
 
-const CLONE_FLOW = 'CLONE_FLOW'
+const CLONE_FLOW = 'CLONE_FLOW';
 
 type OpenFM = {
   type: 'OPEN_FM';
@@ -167,8 +167,8 @@ export function cloneFlow(collectionName: string, originalFlowName: string, flow
     type: CLONE_FLOW,
     collectionName,
     originalFlowName,
-    flowName
-  }
+    flowName,
+  };
 }
 
 export function openFM(collectionName: string): OpenFM {
