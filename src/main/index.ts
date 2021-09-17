@@ -1,5 +1,5 @@
 import { app, BrowserWindow, Menu, Rectangle, screen } from 'electron';
-const Store = require('electron-store');
+import Store from 'electron-store';
 import path from 'path';
 import makeMenu from './menu';
 import { initializeEvents } from './events';
@@ -9,11 +9,11 @@ let window: BrowserWindow;
 
 const WIDTH_RATIO = 0.8;
 const ASPECT_RATIO = 10 / 16;
-const config = new Store()
+const config = new Store<Rectangle>();
 
 async function createWindow(): Promise<void> {
   const screenWidth = screen.getPrimaryDisplay().workAreaSize.width;
-  let bounds = config.get('winBounds');
+  const bounds = config.get('winBounds') as Rectangle;
   //default value
   let width = screenWidth * WIDTH_RATIO;
   let height = screenWidth * WIDTH_RATIO * ASPECT_RATIO;
@@ -22,7 +22,7 @@ async function createWindow(): Promise<void> {
     width = bounds.width;
     height = bounds.height;
   }
-  console.log("saved bounds ", bounds);
+  console.log('saved bounds ', bounds);
   window = new BrowserWindow({
     width: width,
     height: height,
@@ -35,10 +35,10 @@ async function createWindow(): Promise<void> {
   window.loadFile(path.join(__dirname, 'index.html'));
 
   window.on('close', () => {
-    console.log("closing the window");
-    console.log("save window bounds");
-    config.set('winBounds', window.getBounds())
-  })
+    console.log('closing the window');
+    console.log('save window bounds');
+    config.set('winBounds', window.getBounds());
+  });
   checkUpdateAndNotify(window);
 }
 

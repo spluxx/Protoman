@@ -12,11 +12,11 @@ const TextView = styled(TextArea)`
   overflow: hidden;
 `;
 
-const UnknownBody: FunctionComponent<{}> = () => {
+const UnknownBody: FunctionComponent<unknown> = () => {
   return <div>The given content-type is unsupported.</div>;
 };
 
-const EmptyBody: FunctionComponent<{}> = () => {
+const EmptyBody: FunctionComponent<unknown> = () => {
   return <div>The response has an empty body.</div>;
 };
 

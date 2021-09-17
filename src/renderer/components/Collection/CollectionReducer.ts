@@ -78,8 +78,8 @@ export default function CollectionReducer(s: AppState, action: AnyAction): AppSt
           const flows = collection?.flows;
           if (!flows) return draft;
           const idx = flows.findIndex(([n]) => n === a.originalFlowName);
-          let original_flow = flows[idx][1];
-          flows.push([a.flowName, original_flow]);
+          const originalFlow = flows[idx][1];
+          flows.push([a.flowName, originalFlow]);
           draft.currentCollection = a.collectionName;
           draft.currentFlow = a.flowName;
         });

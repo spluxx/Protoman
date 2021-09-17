@@ -10,7 +10,7 @@ import { selectEnvNames } from '../../../redux/store';
 
 const ENV_MODAL_WIDTH = 800;
 
-const EnvPicker: React.FunctionComponent<{}> = ({}) => {
+const EnvPicker: React.FunctionComponent<unknown> = ({}) => {
   const [modalVisible, setModalVisible] = React.useState(false);
   const showModal = (): void => setModalVisible(true);
   const closeModal = (): void => setModalVisible(false);

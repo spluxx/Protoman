@@ -50,7 +50,7 @@ const FlowList: React.FunctionComponent<Props> = ({ collectionName }) => {
 
   function handleClone(originalFlowName: string): void {
     //check if this clone already exists
-    let tmpName = originalFlowName.concat("_clone");
+    const tmpName = originalFlowName.concat('_clone');
     let tmpNameIdx = 1;
     while (!validateFlowName(`${tmpName}${tmpNameIdx}`)) tmpNameIdx++;
     dispatch(cloneFlow(collectionName, originalFlowName, `${tmpName}${tmpNameIdx}`));

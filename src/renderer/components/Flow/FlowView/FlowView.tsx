@@ -15,7 +15,7 @@ const Spacing = styled('div')`
   height: 16px;
 `;
 
-const FlowView: React.FunctionComponent<{}> = ({}) => {
+const FlowView: React.FunctionComponent<unknown> = ({}) => {
   const dispatch = useDispatch();
 
   const col = useSelector(selectCurrentColWithName);

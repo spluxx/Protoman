@@ -43,7 +43,7 @@ export function sendRequest(
   builder: RequestBuilder,
   env: Env,
   ctx: ProtoCtx,
-): ThunkAction<Promise<void>, AppState, {}, AnyAction> {
+): ThunkAction<Promise<void>, AppState, unknown, AnyAction> {
   return async (dispatch): Promise<void> => {
     dispatch({ type: SEND_REQUEST, collectionName, flowName });
     try {
