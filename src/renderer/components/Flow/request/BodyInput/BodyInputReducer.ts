@@ -14,20 +14,20 @@ export default function BodyInputReducer(s: AppState, action: AnyAction): AppSta
       case 'SELECT_REQUEST_MESSAGE_NAME':
         return produce(s, draft => {
           const collection = getByKey(draft.collections, draft.currentCollection);
-          if (!collection) return s;
+          if (!collection) return draft;
           const protoCtx = collection.protoCtx;
           const flow = getByKey(collection.flows, draft.currentFlow);
-          if (!flow) return s;
+          if (!flow) return draft;
           const dv = typeToDefaultValue(protoCtx.types[a.name], protoCtx);
-          if (dv.type.tag !== 'message') return s;
+          if (dv.type.tag !== 'message') return draft;
           flow.requestBuilder.bodies.protobuf = dv as Draft<MessageValue>;
         });
       case 'SELECT_BODY_TYPE':
         return produce(s, draft => {
           const collection = getByKey(draft.collections, draft.currentCollection);
-          if (!collection) return s;
+          if (!collection) return draft;
           const flow = getByKey(collection.flows, draft.currentFlow);
-          if (!flow) return s;
+          if (!flow) return draft;
           if (BODY_TYPES.includes(a.bodyType)) {
             flow.requestBuilder.bodyType = a.bodyType as BodyType;
           }
@@ -35,9 +35,9 @@ export default function BodyInputReducer(s: AppState, action: AnyAction): AppSta
       case 'JSON_BODY_CHANGED_TYPE':
         return produce(s, draft => {
           const collection = getByKey(draft.collections, draft.currentCollection);
-          if (!collection) return s;
+          if (!collection) return draft;
           const flow = getByKey(collection.flows, draft.currentFlow);
-          if (!flow) return s;
+          if (!flow) return draft;
           if (flow.requestBuilder.bodyType == 'json') {
             flow.requestBuilder.bodies.json = a.bodyValue;
           }
