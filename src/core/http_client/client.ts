@@ -47,7 +47,7 @@ async function translateResponse(
   if (buf.length === 0) {
     responseBodyType = 'empty';
     responseBodyValue = undefined;
-  } else if (saidContentType === CONTENT_TYPE_JSON) {
+  } else if (saidContentType?.includes(CONTENT_TYPE_JSON)) {
     responseBodyType = 'json';
     responseBodyValue = toJson(buf);
   } else if (saidContentType?.includes(CONTENT_TYPE_HTML)) {
