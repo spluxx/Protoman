@@ -6,6 +6,7 @@ import { ResponseBodyValue, ResponseDescriptor, ResponseBodyType } from './respo
 import fetch, { Response } from 'node-fetch';
 import { deserializeProtobuf } from '../protobuf/deserializer';
 import https from 'https';
+import http from 'http';
 
 const CONTENT_TYPE_JSON = 'application/json';
 const CONTENT_TYPE_HTML = 'text/html';
@@ -16,9 +17,14 @@ export async function makeRequest(request: RequestDescriptor, protoCtx: ProtoCtx
   const headers = convertHeaders(request.headers);
 
   const sTime = Date.now();
-  const agent = new https.Agent({
-    rejectUnauthorized: false,
-  });
+  let agent: http.Agent;
+  if (url.toLowerCase().startsWith('https://')) {
+    agent = new https.Agent({
+      rejectUnauthorized: false,
+    });
+  } else {
+    agent = new http.Agent();
+  }
   const resp = await fetch(url, { method, body, headers, agent });
   const eTime = Date.now();
 
