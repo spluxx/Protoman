@@ -70,6 +70,9 @@ module.exports = {
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
+    fallback: {
+      path: require.resolve('path-browserify'),
+    },
   },
   watchOptions: {
     poll: true,

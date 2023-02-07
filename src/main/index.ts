@@ -32,8 +32,16 @@ async function createWindow(): Promise<void> {
     height: height,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
     },
   });
+
+  require('@electron/remote/main').enable(window.webContents)
+
+  if (process.env.NODE_ENV === 'development') {
+    window.webContents.openDevTools();
+  }
+
   initializeEvents();
   Menu.setApplicationMenu(makeMenu());
   window.loadFile(path.join(__dirname, 'index.html'));

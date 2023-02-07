@@ -60,6 +60,10 @@ As a fallback, you can clone the repo and run npm install && npm run build to bu
 - `yarn install`
 - `yarn build`
 
+### Debug
+- `yarn dev` - start dev process, dont kill it!
+- `yarn start` - start client
+
 ## Contributing
 
 If you are interested in reporting/fixing issues and contributing directly to the codebase, follow the standard procedures.
