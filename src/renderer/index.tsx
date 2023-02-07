@@ -7,11 +7,14 @@ import App from './components/App';
 import ipcChannels from '../ipc_channels';
 import { dumpStore } from './redux/store';
 import { setupListeners } from './events';
+
+import 'react-tooltip/dist/react-tooltip.css';
+
 const electron = window.require('electron');
 export const ipcRenderer = electron.ipcRenderer;
 
 const DEBOUNCE_MS = 2 * 1000; // 2 seconds
-let lastJobHandle = 0;
+let lastJobHandle: NodeJS.Timeout;
 
 export function initializeApp(store: Store): void {
   ReactDOM.render(

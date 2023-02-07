@@ -41,10 +41,10 @@ export async function deserializeProtobuf(
     try {
       return { tag: 'valid', value: handleMessage(createMessageType(messageType), obj, ctx) };
     } catch (e) {
-      return { tag: 'invalid', value: JSON.stringify(obj, null, 2), error: e.toString() };
+      return { tag: 'invalid', value: JSON.stringify(obj, null, 2), error: (e as Error).toString() };
     }
   } catch (e) {
-    return { tag: 'invalid', value: null, error: transformPBJSError(e).message };
+    return { tag: 'invalid', value: null, error: transformPBJSError(e as Error).message };
   }
 }
 

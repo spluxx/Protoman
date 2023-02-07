@@ -57,7 +57,7 @@ const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies, protoCtx, messa
             style={{ width: MESSAGE_NAME_WIDTH }}
             showSearch
             filterOption={(input, option): boolean => {
-              return option && option.value.toString().includes(input.toString());
+              return (option?.value?.toString() || '').includes(input.toString());
             }}
           >
             {messageNames.map((messageName, idx) => (

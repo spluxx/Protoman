@@ -38,7 +38,7 @@ const ExpectedBodyInput: React.FunctionComponent<Props> = ({
         allowClear
         showSearch
         filterOption={(input, option): boolean => {
-          return option && option.value.toString().includes(input.toString());
+          return (option?.value?.toString() || '').includes(input.toString());
         }}
       >
         {messageNames.map((messageName, idx) => (
@@ -59,7 +59,7 @@ const ExpectedBodyInput: React.FunctionComponent<Props> = ({
         allowClear
         showSearch
         filterOption={(input, option): boolean => {
-          return option && option.value.toString().includes(input.toString());
+          return (option?.value?.toString() || '').includes(input.toString());
         }}
       >
         {messageNames.map((messageName, idx) => (

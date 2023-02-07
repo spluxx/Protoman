@@ -38,7 +38,7 @@ const EnvPicker: React.FunctionComponent<unknown> = ({}) => {
 
   return (
     <>
-      <Button shape="circle-outline" style={{ marginLeft: 4 }} onClick={showModal}>
+      <Button shape="circle" style={{ marginLeft: 4 }} onClick={showModal}>
         <SettingOutlined />
       </Button>
       <Select

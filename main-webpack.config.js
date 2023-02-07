@@ -1,5 +1,4 @@
 const path = require('path');
-const tsImportPluginFactory = require('ts-import-plugin');
 
 const NODE_ENV = process.env.NODE_ENV;
 

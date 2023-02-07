@@ -106,12 +106,12 @@ const ColoringInput: React.FunctionComponent<InputProps> = props => {
   const ph = <span style={{ color: '#a9a9a9' }}>{placeholder}</span>;
 
   const [clientWidth, setClientWidth] = React.useState(0);
-  const inputRef = React.useRef<Input>(null);
+  const inputRef = React.useRef<any>(null);
   const fakeInputRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     if (inputRef.current && fakeInputRef.current) {
-      const input = inputRef.current.input;
+      const input = (inputRef.current as any).input; // eslint-disable-line
       const fakeInput = fakeInputRef.current;
 
       setClientWidth(input.clientWidth);
@@ -126,7 +126,7 @@ const ColoringInput: React.FunctionComponent<InputProps> = props => {
 
       return (): void => {
         INSERTION_POINT_CHANGING_EVENTS.forEach(type => {
-          inputRef.current?.input?.removeEventListener(type, syncScroll);
+          (inputRef.current as any)?.input?.removeEventListener(type, syncScroll);
         });
       };
     }

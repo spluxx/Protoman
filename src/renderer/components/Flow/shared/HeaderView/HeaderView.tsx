@@ -85,7 +85,7 @@ const SingleHeaderView: React.FunctionComponent<SingleProps> = ({
             }
           }}
           filterOption={(input, option): boolean => {
-            return option && option.value.toString().includes(input.toString());
+            return (option?.value?.toString() || '').includes(input.toString());
           }}
         >
           {nameOptions.map(option => (

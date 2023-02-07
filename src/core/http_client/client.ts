@@ -95,7 +95,7 @@ function toStr(buf: Uint8Array): string {
   try {
     return new TextDecoder().decode(buf);
   } catch (err) {
-    throw new Error('Error occurred while decoding body to string:\n' + err.message);
+    throw new Error('Error occurred while decoding body to string:\n' + (err as Error).message);
   }
 }
 
@@ -104,6 +104,6 @@ function toJson(buf: Uint8Array): string {
   try {
     return JSON.stringify(JSON.parse(str), null, 2);
   } catch (err) {
-    throw new Error('Error occurred while parsing json:\n' + err.message + '\nGiven JSON:\n' + str);
+    throw new Error('Error occurred while parsing json:\n' + (err as Error).message + '\nGiven JSON:\n' + str);
   }
 }

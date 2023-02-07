@@ -5,6 +5,10 @@ import makeMenu from './menu';
 import { initializeEvents } from './events';
 import { checkUpdateAndNotify } from './notification';
 
+console.log('Initializing electron remote');
+/* eslint-disable @typescript-eslint/no-var-requires */
+require('@electron/remote/main').initialize();
+
 let window: BrowserWindow;
 
 const WIDTH_RATIO = 0.8;
@@ -47,7 +51,5 @@ console.log('MAIN PROCESS STARTED');
 export function sendToWindow(channel: string, args: unknown[]): void {
   window.webContents.send(channel, args);
 }
-
-app.allowRendererProcessReuse = true;
 
 app.on('ready', createWindow);

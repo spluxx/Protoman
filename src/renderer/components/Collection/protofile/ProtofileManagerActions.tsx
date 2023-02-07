@@ -6,8 +6,10 @@ import { ProtoCtx } from '../../../../core/protobuf/protobuf';
 import { buildContext } from '../../../../core/protobuf/protoParser';
 import { message } from 'antd';
 import BuildFailureWarning from './BuildFailureWarning';
+
 /* eslint-disable @typescript-eslint/no-var-requires */
-const fs = require('electron').remote.require('fs');
+const { require: remoteRequire } = require('@electron/remote');
+const fs = remoteRequire('fs');
 
 type SetProtofiles = {
   type: 'SET_PROTOFILES';
