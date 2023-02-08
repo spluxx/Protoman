@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useState, CSSProperties } from 'react';
 import styled from 'styled-components';
 import { Select, Button } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
@@ -147,23 +147,29 @@ type PVVProps = {
 
 const PrimitiveValueView: FunctionComponent<PVVProps> = ({ editable, value, handlers }) => {
   const { type, value: v } = value;
-  const [useNull, setUseNull] = useState<boolean>(false);
+  const [useNull, setUseNull] = useState<boolean>(v === null);
   const isEditable = useNull ? false : editable;
-  const displayValue = v ?? 'NULL';
+  const displayValue = v ?? ''; // display NULL as empty string.
+
+  const overrideStyles: CSSProperties = {
+    width: LONG_PRIMITIVE_TYPES.includes(type.name) ? LONG_VALUE_INPUT_WIDTH : SHORT_VALUE_INPUT_WIDTH,
+  };
+
   return (
     <>
       <HighlightInput
         size="small"
         addonAfter={<LightText>{type.name}</LightText>}
         readOnly={!isEditable}
+        disabled={!isEditable}
         colored={isEditable}
         value={displayValue}
-        style={{ width: LONG_PRIMITIVE_TYPES.includes(type.name) ? LONG_VALUE_INPUT_WIDTH : SHORT_VALUE_INPUT_WIDTH }}
+        style={overrideStyles}
         onChange={(e): void => handlers.valueChange('', e.target.value)}
       />
       <FormGroup>
         <FormControlLabel
-          control={<Checkbox />}
+          control={<Checkbox defaultChecked={useNull} />}
           onChange={(_, checked) => {
             setUseNull(checked);
 

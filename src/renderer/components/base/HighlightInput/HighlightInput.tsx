@@ -149,7 +149,7 @@ const ColoringInput: React.FunctionComponent<InputProps> = props => {
   );
 };
 
-type Props = InputProps & { colored?: boolean };
+type Props = InputProps & { colored?: boolean; background?: string };
 
 const HighlightInput: React.FunctionComponent<Props> = props => {
   const p = { ...props, colored: undefined };

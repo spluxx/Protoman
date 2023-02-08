@@ -10,17 +10,9 @@ export async function serializeProtobuf(body: MessageValue, ctx: ProtoCtx): Prom
   const root = protobuf.Root.fromJSON(jsonDescriptor);
   const messageType = root.lookupType(body.type.name);
 
-  // TEST print serialize message
-  // console.log('MESSAGE: ', messageType.create(rec));
+  const buffer = Buffer.from(messageType.encode(messageType.create(rec as JsonObject)).finish());
 
-  // TEST deserialize
-  // const root2 = protobuf.Root.fromJSON(JSON.parse(ctx.descriptorJson));
-  // const messageType2 = root2.lookupType(body.type.name);
-  // const decoded = messageType2.decode(Buffer.from(messageType.encode(messageType.create(rec)).finish()));
-  // const obj = decoded.toJSON();
-  // console.log('DESERIALIZE TEST ', obj);
-
-  return Buffer.from(messageType.encode(messageType.create(rec)).finish());
+  return buffer;
 }
 
 export function createMessageRecurse(protobufValue: ProtobufValue): ProtoJson {
@@ -40,28 +32,43 @@ export function createMessageRecurse(protobufValue: ProtobufValue): ProtoJson {
   }
 }
 
-function makeMessageValue(messagevalue: MessageValue): JsonObject {
-  const singleFields = messagevalue.singleFields.map(([name, value]): [string, ProtoJson] => [
-    name,
-    createMessageRecurse(value),
-  ]);
+const filterNullValue = (val: ProtobufValue): boolean => {
+  // only primitiveValue
+  if (val?.type?.tag === 'primitive') {
+    return (val as PrimitiveValue).value !== null;
+  }
 
-  const oneOfFields = messagevalue.oneOfFields.map(([, [name, value]]): [string, ProtoJson] => [
-    name,
-    createMessageRecurse(value),
-  ]);
+  return true;
+};
+
+function makeMessageValue(messagevalue: MessageValue): JsonObject | null {
+  const singleFields = messagevalue.singleFields
+    .filter(([_, value]) => filterNullValue(value))
+    .map(([name, value]): [string, ProtoJson] => [name, createMessageRecurse(value)]);
+
+  const oneOfFields = messagevalue.oneOfFields
+    .filter(([, [_, value]]) => filterNullValue(value))
+    .map(([, [name, value]]): [string, ProtoJson] => [name, createMessageRecurse(value)]);
 
   const repeatedFields = messagevalue.repeatedFields.map(([name, values]): [string, JsonArray] => [
     name,
-    values.map(createMessageRecurse),
+    values.filter(value => filterNullValue(value)).map(createMessageRecurse),
   ]);
 
   const mapFields = messagevalue.mapFields.map(([name, kvPairs]): [string, JsonObject] => [
     name,
-    toObject(kvPairs.map(([k, v]): [string, ProtoJson] => [k, createMessageRecurse(v)])),
+    toObject(
+      kvPairs
+        .filter(([k, value]) => filterNullValue(value))
+        .map(([k, v]): [string, ProtoJson] => [k, createMessageRecurse(v)]),
+    ),
   ]);
 
   const allFields = [...singleFields, ...oneOfFields, ...repeatedFields, ...mapFields];
+
+  if (!allFields.length) {
+    return null;
+  }
 
   return toObject(allFields);
 }
