@@ -61,7 +61,7 @@ As a fallback, you can clone the repo and run npm install && npm run build to bu
 - `yarn build`
 
 ### Debug
-- `yarn dev` - start dev process, dont kill it!
+- `yarn dev` - start build dev in watch mode.
 - `yarn start` - start client
 
 ## Contributing
