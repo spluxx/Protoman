@@ -160,6 +160,7 @@ const PrimitiveValueView: FunctionComponent<PVVProps> = ({ editable, value, hand
     width: LONG_PRIMITIVE_TYPES.includes(type.name) ? LONG_VALUE_INPUT_WIDTH : SHORT_VALUE_INPUT_WIDTH,
   };
 
+  // TODO: support validate input by type ex. Int should only accept number. (& special character)
   return (
     <>
       <HighlightInput
