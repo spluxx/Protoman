@@ -37,7 +37,9 @@ export async function toRequestDescriptor(
   let contentType;
 
   if (bodyType === 'protobuf' && bodies.protobuf) {
-    const withEnv = applyToProtoMessage(bodies.protobuf, (s: string): string => applyEnvs(s, varMap));
+    const withEnv = applyToProtoMessage(bodies.protobuf, (s: string | null): string | null =>
+      s !== null ? applyEnvs(s, varMap) : null,
+    );
     body = await serializeProtobuf(withEnv, ctx);
     contentType = 'application/x-protobuf';
   } else if (bodyType === 'json') {

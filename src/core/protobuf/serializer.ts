@@ -4,9 +4,22 @@ import protobuf from 'protobufjs';
 import { ProtoJson, JsonObject, JsonArray } from './protoJson';
 
 export async function serializeProtobuf(body: MessageValue, ctx: ProtoCtx): Promise<Buffer> {
-  const root = protobuf.Root.fromJSON(JSON.parse(ctx.descriptorJson));
-  const messageType = root.lookupType(body.type.name);
+  const jsonDescriptor = JSON.parse(ctx.descriptorJson);
   const rec = makeMessageValue(body);
+
+  const root = protobuf.Root.fromJSON(jsonDescriptor);
+  const messageType = root.lookupType(body.type.name);
+
+  // TEST print serialize message
+  // console.log('MESSAGE: ', messageType.create(rec));
+
+  // TEST deserialize
+  // const root2 = protobuf.Root.fromJSON(JSON.parse(ctx.descriptorJson));
+  // const messageType2 = root2.lookupType(body.type.name);
+  // const decoded = messageType2.decode(Buffer.from(messageType.encode(messageType.create(rec)).finish()));
+  // const obj = decoded.toJSON();
+  // console.log('DESERIALIZE TEST ', obj);
+
   return Buffer.from(messageType.encode(messageType.create(rec)).finish());
 }
 
@@ -53,7 +66,11 @@ function makeMessageValue(messagevalue: MessageValue): JsonObject {
   return toObject(allFields);
 }
 
-function makePrimitiveValue(primitiveValue: PrimitiveValue): number | string | boolean {
+function makePrimitiveValue(primitiveValue: PrimitiveValue): number | string | boolean | null {
+  if (primitiveValue.value === null) {
+    return null;
+  }
+
   switch (primitiveValue.type.name) {
     case 'bool':
       return primitiveValue.value === 'true';
