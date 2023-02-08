@@ -77,6 +77,11 @@ const FieldName = styled('span')`
   width: 50px;
 `;
 
+const Eyebrow = styled('span')`
+  color: gray;
+  font-size: 0.75rem;
+`;
+
 type MVVProps = {
   editable?: boolean;
   value: MessageValue;
@@ -175,7 +180,7 @@ const PrimitiveValueView: FunctionComponent<PVVProps> = ({ editable, value, hand
 
             handlers.valueChange('', null);
           }}
-          label="use NULL value."
+          label={<Eyebrow>use NULL value</Eyebrow>}
         />
       </FormGroup>
     </>
