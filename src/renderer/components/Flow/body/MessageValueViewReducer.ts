@@ -27,7 +27,9 @@ export default function MessageValueViewReducer(s: AppState, action: AnyAction):
       case 'VALUE_CHANGE':
         return produce(s, draft => {
           const body = extractBody(draft);
-          body && changeValue(body, a.path.split('/'), a.value);
+          if (body) {
+            changeValue(body, a.path.split('/'), a.value);
+          }
         });
       case 'FIELD_CHANGE':
         return produce(s, draft => {
@@ -54,14 +56,14 @@ export default function MessageValueViewReducer(s: AppState, action: AnyAction):
 
 // Change Value Helpers
 
-function changeValue(v: Draft<ProtobufValue>, segments: string[], value: string): void {
+function changeValue(v: Draft<ProtobufValue>, segments: string[], value: string | null): void {
   switch (v.type.tag) {
     case 'message':
-      return changeMessageValue(v as Draft<MessageValue>, segments, value);
+      return changeMessageValue(v as Draft<MessageValue>, segments, value as string);
     case 'primitive':
       return changePrimitiveValue(v as Draft<PrimitiveValue>, segments, value);
     case 'enum':
-      return changeEnumValue(v as Draft<EnumValue>, segments, value);
+      return changeEnumValue(v as Draft<EnumValue>, segments, value as string);
   }
 }
 
@@ -92,7 +94,7 @@ function changeMessageValue(msg: Draft<MessageValue>, segments: string[], value:
   }
 }
 
-function changePrimitiveValue(v: Draft<PrimitiveValue>, segment: string[], value: string): void {
+function changePrimitiveValue(v: Draft<PrimitiveValue>, segment: string[], value: string | null): void {
   console.assert(segment.length === 1 && segment[0] === '');
   v.value = value;
 }

@@ -4,7 +4,7 @@ type ValueChangeAction = {
   type: 'VALUE_CHANGE';
   ctx: ProtoCtx;
   path: string;
-  value: string;
+  value: string | null;
 };
 
 type FieldChangeAction = {
@@ -29,7 +29,7 @@ type EntryRemoveAction = {
 export const MessageValueViewActionTypes = ['VALUE_CHANGE', 'FIELD_CHANGE', 'ENTRY_ADD', 'ENTRY_REMOVE'];
 export type MessageValueViewAction = ValueChangeAction | FieldChangeAction | EntryAddAction | EntryRemoveAction;
 
-export function valueChange(path: string, value: string, ctx: ProtoCtx): ValueChangeAction {
+export function valueChange(path: string, value: string | null, ctx: ProtoCtx): ValueChangeAction {
   return {
     type: 'VALUE_CHANGE',
     ctx,
