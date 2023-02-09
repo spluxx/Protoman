@@ -45,7 +45,7 @@ module.exports = {
       },
       {
         test: /\.less$/,
-        loader: [
+        use: [
           'style-loader',
           'css-loader',
           {
@@ -58,6 +58,10 @@ module.exports = {
         ],
       },
       {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+      },
+      {
         enforce: 'pre',
         test: /\.js$/,
         loader: 'source-map-loader',
@@ -66,6 +70,9 @@ module.exports = {
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
+    fallback: {
+      path: require.resolve('path-browserify'),
+    },
   },
   watchOptions: {
     poll: true,

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { ProtobufValue, MessageValue, PrimitiveValue } from './protobuf';
 
-type Proc = (s: string) => string;
+type Proc = (s: string | null) => string | null;
 
 function applyToProto(v: ProtobufValue, proc: Proc): ProtobufValue {
   switch (v.type.tag) {
@@ -15,10 +15,12 @@ function applyToProto(v: ProtobufValue, proc: Proc): ProtobufValue {
 }
 
 export function applyToProtoMessage(v: MessageValue, proc: Proc): MessageValue {
-  const singleFields = v.singleFields.map(([name, v]): [string, ProtobufValue] => [name, applyToProto(v, proc)]);
+  const singleFields = v.singleFields
+    .filter(([_, v]) => !!v?.type?.tag)
+    .map(([name, v]): [string, ProtobufValue] => [name, applyToProto(v, proc)]);
   const repeatedFields = v.repeatedFields.map(([name, vs]): [string, ProtobufValue[]] => [
     name,
-    vs.map(v => applyToProto(v, proc)),
+    vs.filter(val => !!val?.type?.tag).map(v => applyToProto(v, proc)),
   ]);
   const oneOfFields = v.oneOfFields.map(([name, [sub, v]]): [string, [string, ProtobufValue]] => [
     name,

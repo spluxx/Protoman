@@ -1,5 +1,5 @@
-import React from 'react';
-import ReactTooltip from 'react-tooltip';
+import React, { useState } from 'react';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 /**
  *  It's such a waste to listen to window mouse events, but since the current implementation of
@@ -19,6 +19,7 @@ const TooltipSpan: React.FunctionComponent<TooltipSpanProps> = ({ id, text, colo
     return Math.floor(Math.random() * 100007);
   }, []);
   const nID = `${nonce}${id || ''}`;
+  const [open, setIsOpen] = useState(false);
 
   React.useEffect(() => {
     const checkHover = (evt: MouseEvent): void => {
@@ -26,9 +27,11 @@ const TooltipSpan: React.FunctionComponent<TooltipSpanProps> = ({ id, text, colo
         const { left, right, top, bottom } = spanRef.current.getBoundingClientRect();
         const isInside = left <= evt.clientX && evt.clientX <= right && top <= evt.clientY && evt.clientY <= bottom;
         if (isInside) {
-          ReactTooltip.show(spanRef.current);
+          // ReactTooltip.show(spanRef.current);
+          setIsOpen(true);
         } else {
-          ReactTooltip.hide(spanRef.current);
+          // ReactTooltip.hide(spanRef.current);
+          setIsOpen(false);
         }
       }
     };
@@ -40,10 +43,10 @@ const TooltipSpan: React.FunctionComponent<TooltipSpanProps> = ({ id, text, colo
 
   return (
     <>
-      <span ref={spanRef} style={{ color }} data-tip={tooltip || ''} data-for={nID}>
+      <span ref={spanRef} id={`span-ref-${nID}`} style={{ color }} data-tooltip-content={tooltip || ''} data-for={nID}>
         {text}
       </span>
-      <ReactTooltip id={nID} />
+      <ReactTooltip id={nID} isOpen={open} anchorId={`span-ref-${nID}`} content={tooltip || ''} />
     </>
   );
 };

@@ -5,6 +5,10 @@ import makeMenu from './menu';
 import { initializeEvents } from './events';
 import { checkUpdateAndNotify } from './notification';
 
+console.log('Initializing electron remote');
+/* eslint-disable @typescript-eslint/no-var-requires */
+require('@electron/remote/main').initialize();
+
 let window: BrowserWindow;
 
 const WIDTH_RATIO = 0.8;
@@ -28,8 +32,16 @@ async function createWindow(): Promise<void> {
     height: height,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
     },
   });
+
+  require('@electron/remote/main').enable(window.webContents)
+
+  if (process.env.NODE_ENV === 'development') {
+    window.webContents.openDevTools();
+  }
+
   initializeEvents();
   Menu.setApplicationMenu(makeMenu());
   window.loadFile(path.join(__dirname, 'index.html'));
@@ -47,7 +59,5 @@ console.log('MAIN PROCESS STARTED');
 export function sendToWindow(channel: string, args: unknown[]): void {
   window.webContents.send(channel, args);
 }
-
-app.allowRendererProcessReuse = true;
 
 app.on('ready', createWindow);

@@ -65,7 +65,7 @@ const FlowNameView: React.FunctionComponent<Props> = ({}) => {
             onKeyDown={(e): void => {
               switch (e.keyCode) {
                 case 27: // esc
-                  setDraftName(name);
+                  setDraftName(window?.name);
                   stopEditing();
                   break;
                 case 13: // enter

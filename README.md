@@ -56,6 +56,14 @@ A [Postman](https://www.postman.com/)-like API client for [protobuf](https://dev
 
 As a fallback, you can clone the repo and run npm install && npm run build to build, and npm run start to launch the app. Or, you can actually find configurations on [electron builder](https://www.electron.build/) to get the right distribution version yourself!
 
+### Manual build
+- `yarn install`
+- `yarn build`
+
+### Debug
+- `yarn dev` - start build dev in watch mode.
+- `yarn start` - start client
+
 ## Contributing
 
 If you are interested in reporting/fixing issues and contributing directly to the codebase, follow the standard procedures.

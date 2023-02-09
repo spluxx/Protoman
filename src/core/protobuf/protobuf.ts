@@ -52,7 +52,7 @@ export interface MessageValue {
 export interface PrimitiveValue {
   readonly type: PrimitiveType;
 
-  readonly value: string;
+  readonly value: string | null;
 }
 
 export interface EnumValue {

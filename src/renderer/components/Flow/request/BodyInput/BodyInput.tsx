@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { selectRequestMessageName, selectBodyType, JSONbodyChangedType } from './BodyInputActions';
 import { BodyType, RequestBody } from '../../../../models/request_builder';
-import { ProtoCtx } from '../../../../../core/protobuf/protobuf';
+import { MessageValue, ProtoCtx } from '../../../../../core/protobuf/protobuf';
 
 type Props = {
   bodyType: BodyType;
@@ -25,6 +25,18 @@ export const MESSAGE_NAME_WIDTH = 500;
 
 export const JSON_BODY_AREA_WIDTH = 500;
 export const JSON_BODY_AREA_HEIGHT = 100;
+
+// sometime we might has bad value contain in the save, so we sanitized it.
+const sanitizedMessageValue = (message: MessageValue): MessageValue => {
+  const sanitized = { ...message };
+  sanitized.singleFields = sanitized.singleFields.filter(([_, value]) => !!value?.type?.tag);
+  sanitized.repeatedFields = sanitized.repeatedFields.map(field => {
+    const newField = field;
+    newField[1] = newField[1].filter(value => !!value?.type?.tag);
+    return newField;
+  });
+  return sanitized;
+};
 
 const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies, protoCtx, messageNames }) => {
   const dispatch = useDispatch();
@@ -57,7 +69,7 @@ const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies, protoCtx, messa
             style={{ width: MESSAGE_NAME_WIDTH }}
             showSearch
             filterOption={(input, option): boolean => {
-              return option && option.value.toString().includes(input.toString());
+              return (option?.value?.toString() || '').includes(input.toString());
             }}
           >
             {messageNames.map((messageName, idx) => (
@@ -67,7 +79,9 @@ const BodyInput: FunctionComponent<Props> = ({ bodyType, bodies, protoCtx, messa
             ))}
           </Select>
         </div>
-        {bodies.protobuf ? <MessageValueView value={bodies.protobuf} handlers={handlers} editable /> : null}
+        {bodies.protobuf ? (
+          <MessageValueView value={sanitizedMessageValue(bodies.protobuf)} handlers={handlers} editable />
+        ) : null}
       </>
     ) : bodyType === 'json' ? (
       <>
