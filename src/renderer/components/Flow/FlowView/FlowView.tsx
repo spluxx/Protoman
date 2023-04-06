@@ -55,7 +55,6 @@ const FlowView: React.FunctionComponent<unknown> = ({}) => {
   const { protoCtx } = collection;
 
   function send(): void {
-    console.log('requestBuilder ', sanatizeRequestBuilder(requestBuilder));
     dispatch(sendRequest(collectionName, flowName, sanatizeRequestBuilder(requestBuilder), curEnv, protoCtx));
   }
 
