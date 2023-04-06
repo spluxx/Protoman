@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { sendRequest } from './FlowViewActions';
 import { selectCurrentColWithName, selectCurrentFlowWithName, selectCurrentEnv } from '../../../redux/store';
 import { Alert, Spin } from 'antd';
+import { RequestBuilder as RequestBuilderModel } from '../../../models/request_builder';
 
 const Wrapper = styled('div')`
   padding: 0px;
@@ -14,6 +15,28 @@ const Wrapper = styled('div')`
 const Spacing = styled('div')`
   height: 16px;
 `;
+
+// workaround for sanatized bad data before send protobuf request
+const sanatizeRequestBuilder = (requestBuilder: RequestBuilderModel): RequestBuilderModel => {
+  if (requestBuilder?.bodies?.protobuf?.mapFields) {
+    const overrideMapFields: any = requestBuilder.bodies.protobuf.mapFields.map(field => {
+      return [field[0], field[1].filter(Boolean)];
+    });
+
+    return {
+      ...requestBuilder,
+      bodies: {
+        ...requestBuilder.bodies,
+        protobuf: {
+          ...requestBuilder.bodies.protobuf,
+          mapFields: overrideMapFields,
+        },
+      },
+    };
+  }
+
+  return requestBuilder;
+};
 
 const FlowView: React.FunctionComponent<unknown> = ({}) => {
   const dispatch = useDispatch();
@@ -32,7 +55,7 @@ const FlowView: React.FunctionComponent<unknown> = ({}) => {
   const { protoCtx } = collection;
 
   function send(): void {
-    dispatch(sendRequest(collectionName, flowName, requestBuilder, curEnv, protoCtx));
+    dispatch(sendRequest(collectionName, flowName, sanatizeRequestBuilder(requestBuilder), curEnv, protoCtx));
   }
 
   return (

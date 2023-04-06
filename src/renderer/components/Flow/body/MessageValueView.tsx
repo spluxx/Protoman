@@ -134,7 +134,7 @@ const MessageValueView: FunctionComponent<MVVProps> = ({ editable, value, handle
             key={fieldName}
             editable={editable}
             fieldName={fieldName}
-            kvPairs={entries}
+            kvPairs={entries.filter(Boolean)} // workaround - entries null
             handlers={prefix(fieldName, handlers)}
           />
         ))}
