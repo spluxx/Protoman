@@ -11,7 +11,7 @@ const CONTENT_TYPE_JSON = 'application/json';
 const CONTENT_TYPE_HTML = 'text/html';
 
 export async function makeRequest(request: RequestDescriptor, protoCtx: ProtoCtx): Promise<ResponseDescriptor> {
-  const { url, method, body } = request;
+  let { url, method, body } = request;
 
   const headers = convertHeaders(request.headers);
 
@@ -19,6 +19,13 @@ export async function makeRequest(request: RequestDescriptor, protoCtx: ProtoCtx
   const agent = new https.Agent({
     rejectUnauthorized: false,
   });
+
+
+  if (method === "GET" || method === "DELETE") {
+    url = url + `?proto_body=${Buffer.from(body || new Uint8Array()).toString('base64').replace(/=+$/g, '')}`
+    body = undefined;
+  }
+
   const resp = await fetch(url, { method, body, headers, agent });
   const eTime = Date.now();
 
