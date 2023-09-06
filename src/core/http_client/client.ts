@@ -6,9 +6,24 @@ import { ResponseBodyValue, ResponseDescriptor, ResponseBodyType } from './respo
 import fetch, { Response } from 'node-fetch';
 import { deserializeProtobuf } from '../protobuf/deserializer';
 import https from 'https';
+import http from 'http';
 
 const CONTENT_TYPE_JSON = 'application/json';
 const CONTENT_TYPE_HTML = 'text/html';
+
+const httpsAgent = new https.Agent({
+  rejectUnauthorized: false,
+});
+
+const httpAgent = new http.Agent();
+
+const httpAgentResolver = (_parsedURL: { protocol: string }) => {
+  if (_parsedURL.protocol == 'http:') {
+    return httpAgent;
+  } else {
+    return httpsAgent;
+  }
+};
 
 export async function makeRequest(request: RequestDescriptor, protoCtx: ProtoCtx): Promise<ResponseDescriptor> {
   const { url, method, body } = request;
@@ -16,10 +31,9 @@ export async function makeRequest(request: RequestDescriptor, protoCtx: ProtoCtx
   const headers = convertHeaders(request.headers);
 
   const sTime = Date.now();
-  const agent = new https.Agent({
-    rejectUnauthorized: false,
-  });
-  const resp = await fetch(url, { method, body, headers, agent });
+
+  const resp = await fetch(url, { method, body, headers, agent: httpAgentResolver });
+
   const eTime = Date.now();
 
   const dt = eTime - sTime;
